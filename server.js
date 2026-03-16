@@ -1,0 +1,196 @@
+// --- EXPRESS BACKEND SETUP ---
+const express = require("express");
+const { Pool } = require("pg");
+const cors = require("cors");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken"); // Kept for future auth expansion
+require("dotenv").config();
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Middleware
+app.use(cors());
+app.use(express.json()); // Parses incoming JSON requests
+
+// --- NEON DB POSTGRESQL CONNECTION ---
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is missing in environment variables");
+}
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+  // Add connection timeout so it doesn't hang forever if the DB is waking up
+  connectionTimeoutMillis: 10000,
+});
+
+// Catch errors on idle clients in the pool
+pool.on("error", (err, client) => {
+  console.error(
+    "Idle client error (Neon DB likely went to sleep):",
+    err.message,
+  );
+});
+
+// Test Connection safely
+const testDbConnection = async () => {
+  try {
+    // Query the current time just to prove the connection works
+    const res = await pool.query("SELECT NOW()");
+    console.log("Successfully connected to PostgreSQL (Neon DB)!");
+  } catch (err) {
+    console.error("Database connection error:", err.message);
+  }
+};
+
+testDbConnection();
+
+// --- FIX FOR NEON DB SLEEP CRASHES ---
+// This prevents the app from crashing when Neon disconnects idle clients
+pool.on("error", (err, client) => {
+  console.error(
+    "Unexpected error on idle client (Neon DB went to sleep):",
+    err.message,
+  );
+});
+
+// Test Connection
+pool
+  .connect()
+  .then(() => console.log("Successfully connected to PostgreSQL (Neon DB)!"))
+  .catch((err) => console.error("Database connection error:", err.stack));
+
+// --- 1. USER AUTHENTICATION SYSTEM (REGISTER) ---
+app.post("/api/auth/register", async (req, res) => {
+  const { name, email, password, role } = req.body;
+
+  // Validation
+  if (!name || !email || !password || !role) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  try {
+    // Check if user exists
+    const userExists = await pool.query(
+      "SELECT * FROM users WHERE email = $1",
+      [email],
+    );
+    if (userExists.rows.length > 0) {
+      return res.status(400).json({ error: "User already exists" });
+    }
+
+    // Hash password before saving to DB
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Save new user
+    const result = await pool.query(
+      "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id, name, email, role",
+      [name, email, hashedPassword, role],
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error("Signup Error:", err);
+    res.status(500).json({ error: "Server error during registration" });
+  }
+});
+
+// --- 2. USER AUTHENTICATION SYSTEM (LOGIN) ---
+app.post("/api/auth/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Find user by email
+    const user = await pool.query("SELECT * FROM users WHERE email = $1", [
+      email,
+    ]);
+    if (user.rows.length === 0) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
+
+    // Compare hashed password
+    const isMatch = await bcrypt.compare(password, user.rows[0].password);
+    if (!isMatch) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
+
+    // Return user data
+    res.json({
+      id: user.rows[0].id,
+      name: user.rows[0].name,
+      email: user.rows[0].email,
+      role: user.rows[0].role,
+    });
+  } catch (err) {
+    console.error("Login Error:", err);
+    res.status(500).json({ error: "Server error during login" });
+  }
+});
+
+// --- 3. COMPANIES API ---
+app.get("/api/companies", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM companies ORDER BY created_at DESC",
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Fetch Companies Error:", err);
+    res.status(500).json({ error: "Server error fetching companies" });
+  }
+});
+
+app.post("/api/companies", async (req, res) => {
+  const { company_name, description, icon_class, bg_color, text_color } =
+    req.body;
+  try {
+    const result = await pool.query(
+      "INSERT INTO companies (company_name, description, icon_class, bg_color, text_color) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [company_name, description, icon_class, bg_color, text_color],
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error("Create Company Error:", err);
+    res.status(500).json({ error: "Server error creating company" });
+  }
+});
+
+// --- 4. INTERVIEW QUESTIONS API ---
+app.get("/api/questions/:companyId", async (req, res) => {
+  try {
+    const { companyId } = req.params;
+    const result = await pool.query(
+      "SELECT * FROM interview_questions WHERE company_id = $1",
+      [companyId],
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Fetch Questions Error:", err);
+    res.status(500).json({ error: "Server error fetching questions" });
+  }
+});
+
+// --- 5. STUDENT ATTEMPTS API ---
+app.post("/api/attempts", async (req, res) => {
+  const { student_id, company_id, total_score, max_score } = req.body;
+  try {
+    const result = await pool.query(
+      "INSERT INTO student_attempts (student_id, company_id, total_score, max_score) VALUES ($1, $2, $3, $4) RETURNING *",
+      [student_id, company_id, total_score, max_score],
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error("Save Attempt Error:", err);
+    res.status(500).json({ error: "Server error saving attempt" });
+  }
+});
+
+// --- SERVER LISTENING / VERCEL EXPORT ---
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log(`Backend Server running on http://localhost:${PORT}`);
+  });
+}
+// This is required for Vercel to work!
+module.exports = app;

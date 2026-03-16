@@ -1,0 +1,1456 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ami-Bridge | Admin Dashboard</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for Performance Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome for Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#4f46e5", // Indigo for admin branding
+              primaryHover: "#4338ca",
+              dark: "#0f172a",
+              darkPanel: "#1e293b",
+              danger: "#ef4444",
+              success: "#10b981",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+
+      .fade-in {
+        animation: fadeIn 0.3s ease-in-out;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Modal Backdrop */
+      .modal-backdrop {
+        background-color: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+      }
+    </style>
+  </head>
+  <body
+    class="bg-slate-50 text-slate-800 font-sans antialiased flex h-screen overflow-hidden"
+  >
+    <!-- Toast Notification Container -->
+    <div
+      id="toast-container"
+      class="fixed top-5 right-5 z-50 flex flex-col gap-2"
+    ></div>
+
+    <!-- Sidebar Navigation -->
+    <aside
+      class="w-64 bg-dark text-white flex flex-col transition-all duration-300 shadow-xl z-20"
+    >
+      <div class="p-6 border-b border-slate-700 flex items-center gap-3">
+        <div
+          class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-xl"
+        >
+          A
+        </div>
+        <div>
+          <h2 class="text-xl font-bold tracking-wide">Ami-Bridge</h2>
+          <span
+            class="text-xs text-indigo-300 font-semibold uppercase tracking-wider"
+            >Admin Portal</span
+          >
+        </div>
+      </div>
+
+      <nav class="flex-1 py-6 px-3 space-y-2 overflow-y-auto">
+        <button
+          onclick="navigate('analytics')"
+          id="nav-analytics"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white transition-colors"
+        >
+          <i class="fas fa-chart-pie w-5"></i>
+          <span class="font-medium">Platform Analytics</span>
+        </button>
+        <button
+          onclick="navigate('users')"
+          id="nav-users"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+        >
+          <i class="fas fa-users w-5"></i>
+          <span class="font-medium">User Management</span>
+        </button>
+        <button
+          onclick="navigate('companies')"
+          id="nav-companies"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+        >
+          <i class="fas fa-building w-5"></i>
+          <span class="font-medium">Company Config</span>
+        </button>
+        <button
+          onclick="navigate('questions')"
+          id="nav-questions"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+        >
+          <i class="fas fa-database w-5"></i>
+          <span class="font-medium">Question Bank</span>
+        </button>
+        <button
+          onclick="navigate('mentors')"
+          id="nav-mentors"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+        >
+          <i class="fas fa-chalkboard-teacher w-5"></i>
+          <span class="font-medium">Mentor Assignment</span>
+        </button>
+      </nav>
+
+      <div class="p-4 border-t border-slate-700">
+        <button
+          onclick="logout()"
+          class="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-red-400 hover:bg-red-500 hover:text-white transition-colors"
+        >
+          <i class="fas fa-sign-out-alt w-5"></i>
+          <span class="font-medium">Logout</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+      <!-- Top Header -->
+      <header
+        class="bg-white shadow-sm h-16 flex items-center justify-between px-8 z-10 shrink-0"
+      >
+        <h1 id="page-title" class="text-xl font-bold text-slate-800">
+          Platform Analytics
+        </h1>
+        <div class="flex items-center gap-4">
+          <div class="relative">
+            <i
+              class="fas fa-bell text-slate-400 text-xl cursor-pointer hover:text-primary"
+            ></i>
+          </div>
+          <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
+            <div class="text-right hidden sm:block">
+              <p class="text-sm font-bold text-slate-700" id="header-user-name">
+                System Admin
+              </p>
+              <p class="text-xs text-slate-500">Superuser</p>
+            </div>
+            <div
+              class="w-10 h-10 rounded-full bg-slate-200 border-2 border-primary flex items-center justify-center overflow-hidden"
+            >
+              <img
+                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Admin"
+                alt="Avatar"
+                class="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Scrollable Content -->
+      <div class="flex-1 overflow-y-auto p-8 bg-slate-50">
+        <!-- SECTION: ANALYTICS -->
+        <div
+          id="sec-analytics"
+          class="section-container block fade-in max-w-7xl mx-auto"
+        >
+          <!-- Stats Row -->
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+          >
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
+            >
+              <div
+                class="w-14 h-14 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-2xl"
+              >
+                <i class="fas fa-user-graduate"></i>
+              </div>
+              <div>
+                <p class="text-sm text-slate-500 font-medium">Total Students</p>
+                <p class="text-2xl font-bold text-slate-800" id="stat-students">
+                  0
+                </p>
+              </div>
+            </div>
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
+            >
+              <div
+                class="w-14 h-14 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center text-2xl"
+              >
+                <i class="fas fa-chalkboard-teacher"></i>
+              </div>
+              <div>
+                <p class="text-sm text-slate-500 font-medium">Total Mentors</p>
+                <p class="text-2xl font-bold text-slate-800" id="stat-mentors">
+                  0
+                </p>
+              </div>
+            </div>
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
+            >
+              <div
+                class="w-14 h-14 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center text-2xl"
+              >
+                <i class="fas fa-building"></i>
+              </div>
+              <div>
+                <p class="text-sm text-slate-500 font-medium">
+                  Companies Setup
+                </p>
+                <p
+                  class="text-2xl font-bold text-slate-800"
+                  id="stat-companies"
+                >
+                  0
+                </p>
+              </div>
+            </div>
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
+            >
+              <div
+                class="w-14 h-14 rounded-full bg-green-50 text-green-600 flex items-center justify-center text-2xl"
+              >
+                <i class="fas fa-laptop-code"></i>
+              </div>
+              <div>
+                <p class="text-sm text-slate-500 font-medium">
+                  Assessments Taken
+                </p>
+                <p class="text-2xl font-bold text-slate-800" id="stat-attempts">
+                  0
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts Row -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-800">
+                  Platform Usage (Last 7 Days)
+                </h3>
+              </div>
+              <canvas id="usageChart" height="200"></canvas>
+            </div>
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+            >
+              <h3 class="text-lg font-bold text-slate-800 mb-4">
+                User Distribution
+              </h3>
+              <canvas id="userDistChart" height="200"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION: USERS -->
+        <div
+          id="sec-users"
+          class="section-container hidden fade-in max-w-7xl mx-auto"
+        >
+          <div
+            class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+          >
+            <div
+              class="p-6 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4"
+            >
+              <div class="flex items-center gap-4 w-full sm:w-auto">
+                <div class="relative flex-1 sm:w-64">
+                  <i
+                    class="fas fa-search absolute left-3 top-3 text-slate-400"
+                  ></i>
+                  <input
+                    type="text"
+                    placeholder="Search users..."
+                    class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                  />
+                </div>
+                <select
+                  class="border border-slate-300 rounded-lg py-2 px-4 focus:ring-2 focus:ring-primary outline-none"
+                >
+                  <option value="all">All Roles</option>
+                  <option value="student">Students</option>
+                  <option value="mentor">Mentors</option>
+                </select>
+              </div>
+              <button
+                onclick="openModal('user-modal')"
+                class="px-5 py-2 bg-primary text-white rounded-lg hover:bg-primaryHover transition flex items-center gap-2 font-medium shrink-0"
+              >
+                <i class="fas fa-plus"></i> Add User
+              </button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr
+                    class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider"
+                  >
+                    <th class="px-6 py-4 font-semibold">User Details</th>
+                    <th class="px-6 py-4 font-semibold">Role</th>
+                    <th class="px-6 py-4 font-semibold">Joined Date</th>
+                    <th class="px-6 py-4 font-semibold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="users-table-body"
+                  class="divide-y divide-slate-100 text-sm"
+                >
+                  <!-- Rendered by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION: COMPANIES -->
+        <div
+          id="sec-companies"
+          class="section-container hidden fade-in max-w-7xl mx-auto"
+        >
+          <div class="mb-6 flex justify-between items-end">
+            <div>
+              <h2 class="text-2xl font-bold text-slate-800">
+                Company Configuration
+              </h2>
+              <p class="text-slate-500 mt-1">
+                Manage target companies and their profiles.
+              </p>
+            </div>
+            <button
+              onclick="openModal('company-modal')"
+              class="px-5 py-2 bg-primary text-white rounded-lg hover:bg-primaryHover transition flex items-center gap-2 font-medium"
+            >
+              <i class="fas fa-plus"></i> Add Company
+            </button>
+          </div>
+
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            id="admin-company-grid"
+          >
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- SECTION: QUESTIONS -->
+        <div
+          id="sec-questions"
+          class="section-container hidden fade-in max-w-7xl mx-auto"
+        >
+          <div
+            class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+          >
+            <div
+              class="p-6 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50"
+            >
+              <div class="flex items-center gap-3 w-full sm:w-auto">
+                <label class="font-semibold text-slate-700"
+                  >Target Company:</label
+                >
+                <select
+                  id="q-company-filter"
+                  onchange="renderQuestions()"
+                  class="border border-slate-300 rounded-lg py-2 px-4 focus:ring-2 focus:ring-primary outline-none bg-white min-w-[200px]"
+                >
+                  <!-- Populated by JS -->
+                </select>
+              </div>
+              <button
+                onclick="openModal('question-modal')"
+                class="px-5 py-2 bg-primary text-white rounded-lg hover:bg-primaryHover transition flex items-center gap-2 font-medium shrink-0 shadow-sm"
+              >
+                <i class="fas fa-plus"></i> Add Question
+              </button>
+            </div>
+            <div class="p-6">
+              <div class="space-y-4" id="questions-list">
+                <!-- Rendered by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION: MENTORS -->
+        <div
+          id="sec-mentors"
+          class="section-container hidden fade-in max-w-6xl mx-auto"
+        >
+          <!-- Assignment Form -->
+          <div
+            class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8"
+          >
+            <h3 class="text-lg font-bold text-slate-800 mb-4">
+              Create New Mentor Assignment
+            </h3>
+            <form
+              class="flex flex-col md:flex-row gap-4 items-end"
+              onsubmit="
+                event.preventDefault();
+                assignMentor();
+              "
+            >
+              <div class="flex-1 w-full">
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Select Mentor</label
+                >
+                <select
+                  id="assign-mentor-select"
+                  class="w-full border border-slate-300 rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-primary outline-none"
+                  required
+                >
+                  <!-- Rendered by JS -->
+                </select>
+              </div>
+              <div
+                class="flex items-center justify-center w-full md:w-10 text-slate-400 pb-3 hidden md:flex"
+              >
+                <i class="fas fa-arrow-right"></i>
+              </div>
+              <div class="flex-1 w-full">
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Select Student</label
+                >
+                <select
+                  id="assign-student-select"
+                  class="w-full border border-slate-300 rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-primary outline-none"
+                  required
+                >
+                  <!-- Rendered by JS -->
+                </select>
+              </div>
+              <button
+                type="submit"
+                class="w-full md:w-auto px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primaryHover transition font-medium shadow-md"
+              >
+                Assign Pair
+              </button>
+            </form>
+          </div>
+
+          <!-- Assignment List -->
+          <div
+            class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+          >
+            <div class="p-6 border-b border-slate-200">
+              <h3 class="text-lg font-bold text-slate-800">
+                Current Mentor-Student Assignments
+              </h3>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr
+                    class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider"
+                  >
+                    <th class="px-6 py-4 font-semibold">Mentor</th>
+                    <th class="px-6 py-4 font-semibold">Assigned Student</th>
+                    <th class="px-6 py-4 font-semibold">Assignment Date</th>
+                    <th class="px-6 py-4 font-semibold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="assignments-table-body"
+                  class="divide-y divide-slate-100 text-sm"
+                >
+                  <!-- Rendered by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- MODALS -->
+
+    <!-- User Modal -->
+    <div
+      id="user-modal"
+      class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop fade-in"
+    >
+      <div
+        class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
+      >
+        <div
+          class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50"
+        >
+          <h3 class="font-bold text-lg text-slate-800">Add/Edit User</h3>
+          <button
+            onclick="closeModal('user-modal')"
+            class="text-slate-400 hover:text-danger transition"
+          >
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+        <form
+          id="add-user-form"
+          class="p-6 space-y-4"
+          onsubmit="
+            event.preventDefault();
+            submitUser();
+          "
+        >
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
+              >Full Name</label
+            >
+            <input
+              type="text"
+              id="add-user-name"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary focus:border-primary outline-none"
+              required
+              placeholder="John Doe"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
+              >Email</label
+            >
+            <input
+              type="email"
+              id="add-user-email"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary focus:border-primary outline-none"
+              required
+              placeholder="john@example.com"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
+              >Role</label
+            >
+            <select
+              id="add-user-role"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary focus:border-primary outline-none"
+            >
+              <option value="student">Student</option>
+              <option value="mentor">Mentor</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="pt-4 flex justify-end gap-3">
+            <button
+              type="button"
+              onclick="closeModal('user-modal')"
+              class="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primaryHover transition"
+            >
+              Save User
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Company Modal -->
+    <div
+      id="company-modal"
+      class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop fade-in"
+    >
+      <div
+        class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
+      >
+        <div
+          class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50"
+        >
+          <h3 class="font-bold text-lg text-slate-800">Add/Edit Company</h3>
+          <button
+            onclick="closeModal('company-modal')"
+            class="text-slate-400 hover:text-danger transition"
+          >
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+        <form
+          id="add-comp-form"
+          class="p-6 space-y-4"
+          onsubmit="
+            event.preventDefault();
+            submitCompany();
+          "
+        >
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
+              >Company Name</label
+            >
+            <input
+              type="text"
+              id="add-comp-name"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none"
+              required
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
+              >Icon Class (FontAwesome)</label
+            >
+            <input
+              type="text"
+              id="add-comp-icon"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none"
+              placeholder="e.g. fab fa-google"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
+              >Description</label
+            >
+            <textarea
+              id="add-comp-desc"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none h-24"
+              placeholder="Brief details about the company..."
+            ></textarea>
+          </div>
+          <div class="pt-4 flex justify-end gap-3">
+            <button
+              type="button"
+              onclick="closeModal('user-modal')"
+              class="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primaryHover transition"
+            >
+              Save User
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Company Modal -->
+    <div
+      id="company-modal"
+      class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop fade-in"
+    >
+      <div
+        class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
+      >
+        <div
+          class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50"
+        >
+          <h3 class="font-bold text-lg text-slate-800">Add/Edit Company</h3>
+          <button
+            onclick="closeModal('company-modal')"
+            class="text-slate-400 hover:text-danger transition"
+          >
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+        <form
+          class="p-6 space-y-4"
+          onsubmit="
+            event.preventDefault();
+            submitCompany();
+          "
+        >
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
+              >Company Name</label
+            >
+            <input
+              type="text"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none"
+              required
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
+              >Icon Class (FontAwesome)</label
+            >
+            <input
+              type="text"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none"
+              placeholder="e.g. fab fa-google"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
+              >Description</label
+            >
+            <textarea
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none h-24"
+              placeholder="Brief details about the company..."
+            ></textarea>
+          </div>
+          <div class="pt-4 flex justify-end gap-3">
+            <button
+              type="button"
+              onclick="closeModal('company-modal')"
+              class="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primaryHover transition"
+            >
+              Save Company
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Question Modal -->
+    <div
+      id="question-modal"
+      class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop fade-in"
+    >
+      <div
+        class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden my-8 max-h-screen flex flex-col"
+      >
+        <div
+          class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0"
+        >
+          <h3 class="font-bold text-lg text-slate-800">Add Question to Bank</h3>
+          <button
+            onclick="closeModal('question-modal')"
+            class="text-slate-400 hover:text-danger transition"
+          >
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+        <form
+          class="p-6 space-y-4 overflow-y-auto flex-1"
+          onsubmit="
+            event.preventDefault();
+            submitQuestion();
+          "
+        >
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
+              >Company</label
+            >
+            <select
+              id="modal-q-company"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none bg-slate-50"
+              disabled
+            >
+              <!-- Auto selected based on active filter -->
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
+              >Question Text</label
+            >
+            <textarea
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none h-20"
+              required
+            ></textarea>
+          </div>
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-slate-700"
+              >Options</label
+            >
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-400 w-6">A.</span>
+              <input
+                type="text"
+                class="w-full px-3 py-1.5 border border-slate-300 rounded focus:border-primary outline-none"
+                required
+              />
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-400 w-6">B.</span>
+              <input
+                type="text"
+                class="w-full px-3 py-1.5 border border-slate-300 rounded focus:border-primary outline-none"
+                required
+              />
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-400 w-6">C.</span>
+              <input
+                type="text"
+                class="w-full px-3 py-1.5 border border-slate-300 rounded focus:border-primary outline-none"
+                required
+              />
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-400 w-6">D.</span>
+              <input
+                type="text"
+                class="w-full px-3 py-1.5 border border-slate-300 rounded focus:border-primary outline-none"
+                required
+              />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
+              >Correct Answer</label
+            >
+            <select
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none"
+            >
+              <option value="0">Option A</option>
+              <option value="1">Option B</option>
+              <option value="2">Option C</option>
+              <option value="3">Option D</option>
+            </select>
+          </div>
+          <div class="pt-4 flex justify-end gap-3 shrink-0">
+            <button
+              type="button"
+              onclick="closeModal('question-modal')"
+              class="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primaryHover transition"
+            >
+              Add Question
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+      // --- 1. ADMIN STATE & MOCK DATA ---
+      const state = {
+        stats: { students: 1245, mentors: 84, companies: 12, attempts: 8540 },
+        users: [
+          {
+            id: "u1",
+            name: "Rahul Kumar",
+            email: "rahul.k@example.com",
+            role: "student",
+            date: "2023-08-12",
+            avatar: "Rahul",
+          },
+          {
+            id: "u2",
+            name: "Priya Singh",
+            email: "priya.s@example.com",
+            role: "student",
+            date: "2023-09-05",
+            avatar: "Priya",
+          },
+          {
+            id: "u3",
+            name: "Anita Sharma",
+            email: "anita.mentor@example.com",
+            role: "mentor",
+            date: "2023-01-15",
+            avatar: "Anita",
+          },
+          {
+            id: "u4",
+            name: "Vikram Singh",
+            email: "vikram.m@example.com",
+            role: "mentor",
+            date: "2023-02-20",
+            avatar: "Vikram",
+          },
+          {
+            id: "u5",
+            name: "System Admin",
+            email: "admin@amibridge.com",
+            role: "admin",
+            date: "2022-11-01",
+            avatar: "Admin",
+          },
+        ],
+        companies: [
+          {
+            id: "c1",
+            name: "Google",
+            desc: "Software Engineering & Cloud",
+            icon: "fab fa-google",
+            color: "text-red-500",
+            bg: "bg-red-50",
+            qCount: 120,
+          },
+          {
+            id: "c2",
+            name: "Amazon",
+            desc: "SDE & AWS roles",
+            icon: "fab fa-amazon",
+            color: "text-orange-500",
+            bg: "bg-orange-50",
+            qCount: 95,
+          },
+          {
+            id: "c3",
+            name: "Microsoft",
+            desc: "Core Engineering",
+            icon: "fab fa-windows",
+            color: "text-blue-500",
+            bg: "bg-blue-50",
+            qCount: 85,
+          },
+          {
+            id: "c4",
+            name: "TCS",
+            desc: "IT Services & Consulting",
+            icon: "fas fa-laptop-code",
+            color: "text-indigo-500",
+            bg: "bg-indigo-50",
+            qCount: 150,
+          },
+        ],
+        questions: {
+          c1: [
+            {
+              id: "q1",
+              text: "How do you implement a LRU Cache?",
+              correct: "A",
+            },
+            {
+              id: "q2",
+              text: "Explain the map-reduce paradigm.",
+              correct: "C",
+            },
+          ],
+          c4: [
+            {
+              id: "q3",
+              text: "What are the main principles of OOPS?",
+              correct: "B",
+            },
+            {
+              id: "q4",
+              text: "Difference between abstract class and interface?",
+              correct: "D",
+            },
+          ],
+        },
+        assignments: [
+          {
+            id: "a1",
+            mentorId: "u3",
+            mentorName: "Anita Sharma",
+            studentId: "u1",
+            studentName: "Rahul Kumar",
+            date: "2023-10-01",
+          },
+          {
+            id: "a2",
+            mentorId: "u4",
+            mentorName: "Vikram Singh",
+            studentId: "u2",
+            studentName: "Priya Singh",
+            date: "2023-10-15",
+          },
+        ],
+      };
+
+      // --- 2. INITIALIZATION & NAVIGATION ---
+      window.onload = () => {
+        // 1. Fetch the real user from Local Storage
+        const loggedInUser = JSON.parse(localStorage.getItem("ami_user"));
+
+        // 2. Security Check: If no user is logged in, redirect to login
+        if (!loggedInUser) {
+          window.location.href = "index.html";
+          return;
+        }
+
+        // 3. Update the Header UI with real name
+        const headerNameEl = document.getElementById("header-user-name");
+        if (headerNameEl) headerNameEl.innerText = loggedInUser.name;
+
+        // 4. Update the Avatar dynamically
+        const avatarImgs = document.querySelectorAll('img[alt="Avatar"]');
+        avatarImgs.forEach((img) => {
+          img.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(loggedInUser.name)}`;
+        });
+
+        // 5. Initialize Admin Dashboard features
+        updateStats();
+        initCharts();
+        renderUsers();
+        renderCompanies();
+        populateSelects();
+        renderAssignments();
+
+        // Default to analytics
+        navigate("analytics");
+      };
+
+      function navigate(sectionId) {
+        // Update Navigation UI
+        document.querySelectorAll("aside nav button").forEach((btn) => {
+          btn.classList.remove("bg-primary", "text-white");
+          btn.classList.add("text-slate-300");
+        });
+        const activeBtn = document.getElementById(`nav-${sectionId}`);
+        activeBtn.classList.add("bg-primary", "text-white");
+        activeBtn.classList.remove("text-slate-300");
+
+        // Hide all sections
+        document.querySelectorAll(".section-container").forEach((sec) => {
+          sec.classList.add("hidden");
+          sec.classList.remove("block");
+        });
+
+        // Show target section
+        document.getElementById(`sec-${sectionId}`).classList.remove("hidden");
+        document.getElementById(`sec-${sectionId}`).classList.add("block");
+
+        // Set Page Title
+        const titles = {
+          analytics: "Platform Analytics",
+          users: "User Management",
+          companies: "Company Configuration",
+          questions: "Interview Question Bank",
+          mentors: "Mentor Assignments",
+        };
+        document.getElementById("page-title").innerText = titles[sectionId];
+
+        if (sectionId === "questions") {
+          renderQuestions(); // Ensure questions are loaded when tab is opened
+        }
+      }
+
+      // --- 3. UI RENDER FUNCTIONS ---
+
+      function updateStats() {
+        document.getElementById("stat-students").innerText =
+          state.stats.students.toLocaleString();
+        document.getElementById("stat-mentors").innerText = state.stats.mentors;
+        document.getElementById("stat-companies").innerText =
+          state.companies.length;
+        document.getElementById("stat-attempts").innerText =
+          state.stats.attempts.toLocaleString();
+      }
+
+      function renderUsers() {
+        const tbody = document.getElementById("users-table-body");
+        tbody.innerHTML = "";
+
+        state.users.forEach((user) => {
+          let roleBadge = "";
+          if (user.role === "admin")
+            roleBadge =
+              '<span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-bold uppercase">Admin</span>';
+          else if (user.role === "mentor")
+            roleBadge =
+              '<span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-bold uppercase">Mentor</span>';
+          else
+            roleBadge =
+              '<span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-bold uppercase">Student</span>';
+
+          tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${user.avatar}" class="w-8 h-8 rounded-full bg-slate-200">
+                                <div>
+                                    <p class="font-bold text-slate-800">${user.name}</p>
+                                    <p class="text-xs text-slate-500">${user.email}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">${roleBadge}</td>
+                        <td class="px-6 py-4 text-slate-600 text-sm">${user.date}</td>
+                        <td class="px-6 py-4 text-right">
+                            <button class="text-blue-600 hover:text-blue-800 p-1 mr-2" title="Edit Role"><i class="fas fa-edit"></i></button>
+                            <button class="text-red-500 hover:text-red-700 p-1" title="Delete User" onclick="deleteItem('user')"><i class="fas fa-trash-alt"></i></button>
+                        </td>
+                    </tr>
+                `;
+        });
+      }
+
+      function renderCompanies() {
+        const grid = document.getElementById("admin-company-grid");
+        grid.innerHTML = "";
+
+        state.companies.forEach((company) => {
+          grid.innerHTML += `
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-12 h-12 rounded-lg ${company.bg} ${company.color} flex items-center justify-center text-xl">
+                                <i class="${company.icon}"></i>
+                            </div>
+                            <div class="flex gap-2 text-slate-400">
+                                <button class="hover:text-primary transition"><i class="fas fa-edit"></i></button>
+                                <button class="hover:text-danger transition" onclick="deleteItem('company')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800">${company.name}</h3>
+                        <p class="text-slate-500 text-sm mb-4 flex-1">${company.desc}</p>
+                        <div class="pt-4 border-t border-slate-100 flex justify-between items-center">
+                            <span class="text-sm font-semibold text-slate-600">${company.qCount} Questions</span>
+                            <button onclick="jumpToQuestions('${company.id}')" class="text-sm text-primary font-bold hover:underline">Manage Bank</button>
+                        </div>
+                    </div>
+                `;
+        });
+      }
+
+      function populateSelects() {
+        // Populate company filters
+        const qCompanyFilter = document.getElementById("q-company-filter");
+        const modalQCompany = document.getElementById("modal-q-company");
+        qCompanyFilter.innerHTML = "";
+        modalQCompany.innerHTML = "";
+
+        state.companies.forEach((c) => {
+          qCompanyFilter.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+          modalQCompany.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+        });
+
+        // Populate Mentor/Student assignments
+        const mentorSelect = document.getElementById("assign-mentor-select");
+        const studentSelect = document.getElementById("assign-student-select");
+        mentorSelect.innerHTML =
+          '<option value="" disabled selected>Select Mentor...</option>';
+        studentSelect.innerHTML =
+          '<option value="" disabled selected>Select Student...</option>';
+
+        state.users
+          .filter((u) => u.role === "mentor")
+          .forEach((m) => {
+            mentorSelect.innerHTML += `<option value="${m.id}">${m.name}</option>`;
+          });
+        state.users
+          .filter((u) => u.role === "student")
+          .forEach((s) => {
+            studentSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+          });
+      }
+
+      function renderQuestions() {
+        const companyId = document.getElementById("q-company-filter").value;
+        const list = document.getElementById("questions-list");
+        list.innerHTML = "";
+
+        // Sync modal dropdown with filter
+        document.getElementById("modal-q-company").value = companyId;
+
+        const qList = state.questions[companyId] || [];
+
+        if (qList.length === 0) {
+          list.innerHTML =
+            '<div class="text-center py-8 text-slate-500 italic">No questions found for this company. Click "Add Question" to build the bank.</div>';
+          return;
+        }
+
+        qList.forEach((q, index) => {
+          list.innerHTML += `
+                    <div class="border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition">
+                        <div class="flex justify-between items-start gap-4">
+                            <div>
+                                <span class="text-sm font-bold text-slate-400 mr-2">Q${index + 1}.</span>
+                                <span class="font-medium text-slate-800">${q.text}</span>
+                                <div class="mt-2 text-sm text-green-600 font-semibold"><i class="fas fa-check-circle mr-1"></i> Correct Answer: Option ${q.correct}</div>
+                            </div>
+                            <div class="flex gap-2 text-slate-400 shrink-0">
+                                <button class="hover:text-primary transition"><i class="fas fa-edit"></i></button>
+                                <button class="hover:text-danger transition" onclick="deleteItem('question')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        });
+      }
+
+      function renderAssignments() {
+        const tbody = document.getElementById("assignments-table-body");
+        tbody.innerHTML = "";
+
+        if (state.assignments.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="4" class="text-center py-6 text-slate-500 italic">No active mentor assignments found.</td></tr>';
+          return;
+        }
+
+        state.assignments.forEach((assign) => {
+          tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4 font-bold text-purple-700"><i class="fas fa-chalkboard-teacher mr-2 text-slate-400"></i>${assign.mentorName}</td>
+                        <td class="px-6 py-4 font-bold text-blue-700"><i class="fas fa-user-graduate mr-2 text-slate-400"></i>${assign.studentName}</td>
+                        <td class="px-6 py-4 text-slate-600 text-sm">${assign.date}</td>
+                        <td class="px-6 py-4 text-right">
+                            <button class="text-red-500 hover:text-red-700 px-3 py-1 bg-red-50 rounded hover:bg-red-100 transition text-xs font-bold uppercase tracking-wider" onclick="deleteItem('assignment')">Revoke</button>
+                        </td>
+                    </tr>
+                `;
+        });
+      }
+
+      // --- 4. MODALS & ACTIONS ---
+
+      function openModal(id) {
+        document.getElementById(id).classList.remove("hidden");
+      }
+
+      function closeModal(id) {
+        document.getElementById(id).classList.add("hidden");
+      }
+
+      function submitUser() {
+        const nameInput = document.getElementById("add-user-name").value;
+        const emailInput = document.getElementById("add-user-email").value;
+        const roleInput = document.getElementById("add-user-role").value;
+
+        // Add to state
+        state.users.unshift({
+          id: "u" + Date.now(),
+          name: nameInput,
+          email: emailInput,
+          role: roleInput,
+          date: new Date().toISOString().split("T")[0],
+          avatar: nameInput.split(" ")[0],
+        });
+
+        // Update stats dynamically based on activity
+        if (roleInput === "student") state.stats.students++;
+        if (roleInput === "mentor") state.stats.mentors++;
+
+        // Re-render UI and Charts
+        updateStats();
+        renderUsers();
+        initCharts();
+
+        showToast("New user added successfully!", "success");
+        closeModal("user-modal");
+        document.getElementById("add-user-form").reset();
+      }
+
+      function submitCompany() {
+        const nameInput = document.getElementById("add-comp-name").value;
+        const iconInput =
+          document.getElementById("add-comp-icon").value || "fas fa-building";
+        const descInput = document.getElementById("add-comp-desc").value;
+
+        // Add to state
+        state.companies.push({
+          id: "c" + Date.now(),
+          name: nameInput,
+          desc: descInput,
+          icon: iconInput,
+          color: "text-indigo-500",
+          bg: "bg-indigo-50",
+          qCount: 0,
+        });
+
+        // Update stats dynamically based on activity
+        state.stats.companies++;
+
+        // Re-render UI
+        updateStats();
+        renderCompanies();
+        populateSelects();
+
+        showToast("Company saved successfully!", "success");
+        closeModal("company-modal");
+        document.getElementById("add-comp-form").reset();
+      }
+
+      function submitQuestion() {
+        showToast("Question added to bank!", "success");
+        closeModal("question-modal");
+      }
+
+      function assignMentor() {
+        const mId = document.getElementById("assign-mentor-select").value;
+        const sId = document.getElementById("assign-student-select").value;
+
+        if (!mId || !sId) return;
+
+        const mName = state.users.find((u) => u.id === mId).name;
+        const sName = state.users.find((u) => u.id === sId).name;
+
+        state.assignments.unshift({
+          id: "a" + Date.now(),
+          mentorId: mId,
+          mentorName: mName,
+          studentId: sId,
+          studentName: sName,
+          date: new Date().toISOString().split("T")[0],
+        });
+
+        renderAssignments();
+        showToast("Mentor assigned successfully!", "success");
+
+        // Reset selects
+        document.getElementById("assign-mentor-select").value = "";
+        document.getElementById("assign-student-select").value = "";
+      }
+
+      function deleteItem(type) {
+        // Mock delete confirmation
+        if (
+          confirm(
+            `Are you sure you want to delete this ${type}? This action cannot be undone.`,
+          )
+        ) {
+          showToast(
+            `${type.charAt(0).toUpperCase() + type.slice(1)} deleted.`,
+            "info",
+          );
+        }
+      }
+
+      function jumpToQuestions(companyId) {
+        navigate("questions");
+        document.getElementById("q-company-filter").value = companyId;
+        renderQuestions();
+      }
+
+      // --- 5. UTILITY & CHARTS ---
+
+      function showToast(message, type = "info") {
+        const container = document.getElementById("toast-container");
+        const toast = document.createElement("div");
+
+        const colors = {
+          success: "bg-green-500",
+          error: "bg-red-500",
+          info: "bg-indigo-500",
+        };
+
+        toast.className = `${colors[type]} text-white px-6 py-3 rounded shadow-lg fade-in flex items-center gap-3`;
+        toast.innerHTML = `
+                <i class="fas ${type === "success" ? "fa-check-circle" : type === "error" ? "fa-exclamation-circle" : "fa-info-circle"}"></i>
+                <span class="font-medium text-sm">${message}</span>
+            `;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          toast.style.transform = "translateY(-10px)";
+          toast.style.transition = "all 0.3s ease";
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
+
+      function logout() {
+        showToast("Logging out...", "info");
+
+        // Clear the saved user session from the browser!
+        localStorage.removeItem("ami_user");
+
+        setTimeout(() => {
+          document.body.innerHTML =
+            '<div class="h-screen w-full flex items-center justify-center bg-slate-50"><h1 class="text-2xl font-bold text-slate-500">Redirecting to Login...</h1></div>';
+
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 500);
+        }, 1000);
+      }
+
+      let usageChartInstance = null;
+      let distChartInstance = null;
+
+      function initCharts() {
+        // Usage Chart (Line)
+        const ctxUsage = document.getElementById("usageChart").getContext("2d");
+        if (usageChartInstance) usageChartInstance.destroy();
+        usageChartInstance = new Chart(ctxUsage, {
+          type: "line",
+          data: {
+            labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+            datasets: [
+              {
+                label: "Assessments Taken",
+                data: [120, 190, 300, 250, 420, 380, 510],
+                borderColor: "#4f46e5",
+                backgroundColor: "rgba(79, 70, 229, 0.1)",
+                tension: 0.4,
+                fill: true,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            animation: false, // Disabled continuous/load animation for static feel
+          },
+        });
+
+        // User Distribution Chart (Bar/Histogram)
+        const ctxDist = document
+          .getElementById("userDistChart")
+          .getContext("2d");
+        if (distChartInstance) distChartInstance.destroy();
+        distChartInstance = new Chart(ctxDist, {
+          type: "bar",
+          data: {
+            labels: ["Students", "Mentors", "Admins"],
+            datasets: [
+              {
+                label: "Total Users",
+                data: [state.stats.students, state.stats.mentors, 5],
+                backgroundColor: ["#3b82f6", "#8b5cf6", "#ef4444"],
+                borderWidth: 0,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            animation: false, // Disabled continuous/load animation for static feel
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { stepSize: 1 },
+              },
+            },
+            plugins: {
+              legend: { display: false }, // Hide legend for cleaner bar chart look
+            },
+          },
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1331 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ami-Bridge | Student Dashboard</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for Performance Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome for Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#2563eb",
+              primaryHover: "#1d4ed8",
+              dark: "#0f172a",
+              darkPanel: "#1e293b",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+
+      .fade-in {
+        animation: fadeIn 0.3s ease-in-out;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="bg-slate-50 text-slate-800 font-sans antialiased flex h-screen overflow-hidden"
+  >
+    <!-- Toast Notification Container -->
+    <div
+      id="toast-container"
+      class="fixed top-5 right-5 z-50 flex flex-col gap-2"
+    ></div>
+
+    <!-- Sidebar Navigation -->
+    <aside
+      class="w-64 bg-dark text-white flex flex-col transition-all duration-300 shadow-xl z-20"
+    >
+      <div class="p-6 border-b border-slate-700 flex items-center gap-3">
+        <div
+          class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-xl"
+        >
+          A
+        </div>
+        <h2 class="text-xl font-bold tracking-wide">Ami-Bridge</h2>
+      </div>
+
+      <nav class="flex-1 py-6 px-3 space-y-2 overflow-y-auto">
+        <button
+          onclick="navigate('analytics')"
+          id="nav-analytics"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white transition-colors"
+        >
+          <i class="fas fa-chart-line w-5"></i>
+          <span class="font-medium">Performance</span>
+        </button>
+        <button
+          onclick="navigate('practice')"
+          id="nav-practice"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+        >
+          <i class="fas fa-laptop-code w-5"></i>
+          <span class="font-medium">Interview Practice</span>
+        </button>
+        <button
+          onclick="navigate('resume')"
+          id="nav-resume"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+        >
+          <i class="fas fa-file-alt w-5"></i>
+          <span class="font-medium">Resume Management</span>
+        </button>
+        <button
+          onclick="navigate('history')"
+          id="nav-history"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+        >
+          <i class="fas fa-history w-5"></i>
+          <span class="font-medium">Attempt History</span>
+        </button>
+        <button
+          onclick="navigate('feedback')"
+          id="nav-feedback"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+        >
+          <i class="fas fa-comments w-5"></i>
+          <span class="font-medium">Mentor Feedback</span>
+        </button>
+        <button
+          onclick="navigate('profile')"
+          id="nav-profile"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+        >
+          <i class="fas fa-user w-5"></i>
+          <span class="font-medium">My Profile</span>
+        </button>
+      </nav>
+
+      <div class="p-4 border-t border-slate-700">
+        <button
+          onclick="logout()"
+          class="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-red-400 hover:bg-red-500 hover:text-white transition-colors"
+        >
+          <i class="fas fa-sign-out-alt w-5"></i>
+          <span class="font-medium">Logout</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+      <!-- Top Header -->
+      <header
+        class="bg-white shadow-sm h-16 flex items-center justify-between px-8 z-10 shrink-0"
+      >
+        <h1 id="page-title" class="text-xl font-bold text-slate-800">
+          Performance Analytics
+        </h1>
+        <div class="flex items-center gap-4">
+          <div class="relative">
+            <i
+              class="fas fa-bell text-slate-400 text-xl cursor-pointer hover:text-primary"
+            ></i>
+            <span
+              class="absolute -top-1 -right-1 bg-red-500 w-3 h-3 rounded-full border-2 border-white"
+            ></span>
+          </div>
+          <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
+            <div class="text-right hidden sm:block">
+              <p class="text-sm font-bold text-slate-700" id="header-user-name">
+                Rahul Kumar
+              </p>
+              <p class="text-xs text-slate-500">B.Tech CSE</p>
+            </div>
+            <div
+              class="w-10 h-10 rounded-full bg-slate-200 border-2 border-primary flex items-center justify-center overflow-hidden"
+            >
+              <img
+                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul"
+                alt="Avatar"
+                class="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Scrollable Content -->
+      <div class="flex-1 overflow-y-auto p-8 bg-slate-50">
+        <!-- SECTION: ANALYTICS (Default now) -->
+        <div
+          id="sec-analytics"
+          class="section-container block fade-in max-w-6xl mx-auto"
+        >
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
+            >
+              <div
+                class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl"
+              >
+                <i class="fas fa-tasks"></i>
+              </div>
+              <div>
+                <p class="text-sm text-slate-500 font-medium">Total Attempts</p>
+                <p
+                  class="text-2xl font-bold text-slate-800"
+                  id="stat-total-attempts"
+                >
+                  0
+                </p>
+              </div>
+            </div>
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
+            >
+              <div
+                class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xl"
+              >
+                <i class="fas fa-bullseye"></i>
+              </div>
+              <div>
+                <p class="text-sm text-slate-500 font-medium">
+                  Average Accuracy
+                </p>
+                <p
+                  class="text-2xl font-bold text-slate-800"
+                  id="stat-avg-accuracy"
+                >
+                  0%
+                </p>
+              </div>
+            </div>
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
+            >
+              <div
+                class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xl"
+              >
+                <i class="fas fa-trophy"></i>
+              </div>
+              <div>
+                <p class="text-sm text-slate-500 font-medium">Highest Score</p>
+                <p
+                  class="text-2xl font-bold text-slate-800"
+                  id="stat-high-score"
+                >
+                  0
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+            >
+              <h3 class="text-lg font-bold text-slate-800 mb-4">
+                Performance Trend
+              </h3>
+              <canvas id="trendChart" height="200"></canvas>
+            </div>
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+            >
+              <h3 class="text-lg font-bold text-slate-800 mb-4">
+                Attempts by Company
+              </h3>
+              <canvas id="companyChart" height="200"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION: PRACTICE -->
+        <div
+          id="sec-practice"
+          class="section-container hidden fade-in max-w-6xl mx-auto"
+        >
+          <!-- Company Grid View -->
+          <div id="practice-dashboard">
+            <div class="mb-6 flex justify-between items-end">
+              <div>
+                <h2 class="text-2xl font-bold text-slate-800">
+                  Select a Company
+                </h2>
+                <p class="text-slate-500 mt-1">
+                  Practice curated technical and aptitude questions.
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              id="company-grid"
+            >
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+          <!-- Active Test View -->
+          <div
+            id="active-test-view"
+            class="hidden bg-white rounded-xl shadow-sm border border-slate-200 p-8 max-w-3xl mx-auto"
+          >
+            <div class="flex justify-between items-center mb-8 border-b pb-4">
+              <div>
+                <h3
+                  id="test-company-name"
+                  class="text-2xl font-bold text-primary"
+                >
+                  Company
+                </h3>
+                <p class="text-slate-500">Assessment Test</p>
+              </div>
+              <div class="text-right">
+                <span class="text-sm font-semibold text-slate-500"
+                  >Question</span
+                >
+                <div class="text-xl font-bold">
+                  <span id="current-q-num">1</span> /
+                  <span id="total-q-num">5</span>
+                </div>
+              </div>
+            </div>
+
+            <div id="question-container" class="mb-8">
+              <h4
+                id="question-text"
+                class="text-lg font-medium text-slate-800 mb-6"
+              >
+                Question text goes here?
+              </h4>
+              <div id="options-container" class="space-y-3">
+                <!-- Options rendered by JS -->
+              </div>
+            </div>
+
+            <div class="flex justify-between pt-6 border-t border-slate-100">
+              <button
+                onclick="cancelTest()"
+                class="px-5 py-2 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-50 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                id="next-btn"
+                onclick="nextQuestion()"
+                class="px-6 py-2 rounded-lg bg-primary text-white hover:bg-primaryHover transition-colors font-medium"
+              >
+                Next Question
+              </button>
+              <button
+                id="submit-test-btn"
+                onclick="submitTest()"
+                class="hidden px-6 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors font-medium"
+              >
+                Submit Assessment
+              </button>
+            </div>
+          </div>
+
+          <!-- Test Result View -->
+          <div
+            id="test-result-view"
+            class="hidden text-center bg-white rounded-xl shadow-sm border border-slate-200 p-10 max-w-2xl mx-auto"
+          >
+            <div
+              class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl"
+            >
+              <i class="fas fa-check"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-slate-800 mb-2">
+              Assessment Complete!
+            </h2>
+            <p class="text-slate-500 mb-8">
+              Your responses have been recorded and saved to your history.
+            </p>
+
+            <div class="flex justify-center gap-8 mb-8">
+              <div
+                class="bg-slate-50 p-6 rounded-xl border border-slate-100 min-w-[150px]"
+              >
+                <p
+                  class="text-slate-500 text-sm font-bold uppercase tracking-wide"
+                >
+                  Your Score
+                </p>
+                <p class="text-4xl font-bold text-primary mt-2">
+                  <span id="result-score">0</span
+                  ><span class="text-xl text-slate-400"
+                    >/<span id="result-max">0</span></span
+                  >
+                </p>
+              </div>
+              <div
+                class="bg-slate-50 p-6 rounded-xl border border-slate-100 min-w-[150px]"
+              >
+                <p
+                  class="text-slate-500 text-sm font-bold uppercase tracking-wide"
+                >
+                  Accuracy
+                </p>
+                <p class="text-4xl font-bold text-primary mt-2">
+                  <span id="result-percentage">0</span>%
+                </p>
+              </div>
+            </div>
+
+            <button
+              onclick="resetPracticeDashboard()"
+              class="px-6 py-3 rounded-lg bg-primary text-white hover:bg-primaryHover transition-colors font-medium shadow-md"
+            >
+              Back to Practice Dashboard
+            </button>
+          </div>
+        </div>
+
+        <!-- SECTION: PROFILE -->
+        <div
+          id="sec-profile"
+          class="section-container hidden fade-in max-w-4xl mx-auto"
+        >
+          <div
+            class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
+          >
+            <!-- Cover Image Background -->
+            <div
+              class="h-40 bg-gradient-to-r from-blue-500 to-indigo-600 relative overflow-hidden"
+            >
+              <!-- Decorative Abstract Shapes -->
+              <div
+                class="absolute -top-10 -right-10 w-40 h-40 bg-white opacity-10 rounded-full"
+              ></div>
+              <div
+                class="absolute top-10 right-20 w-20 h-20 bg-white opacity-10 rounded-full"
+              ></div>
+              <div
+                class="absolute -bottom-8 left-10 w-24 h-24 bg-white opacity-10 rounded-full"
+              ></div>
+            </div>
+
+            <div class="px-8 pb-8">
+              <!-- Profile Header (Avatar and Name) -->
+              <div
+                class="flex flex-col sm:flex-row justify-between items-start sm:items-end -mt-12 mb-8 gap-4"
+              >
+                <div
+                  class="flex flex-col sm:flex-row items-start sm:items-end gap-4 sm:gap-6"
+                >
+                  <div
+                    class="w-28 h-28 rounded-full border-4 border-white bg-slate-100 overflow-hidden shadow-md shrink-0 relative z-10"
+                  >
+                    <img
+                      src="https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul"
+                      alt="Avatar"
+                      class="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div class="pb-1">
+                    <h2 class="text-2xl font-bold text-slate-800">
+                      Rahul Kumar
+                    </h2>
+                    <p class="text-slate-500 font-medium">
+                      B.Tech Computer Science
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onclick="saveProfile()"
+                  class="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primaryHover transition-all flex items-center gap-2 text-sm font-semibold shadow-md hover:shadow-lg shrink-0"
+                >
+                  <i class="fas fa-save"></i> Save Profile
+                </button>
+              </div>
+
+              <!-- Section Title -->
+              <div class="mb-6 pt-2 border-t border-slate-100">
+                <h3 class="text-lg font-bold text-slate-800">
+                  Personal Details
+                </h3>
+                <p class="text-slate-500 text-sm">
+                  Update your information and skills.
+                </p>
+              </div>
+
+              <!-- Profile Form -->
+              <form
+                id="profile-form"
+                class="grid grid-cols-1 md:grid-cols-2 gap-6"
+                onsubmit="
+                  event.preventDefault();
+                  saveProfile();
+                "
+              >
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-2"
+                    >Full Name</label
+                  >
+                  <div class="relative">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                    >
+                      <i class="fas fa-user text-slate-400"></i>
+                    </div>
+                    <input
+                      type="text"
+                      id="prof-name"
+                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:bg-white transition-colors outline-none text-slate-700"
+                      value="Rahul Kumar"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-2"
+                    >Email Address</label
+                  >
+                  <div class="relative">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                    >
+                      <i class="fas fa-envelope text-slate-400"></i>
+                    </div>
+                    <input
+                      type="email"
+                      id="prof-email"
+                      class="w-full pl-10 pr-4 py-2.5 bg-slate-100 border border-slate-200 rounded-lg text-slate-500 cursor-not-allowed outline-none"
+                      value="rahul.k@example.com"
+                      disabled
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-2"
+                    >Course / Degree</label
+                  >
+                  <div class="relative">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                    >
+                      <i class="fas fa-graduation-cap text-slate-400"></i>
+                    </div>
+                    <input
+                      type="text"
+                      id="prof-degree"
+                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:bg-white transition-colors outline-none text-slate-700"
+                      value="B.Tech Computer Science"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-2"
+                    >College / University</label
+                  >
+                  <div class="relative">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                    >
+                      <i class="fas fa-university text-slate-400"></i>
+                    </div>
+                    <input
+                      type="text"
+                      id="prof-college"
+                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:bg-white transition-colors outline-none text-slate-700"
+                      value="National Institute of Technology"
+                    />
+                  </div>
+                </div>
+                <div class="md:col-span-2">
+                  <label class="block text-sm font-semibold text-slate-700 mb-2"
+                    >Technical Skills</label
+                  >
+                  <div class="relative">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                    >
+                      <i class="fas fa-code text-slate-400"></i>
+                    </div>
+                    <input
+                      type="text"
+                      id="prof-skills"
+                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:bg-white transition-colors outline-none text-slate-700"
+                      value="Java, Python, SQL, React, Data Structures"
+                    />
+                  </div>
+                  <p class="text-xs text-slate-500 mt-1 ml-1">
+                    Separate skills with a comma
+                  </p>
+                </div>
+                <div class="md:col-span-2">
+                  <label class="block text-sm font-semibold text-slate-700 mb-2"
+                    >Target Companies</label
+                  >
+                  <div class="relative">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                    >
+                      <i class="fas fa-building text-slate-400"></i>
+                    </div>
+                    <input
+                      type="text"
+                      id="prof-targets"
+                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:bg-white transition-colors outline-none text-slate-700"
+                      value="Google, Amazon, Microsoft"
+                    />
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION: RESUME -->
+        <div
+          id="sec-resume"
+          class="section-container hidden fade-in max-w-4xl mx-auto"
+        >
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Upload Area -->
+            <div
+              class="md:col-span-1 bg-white rounded-xl shadow-sm border border-slate-200 p-6 h-fit"
+            >
+              <h3 class="text-lg font-bold text-slate-800 mb-4">
+                Upload New Resume
+              </h3>
+              <div
+                class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:bg-slate-50 transition-colors cursor-pointer"
+                onclick="document.getElementById('file-upload').click()"
+              >
+                <i
+                  class="fas fa-cloud-upload-alt text-4xl text-slate-400 mb-3"
+                ></i>
+                <p class="text-sm text-slate-600 font-medium">
+                  Click to browse or drag & drop
+                </p>
+                <p class="text-xs text-slate-400 mt-1">
+                  PDF files only (Max 5MB)
+                </p>
+                <input
+                  type="file"
+                  id="file-upload"
+                  class="hidden"
+                  accept=".pdf"
+                  onchange="handleFileUpload(event)"
+                />
+              </div>
+            </div>
+
+            <!-- Resume List -->
+            <div
+              class="md:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+            >
+              <h3 class="text-lg font-bold text-slate-800 mb-4">My Resumes</h3>
+              <div id="resume-list" class="space-y-3">
+                <!-- Rendered by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION: HISTORY -->
+        <div
+          id="sec-history"
+          class="section-container hidden fade-in max-w-5xl mx-auto"
+        >
+          <div
+            class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+          >
+            <div
+              class="p-6 border-b border-slate-200 flex justify-between items-center"
+            >
+              <h3 class="text-lg font-bold text-slate-800">
+                Assessment History
+              </h3>
+              <button class="text-sm text-primary font-medium hover:underline">
+                <i class="fas fa-download mr-1"></i> Export Report
+              </button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr
+                    class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider"
+                  >
+                    <th class="px-6 py-4 font-semibold">Date</th>
+                    <th class="px-6 py-4 font-semibold">Company</th>
+                    <th class="px-6 py-4 font-semibold">Score</th>
+                    <th class="px-6 py-4 font-semibold">Status</th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="history-table-body"
+                  class="divide-y divide-slate-100 text-sm"
+                >
+                  <!-- Rendered by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION: FEEDBACK -->
+        <div
+          id="sec-feedback"
+          class="section-container hidden fade-in max-w-4xl mx-auto"
+        >
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-slate-800">Mentor Feedback</h2>
+            <p class="text-slate-500 mt-1">
+              Review personalized advice from your assigned mentors.
+            </p>
+          </div>
+          <div id="feedback-list" class="space-y-4">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Application Logic -->
+    <script>
+      // --- 1. STATE & MOCK DATA ---
+      const state = {
+        currentUser: {
+          name: "Rahul Kumar",
+          degree: "B.Tech Computer Science",
+          avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul",
+        },
+        companies: [
+          {
+            id: "c1",
+            name: "Google",
+            icon: "fab fa-google",
+            color: "text-red-500",
+            bg: "bg-red-50",
+            questions: 120,
+          },
+          {
+            id: "c2",
+            name: "Amazon",
+            icon: "fab fa-amazon",
+            color: "text-orange-500",
+            bg: "bg-orange-50",
+            questions: 95,
+          },
+          {
+            id: "c3",
+            name: "Microsoft",
+            icon: "fab fa-windows",
+            color: "text-blue-500",
+            bg: "bg-blue-50",
+            questions: 85,
+          },
+          {
+            id: "c4",
+            name: "TCS",
+            icon: "fas fa-laptop-code",
+            color: "text-indigo-500",
+            bg: "bg-indigo-50",
+            questions: 150,
+          },
+          {
+            id: "c5",
+            name: "Infosys",
+            icon: "fas fa-globe",
+            color: "text-blue-600",
+            bg: "bg-blue-50",
+            questions: 110,
+          },
+        ],
+        resumes: [
+          {
+            id: 1,
+            name: "Rahul_Kumar_Resume_v2.pdf",
+            date: "2023-10-15",
+            size: "245 KB",
+          },
+          {
+            id: 2,
+            name: "Rahul_SDE_Resume.pdf",
+            date: "2023-11-02",
+            size: "312 KB",
+          },
+        ],
+        history: [
+          { id: 101, date: "2023-10-20", company: "TCS", score: 8, max: 10 },
+          { id: 102, date: "2023-10-25", company: "Google", score: 6, max: 10 },
+          { id: 103, date: "2023-11-01", company: "Amazon", score: 9, max: 10 },
+        ],
+        feedback: [
+          {
+            id: 1,
+            mentor: "Anita Sharma",
+            date: "2023-11-03",
+            text: "Your technical skills are strong, particularly in Data Structures. However, please update your resume formatting to be more ATS-friendly. Add more details to your internship project.",
+            type: "Resume",
+          },
+          {
+            id: 2,
+            mentor: "Vikram Singh",
+            date: "2023-10-26",
+            text: "Good attempt on the Google practice set. Focus more on Dynamic Programming questions as you struggled with the optimization part.",
+            type: "Technical",
+          },
+        ],
+
+        // Active test state
+        activeTest: {
+          isActive: false,
+          companyId: null,
+          questions: [],
+          currentIndex: 0,
+          score: 0,
+        },
+      };
+
+      // Mock Question Bank Factory
+      const generateQuestions = (companyName) => {
+        return [
+          {
+            q: `Which of the following data structures is most suitable for implementing a LRU cache for ${companyName}?`,
+            options: [
+              "Array and Linked List",
+              "Hash Map and Doubly Linked List",
+              "Queue and Stack",
+              "Binary Search Tree",
+            ],
+            correct: 1, // Index 1
+          },
+          {
+            q: `In a microservices architecture, how would you handle distributed transactions?`,
+            options: [
+              "Two-Phase Commit",
+              "Saga Pattern",
+              "Both A and B",
+              "Neither A nor B",
+            ],
+            correct: 2,
+          },
+          {
+            q: `What is the time complexity of finding an element in a balanced Binary Search Tree?`,
+            options: ["O(1)", "O(n)", "O(log n)", "O(n log n)"],
+            correct: 2,
+          },
+        ];
+      };
+
+      // --- 2. INITIALIZATION & NAVIGATION ---
+      window.onload = () => {
+        // 1. Fetch the real user from Local Storage
+        const loggedInUser = JSON.parse(localStorage.getItem("ami_user"));
+
+        // 2. Security Check: If no user is logged in, kick them back to the landing page
+        if (!loggedInUser) {
+          window.location.href = "index.html";
+          return;
+        }
+
+        // 3. Update the global state with the real user data
+        state.currentUser.name = loggedInUser.name;
+        state.currentUser.email = loggedInUser.email;
+
+        // 4. Update the Header UI
+        document.getElementById("header-user-name").innerText =
+          loggedInUser.name;
+
+        // 5. Update all Avatar images dynamically based on the real name
+        const avatarImgs = document.querySelectorAll('img[alt="Avatar"]');
+        avatarImgs.forEach((img) => {
+          img.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(loggedInUser.name)}`;
+        });
+
+        // 6. Update the "My Profile" section inputs with real data
+        const profNameInput = document.getElementById("prof-name");
+        const profEmailInput = document.getElementById("prof-email");
+        if (profNameInput) profNameInput.value = loggedInUser.name;
+        if (profEmailInput) profEmailInput.value = loggedInUser.email;
+
+        // 7. Render the rest of the dashboard
+        renderCompanyGrid();
+        renderResumes();
+        renderHistory();
+        renderFeedback();
+        updateDashboardStats();
+
+        navigate("analytics");
+      };
+
+      function navigate(sectionId) {
+        // Update Navigation UI
+        document.querySelectorAll("aside nav button").forEach((btn) => {
+          btn.classList.remove("bg-primary", "text-white");
+          btn.classList.add("text-slate-300");
+        });
+        const activeBtn = document.getElementById(`nav-${sectionId}`);
+        activeBtn.classList.add("bg-primary", "text-white");
+        activeBtn.classList.remove("text-slate-300");
+
+        // Hide all sections
+        document.querySelectorAll(".section-container").forEach((sec) => {
+          sec.classList.add("hidden");
+          sec.classList.remove("block");
+        });
+
+        // Show target section
+        document.getElementById(`sec-${sectionId}`).classList.remove("hidden");
+        document.getElementById(`sec-${sectionId}`).classList.add("block");
+
+        // Set Page Title
+        const titles = {
+          practice: "Company Interview Practice",
+          profile: "My Profile",
+          resume: "Resume Management",
+          history: "Assessment History",
+          analytics: "Performance Analytics",
+          feedback: "Mentor Feedback",
+        };
+        document.getElementById("page-title").innerText = titles[sectionId];
+
+        // Re-initialize charts if navigating to analytics to ensure proper rendering dimensions
+        if (sectionId === "analytics") {
+          initCharts();
+        }
+      }
+
+      // --- 3. UI RENDER FUNCTIONS ---
+
+      function renderCompanyGrid() {
+        const grid = document.getElementById("company-grid");
+        grid.innerHTML = "";
+
+        state.companies.forEach((company) => {
+          grid.innerHTML += `
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow group">
+                        <div class="w-14 h-14 rounded-lg ${company.bg} ${company.color} flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="${company.icon}"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-800">${company.name}</h3>
+                        <p class="text-slate-500 text-sm mb-4">${company.questions}+ Interview Questions</p>
+                        <button onclick="startPractice('${company.id}')" class="w-full py-2 rounded-lg bg-slate-50 text-primary font-medium border border-slate-200 hover:bg-primary hover:text-white hover:border-primary transition-colors">
+                            Start Practice
+                        </button>
+                    </div>
+                `;
+        });
+      }
+
+      function renderResumes() {
+        const list = document.getElementById("resume-list");
+        list.innerHTML = "";
+        if (state.resumes.length === 0) {
+          list.innerHTML =
+            '<p class="text-slate-500 text-sm italic">No resumes uploaded yet.</p>';
+          return;
+        }
+
+        state.resumes.forEach((res) => {
+          list.innerHTML += `
+                    <div class="flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded bg-red-50 text-red-500 flex items-center justify-center text-lg">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-slate-800 text-sm">${res.name}</p>
+                                <p class="text-xs text-slate-500">Uploaded on ${res.date} • ${res.size}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 hover:bg-primary hover:text-white transition-colors flex items-center justify-center" title="View">
+                                <i class="fas fa-eye text-xs"></i>
+                            </button>
+                            <button onclick="deleteResume(${res.id})" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center" title="Delete">
+                                <i class="fas fa-trash text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+        });
+      }
+
+      function renderHistory() {
+        const tbody = document.getElementById("history-table-body");
+        tbody.innerHTML = "";
+
+        // Sort history by date descending
+        const sortedHistory = [...state.history].reverse();
+
+        sortedHistory.forEach((record) => {
+          const percentage = Math.round((record.score / record.max) * 100);
+          let statusBadge =
+            percentage >= 70
+              ? '<span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-bold">Passed</span>'
+              : '<span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-bold">Needs Review</span>';
+
+          tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4 text-slate-600">${record.date}</td>
+                        <td class="px-6 py-4 font-medium text-slate-800">${record.company}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-slate-800">${record.score}/${record.max}</span>
+                                <span class="text-xs text-slate-500">(${percentage}%)</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">${statusBadge}</td>
+                    </tr>
+                `;
+        });
+      }
+
+      function renderFeedback() {
+        const list = document.getElementById("feedback-list");
+        list.innerHTML = "";
+
+        state.feedback.forEach((fb) => {
+          list.innerHTML += `
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex gap-4">
+                        <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-xl text-slate-500 shrink-0">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-3 mb-1">
+                                <h4 class="font-bold text-slate-800">${fb.mentor}</h4>
+                                <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-xs font-semibold">${fb.type}</span>
+                                <span class="text-xs text-slate-400"><i class="far fa-clock mr-1"></i>${fb.date}</span>
+                            </div>
+                            <p class="text-slate-600 text-sm leading-relaxed">${fb.text}</p>
+                        </div>
+                    </div>
+                `;
+        });
+      }
+
+      // --- 4. TEST / PRACTICE LOGIC ---
+
+      function startPractice(companyId) {
+        const company = state.companies.find((c) => c.id === companyId);
+
+        // Setup active test state
+        state.activeTest.isActive = true;
+        state.activeTest.companyId = companyId;
+        state.activeTest.questions = generateQuestions(company.name);
+        state.activeTest.currentIndex = 0;
+        state.activeTest.score = 0;
+
+        // UI Transitions
+        document.getElementById("practice-dashboard").classList.add("hidden");
+        document.getElementById("active-test-view").classList.remove("hidden");
+        document.getElementById("test-company-name").innerText = company.name;
+        document.getElementById("total-q-num").innerText =
+          state.activeTest.questions.length;
+
+        loadQuestion();
+      }
+
+      function loadQuestion() {
+        const qIndex = state.activeTest.currentIndex;
+        const qData = state.activeTest.questions[qIndex];
+
+        document.getElementById("current-q-num").innerText = qIndex + 1;
+        document.getElementById("question-text").innerText = qData.q;
+
+        const optionsContainer = document.getElementById("options-container");
+        optionsContainer.innerHTML = "";
+
+        qData.options.forEach((opt, index) => {
+          optionsContainer.innerHTML += `
+                    <label class="flex items-center gap-3 p-4 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                        <input type="radio" name="test-option" value="${index}" class="w-4 h-4 text-primary focus:ring-primary border-slate-300">
+                        <span class="text-slate-700 text-sm">${opt}</span>
+                    </label>
+                `;
+        });
+
+        // Toggle Next/Submit buttons
+        if (qIndex === state.activeTest.questions.length - 1) {
+          document.getElementById("next-btn").classList.add("hidden");
+          document.getElementById("submit-test-btn").classList.remove("hidden");
+        } else {
+          document.getElementById("next-btn").classList.remove("hidden");
+          document.getElementById("submit-test-btn").classList.add("hidden");
+        }
+      }
+
+      function nextQuestion() {
+        // Check answer before moving on
+        const selected = document.querySelector(
+          'input[name="test-option"]:checked',
+        );
+        if (!selected) {
+          showToast("Please select an answer to continue.", "error");
+          return;
+        }
+
+        const currentQ =
+          state.activeTest.questions[state.activeTest.currentIndex];
+        if (parseInt(selected.value) === currentQ.correct) {
+          state.activeTest.score++;
+        }
+
+        state.activeTest.currentIndex++;
+        loadQuestion();
+      }
+
+      function submitTest() {
+        const selected = document.querySelector(
+          'input[name="test-option"]:checked',
+        );
+        if (!selected) {
+          showToast("Please select an answer to submit.", "error");
+          return;
+        }
+
+        // Grade last question
+        const currentQ =
+          state.activeTest.questions[state.activeTest.currentIndex];
+        if (parseInt(selected.value) === currentQ.correct) {
+          state.activeTest.score++;
+        }
+
+        // Save to history
+        const company = state.companies.find(
+          (c) => c.id === state.activeTest.companyId,
+        );
+        const today = new Date().toISOString().split("T")[0];
+        const maxScore = state.activeTest.questions.length;
+
+        state.history.push({
+          id: Date.now(),
+          date: today,
+          company: company.name,
+          score: state.activeTest.score,
+          max: maxScore,
+        });
+
+        // Update UI Views
+        document.getElementById("active-test-view").classList.add("hidden");
+        document.getElementById("test-result-view").classList.remove("hidden");
+
+        document.getElementById("result-score").innerText =
+          state.activeTest.score;
+        document.getElementById("result-max").innerText = maxScore;
+        document.getElementById("result-percentage").innerText = Math.round(
+          (state.activeTest.score / maxScore) * 100,
+        );
+
+        // Re-render components dependent on history
+        renderHistory();
+        updateDashboardStats();
+        // We do not re-init charts here to save performance, but user can see them when they navigate to Analytics tab
+        showToast("Assessment completed successfully!", "success");
+      }
+
+      function cancelTest() {
+        state.activeTest.isActive = false;
+        resetPracticeDashboard();
+      }
+
+      function resetPracticeDashboard() {
+        document.getElementById("test-result-view").classList.add("hidden");
+        document.getElementById("active-test-view").classList.add("hidden");
+        document
+          .getElementById("practice-dashboard")
+          .classList.remove("hidden");
+
+        // Reset button states just in case
+        document.getElementById("next-btn").classList.remove("hidden");
+        document.getElementById("submit-test-btn").classList.add("hidden");
+      }
+
+      // --- 5. UTILITY & ACTIONS ---
+
+      function saveProfile() {
+        showToast("Profile updated successfully!", "success");
+      }
+
+      function handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+          // Mock adding to list
+          const newRes = {
+            id: Date.now(),
+            name: file.name,
+            date: new Date().toISOString().split("T")[0],
+            size: (file.size / 1024).toFixed(0) + " KB",
+          };
+          state.resumes.unshift(newRes);
+          renderResumes();
+          showToast("Resume uploaded successfully!", "success");
+        }
+      }
+
+      function deleteResume(id) {
+        state.resumes = state.resumes.filter((r) => r.id !== id);
+        renderResumes();
+        showToast("Resume deleted.", "info");
+      }
+
+      function updateDashboardStats() {
+        document.getElementById("stat-total-attempts").innerText =
+          state.history.length;
+
+        if (state.history.length > 0) {
+          let totalScore = 0;
+          let totalMax = 0;
+          let highest = 0;
+
+          state.history.forEach((h) => {
+            totalScore += h.score;
+            totalMax += h.max;
+            if (h.score > highest) highest = h.score;
+          });
+
+          const avg = Math.round((totalScore / totalMax) * 100);
+          document.getElementById("stat-avg-accuracy").innerText = avg + "%";
+          document.getElementById("stat-high-score").innerText = highest;
+        }
+      }
+
+      // Custom Toast Notification instead of alert()
+      function showToast(message, type = "info") {
+        const container = document.getElementById("toast-container");
+        const toast = document.createElement("div");
+
+        const colors = {
+          success: "bg-green-500",
+          error: "bg-red-500",
+          info: "bg-blue-500",
+        };
+
+        toast.className = `${colors[type]} text-white px-6 py-3 rounded shadow-lg fade-in flex items-center gap-3`;
+        toast.innerHTML = `
+                <i class="fas ${type === "success" ? "fa-check-circle" : type === "error" ? "fa-exclamation-circle" : "fa-info-circle"}"></i>
+                <span class="font-medium text-sm">${message}</span>
+            `;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          toast.style.transform = "translateY(-10px)";
+          toast.style.transition = "all 0.3s ease";
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
+
+      function logout() {
+        showToast("Logging out...", "info");
+
+        // Clear the saved user session from the browser!
+        localStorage.removeItem("ami_user");
+
+        setTimeout(() => {
+          document.body.innerHTML =
+            '<div class="h-screen w-full flex items-center justify-center bg-slate-50"><h1 class="text-2xl font-bold text-slate-500">Redirecting to Login...</h1></div>';
+
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 500);
+        }, 1000);
+      }
+
+      // --- 6. CHART.JS INTEGRATION ---
+      let trendChartInstance = null;
+      let companyChartInstance = null;
+
+      function initCharts() {
+        // Prepare Data from History
+        const labels = state.history.map((h) => h.date);
+        const scores = state.history.map((h) =>
+          Math.round((h.score / h.max) * 100),
+        ); // Percentage
+
+        // Count attempts per company
+        const companyCounts = {};
+        state.history.forEach((h) => {
+          companyCounts[h.company] = (companyCounts[h.company] || 0) + 1;
+        });
+
+        // Trend Chart
+        const ctxTrend = document.getElementById("trendChart").getContext("2d");
+        if (trendChartInstance) trendChartInstance.destroy();
+        trendChartInstance = new Chart(ctxTrend, {
+          type: "line",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Accuracy %",
+                data: scores,
+                borderColor: "#2563eb",
+                backgroundColor: "rgba(37, 99, 235, 0.1)",
+                tension: 0.4,
+                fill: true,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true, max: 100 } },
+          },
+        });
+
+        // Company Chart
+        const ctxComp = document
+          .getElementById("companyChart")
+          .getContext("2d");
+        if (companyChartInstance) companyChartInstance.destroy();
+        companyChartInstance = new Chart(ctxComp, {
+          type: "bar",
+          data: {
+            labels: Object.keys(companyCounts),
+            datasets: [
+              {
+                label: "Attempts",
+                data: Object.values(companyCounts),
+                backgroundColor: [
+                  "#ef4444",
+                  "#f97316",
+                  "#3b82f6",
+                  "#8b5cf6",
+                  "#10b981",
+                ],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+          },
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1088 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ami-Bridge | Mentor Dashboard</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for Performance Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome for Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#7c3aed", // Violet for Mentor branding
+              primaryHover: "#6d28d9",
+              dark: "#0f172a",
+              darkPanel: "#1e293b",
+              danger: "#ef4444",
+              success: "#10b981",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+
+      .fade-in {
+        animation: fadeIn 0.3s ease-in-out;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Modal Backdrop */
+      .modal-backdrop {
+        background-color: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+      }
+    </style>
+  </head>
+  <body
+    class="bg-slate-50 text-slate-800 font-sans antialiased flex h-screen overflow-hidden"
+  >
+    <!-- Toast Notification Container -->
+    <div
+      id="toast-container"
+      class="fixed top-5 right-5 z-50 flex flex-col gap-2"
+    ></div>
+
+    <!-- Sidebar Navigation -->
+    <aside
+      class="w-64 bg-dark text-white flex flex-col transition-all duration-300 shadow-xl z-20"
+    >
+      <div class="p-6 border-b border-slate-700 flex items-center gap-3">
+        <div
+          class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-xl"
+        >
+          A
+        </div>
+        <div>
+          <h2 class="text-xl font-bold tracking-wide">Ami-Bridge</h2>
+          <span
+            class="text-xs text-purple-300 font-semibold uppercase tracking-wider"
+            >Mentor Portal</span
+          >
+        </div>
+      </div>
+
+      <nav class="flex-1 py-6 px-3 space-y-2 overflow-y-auto">
+        <button
+          onclick="navigate('assigned')"
+          id="nav-assigned"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white transition-colors"
+        >
+          <i class="fas fa-user-graduate w-5"></i>
+          <span class="font-medium">Assigned Students</span>
+        </button>
+        <button
+          onclick="navigate('performance')"
+          id="nav-performance"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+        >
+          <i class="fas fa-chart-line w-5"></i>
+          <span class="font-medium">Student Performance</span>
+        </button>
+        <button
+          onclick="navigate('resumes')"
+          id="nav-resumes"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+        >
+          <i class="fas fa-file-signature w-5"></i>
+          <span class="font-medium">Resume Review</span>
+        </button>
+        <button
+          onclick="navigate('feedback')"
+          id="nav-feedback"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+        >
+          <i class="fas fa-comment-dots w-5"></i>
+          <span class="font-medium">Provide Feedback</span>
+        </button>
+      </nav>
+
+      <div class="p-4 border-t border-slate-700">
+        <button
+          onclick="logout()"
+          class="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-red-400 hover:bg-red-500 hover:text-white transition-colors"
+        >
+          <i class="fas fa-sign-out-alt w-5"></i>
+          <span class="font-medium">Logout</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+      <!-- Top Header -->
+      <header
+        class="bg-white shadow-sm h-16 flex items-center justify-between px-8 z-10 shrink-0"
+      >
+        <h1 id="page-title" class="text-xl font-bold text-slate-800">
+          Assigned Students
+        </h1>
+        <div class="flex items-center gap-4">
+          <div class="relative">
+            <i
+              class="fas fa-bell text-slate-400 text-xl cursor-pointer hover:text-primary"
+            ></i>
+            <span
+              class="absolute -top-1 -right-1 bg-red-500 w-3 h-3 rounded-full border-2 border-white"
+            ></span>
+          </div>
+          <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
+            <div class="text-right hidden sm:block">
+              <p class="text-sm font-bold text-slate-700" id="header-user-name">
+                Anita Sharma
+              </p>
+              <p class="text-xs text-slate-500">Senior SDE Mentor</p>
+            </div>
+            <div
+              class="w-10 h-10 rounded-full bg-slate-200 border-2 border-primary flex items-center justify-center overflow-hidden"
+            >
+              <img
+                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Anita"
+                alt="Avatar"
+                class="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Scrollable Content -->
+      <div class="flex-1 overflow-y-auto p-8 bg-slate-50">
+        <!-- SECTION: ASSIGNED STUDENTS (Default) -->
+        <div
+          id="sec-assigned"
+          class="section-container block fade-in max-w-7xl mx-auto"
+        >
+          <div class="mb-6 flex justify-between items-end">
+            <div>
+              <h2 class="text-2xl font-bold text-slate-800">Your Mentees</h2>
+              <p class="text-slate-500 mt-1">
+                Students currently assigned to you for guidance.
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            id="mentee-grid"
+          >
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- SECTION: STUDENT PERFORMANCE -->
+        <div
+          id="sec-performance"
+          class="section-container hidden fade-in max-w-7xl mx-auto"
+        >
+          <div
+            class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4"
+          >
+            <div>
+              <h3 class="text-lg font-bold text-slate-800">
+                Performance Review
+              </h3>
+              <p class="text-sm text-slate-500">
+                Select a student to view their assessment history and accuracy
+                trends.
+              </p>
+            </div>
+            <div class="w-full sm:w-72">
+              <select
+                id="perf-student-select"
+                onchange="loadStudentPerformance()"
+                class="w-full border border-slate-300 rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-primary outline-none bg-slate-50 font-medium"
+              >
+                <!-- Rendered by JS -->
+              </select>
+            </div>
+          </div>
+
+          <div id="performance-content" class="hidden">
+            <!-- Stats Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <div
+                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
+              >
+                <div
+                  class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl"
+                >
+                  <i class="fas fa-tasks"></i>
+                </div>
+                <div>
+                  <p class="text-sm text-slate-500 font-medium">
+                    Total Attempts
+                  </p>
+                  <p
+                    class="text-2xl font-bold text-slate-800"
+                    id="perf-total-attempts"
+                  >
+                    0
+                  </p>
+                </div>
+              </div>
+              <div
+                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
+              >
+                <div
+                  class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xl"
+                >
+                  <i class="fas fa-bullseye"></i>
+                </div>
+                <div>
+                  <p class="text-sm text-slate-500 font-medium">
+                    Average Accuracy
+                  </p>
+                  <p
+                    class="text-2xl font-bold text-slate-800"
+                    id="perf-avg-accuracy"
+                  >
+                    0%
+                  </p>
+                </div>
+              </div>
+              <div
+                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
+              >
+                <div
+                  class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xl"
+                >
+                  <i class="fas fa-trophy"></i>
+                </div>
+                <div>
+                  <p class="text-sm text-slate-500 font-medium">
+                    Highest Score
+                  </p>
+                  <p
+                    class="text-2xl font-bold text-slate-800"
+                    id="perf-high-score"
+                  >
+                    0
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              <div
+                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+              >
+                <h3 class="text-lg font-bold text-slate-800 mb-4">
+                  Accuracy Trend
+                </h3>
+                <canvas id="studentTrendChart" height="200"></canvas>
+              </div>
+
+              <!-- History Table -->
+              <div
+                class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col"
+              >
+                <div class="p-6 border-b border-slate-200 shrink-0">
+                  <h3 class="text-lg font-bold text-slate-800">
+                    Recent Assessments
+                  </h3>
+                </div>
+                <div class="overflow-y-auto flex-1 p-0">
+                  <table class="w-full text-left border-collapse">
+                    <thead>
+                      <tr
+                        class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider"
+                      >
+                        <th class="px-6 py-3 font-semibold">Date</th>
+                        <th class="px-6 py-3 font-semibold">Company</th>
+                        <th class="px-6 py-3 font-semibold">Score</th>
+                      </tr>
+                    </thead>
+                    <tbody
+                      id="perf-history-body"
+                      class="divide-y divide-slate-100 text-sm"
+                    >
+                      <!-- Rendered by JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div
+            id="performance-empty"
+            class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center"
+          >
+            <div
+              class="w-20 h-20 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl"
+            >
+              <i class="fas fa-user-graduate"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-700">Select a Student</h3>
+            <p class="text-slate-500 mt-2">
+              Choose a student from the dropdown above to view their performance
+              analytics.
+            </p>
+          </div>
+        </div>
+
+        <!-- SECTION: RESUMES -->
+        <div
+          id="sec-resumes"
+          class="section-container hidden fade-in max-w-6xl mx-auto"
+        >
+          <div
+            class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+          >
+            <div class="p-6 border-b border-slate-200">
+              <h3 class="text-lg font-bold text-slate-800">
+                Resumes Pending Review
+              </h3>
+              <p class="text-sm text-slate-500">
+                Student resumes uploaded for mentor feedback.
+              </p>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr
+                    class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider"
+                  >
+                    <th class="px-6 py-4 font-semibold">Student Name</th>
+                    <th class="px-6 py-4 font-semibold">Document</th>
+                    <th class="px-6 py-4 font-semibold">Upload Date</th>
+                    <th class="px-6 py-4 font-semibold">Status</th>
+                    <th class="px-6 py-4 font-semibold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="resumes-table-body"
+                  class="divide-y divide-slate-100 text-sm"
+                >
+                  <!-- Rendered by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION: FEEDBACK -->
+        <div
+          id="sec-feedback"
+          class="section-container hidden fade-in max-w-6xl mx-auto"
+        >
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Feedback Form -->
+            <div
+              class="lg:col-span-1 bg-white rounded-xl shadow-sm border border-slate-200 p-6 h-fit"
+            >
+              <h3 class="text-lg font-bold text-slate-800 mb-4">
+                Send Feedback
+              </h3>
+              <form
+                onsubmit="
+                  event.preventDefault();
+                  submitFeedback();
+                "
+                class="space-y-4"
+              >
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-1"
+                    >Select Student</label
+                  >
+                  <select
+                    id="fb-student-select"
+                    class="w-full border border-slate-300 rounded-lg py-2 px-3 focus:ring-2 focus:ring-primary outline-none"
+                    required
+                  >
+                    <!-- Rendered by JS -->
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-1"
+                    >Feedback Type</label
+                  >
+                  <select
+                    id="fb-type-select"
+                    class="w-full border border-slate-300 rounded-lg py-2 px-3 focus:ring-2 focus:ring-primary outline-none"
+                    required
+                  >
+                    <option value="Technical">Technical Advice</option>
+                    <option value="Resume">Resume Feedback</option>
+                    <option value="General">General Guidance</option>
+                    <option value="Interview">Interview Prep</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-1"
+                    >Message</label
+                  >
+                  <textarea
+                    id="fb-message"
+                    class="w-full border border-slate-300 rounded-lg py-2 px-3 focus:ring-2 focus:ring-primary outline-none h-32"
+                    placeholder="Write your feedback here..."
+                    required
+                  ></textarea>
+                </div>
+                <button
+                  type="submit"
+                  class="w-full py-2.5 bg-primary text-white rounded-lg hover:bg-primaryHover transition font-medium shadow-md"
+                >
+                  Send Feedback
+                </button>
+              </form>
+            </div>
+
+            <!-- Feedback History -->
+            <div
+              class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+            >
+              <h3 class="text-lg font-bold text-slate-800 mb-4">
+                Past Feedback Sent
+              </h3>
+              <div id="feedback-history-list" class="space-y-4">
+                <!-- Rendered by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- MODALS -->
+
+    <!-- Resume Review Modal -->
+    <div
+      id="resume-modal"
+      class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop fade-in"
+    >
+      <div
+        class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden"
+      >
+        <div
+          class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50"
+        >
+          <h3 class="font-bold text-lg text-slate-800">
+            Resume Quick Feedback
+          </h3>
+          <button
+            onclick="closeModal('resume-modal')"
+            class="text-slate-400 hover:text-danger transition"
+          >
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+        <form
+          id="resume-review-form"
+          class="p-6 space-y-4"
+          onsubmit="
+            event.preventDefault();
+            submitResumeFeedback();
+          "
+        >
+          <div
+            class="bg-slate-50 p-3 rounded-lg border border-slate-200 flex items-center gap-3 mb-4"
+          >
+            <i class="fas fa-file-pdf text-red-500 text-2xl"></i>
+            <div>
+              <p
+                class="font-bold text-slate-700 text-sm"
+                id="modal-resume-name"
+              >
+                Document.pdf
+              </p>
+              <p class="text-xs text-slate-500">
+                Student: <span id="modal-student-name">Student Name</span>
+              </p>
+            </div>
+          </div>
+
+          <input type="hidden" id="modal-student-id" />
+
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
+              >Your Suggestions</label
+            >
+            <textarea
+              id="modal-feedback-text"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary focus:border-primary outline-none h-28"
+              required
+              placeholder="e.g., Improve formatting, add project details..."
+            ></textarea>
+          </div>
+
+          <div class="pt-2 flex justify-end gap-3">
+            <button
+              type="button"
+              onclick="closeModal('resume-modal')"
+              class="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primaryHover transition flex items-center gap-2"
+            >
+              <i class="fas fa-paper-plane"></i> Send Feedback
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+      // --- 1. MENTOR STATE & MOCK DATA ---
+      const state = {
+        currentUser: {
+          name: "Anita Sharma",
+          role: "Senior SDE Mentor",
+          avatar: "Anita",
+        },
+        students: [
+          {
+            id: "s1",
+            name: "Rahul Kumar",
+            course: "B.Tech CSE",
+            email: "rahul.k@example.com",
+            avatar: "Rahul",
+            performance: "Good",
+            statusColor: "text-green-600",
+          },
+          {
+            id: "s2",
+            name: "Priya Singh",
+            course: "MCA",
+            email: "priya.s@example.com",
+            avatar: "Priya",
+            performance: "Needs Review",
+            statusColor: "text-orange-500",
+          },
+          {
+            id: "s3",
+            name: "Amit Patel",
+            course: "BCA",
+            email: "amit.p@example.com",
+            avatar: "Amit",
+            performance: "Excellent",
+            statusColor: "text-green-600",
+          },
+        ],
+        history: {
+          s1: [
+            { date: "2023-10-20", company: "TCS", score: 8, max: 10 },
+            { date: "2023-10-25", company: "Google", score: 6, max: 10 },
+            { date: "2023-11-01", company: "Amazon", score: 9, max: 10 },
+          ],
+          s2: [
+            { date: "2023-10-15", company: "Infosys", score: 4, max: 10 },
+            { date: "2023-10-22", company: "Wipro", score: 5, max: 10 },
+          ],
+          s3: [
+            { date: "2023-10-28", company: "Microsoft", score: 9, max: 10 },
+            { date: "2023-11-02", company: "Google", score: 10, max: 10 },
+          ],
+        },
+        resumes: [
+          {
+            id: "r1",
+            studentId: "s1",
+            studentName: "Rahul Kumar",
+            fileName: "Rahul_SDE_Resume.pdf",
+            date: "2023-11-02",
+            status: "Pending Review",
+          },
+          {
+            id: "r2",
+            studentId: "s2",
+            studentName: "Priya Singh",
+            fileName: "Priya_MCA_CV.pdf",
+            date: "2023-10-28",
+            status: "Reviewed",
+          },
+        ],
+        feedbacks: [
+          {
+            id: "f1",
+            studentId: "s1",
+            studentName: "Rahul Kumar",
+            type: "Technical",
+            text: "Good attempt on the Google practice set. Focus more on Dynamic Programming questions as you struggled with the optimization part.",
+            date: "2023-10-26",
+          },
+        ],
+      };
+
+      // --- 2. INITIALIZATION & NAVIGATION ---
+      window.onload = () => {
+        // 1. Fetch the real user from Local Storage
+        const loggedInUser = JSON.parse(localStorage.getItem("ami_user"));
+
+        // 2. Security Check: If no user is logged in, redirect to login
+        if (!loggedInUser) {
+          window.location.href = "index.html";
+          return;
+        }
+
+        // 3. Update the Header UI with real name
+        const headerNameEl = document.getElementById("header-user-name");
+        if (headerNameEl) headerNameEl.innerText = loggedInUser.name;
+
+        // 4. Update the Avatar dynamically
+        const avatarImgs = document.querySelectorAll('img[alt="Avatar"]');
+        avatarImgs.forEach((img) => {
+          img.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(loggedInUser.name)}`;
+        });
+
+        // 5. Initialize Mentor Dashboard features
+        renderAssignedStudents();
+        populateStudentDropdowns();
+        renderResumes();
+        renderFeedbacks();
+
+        // Default to assigned students
+        navigate("assigned");
+      };
+
+      function navigate(sectionId) {
+        // Update Navigation UI
+        document.querySelectorAll("aside nav button").forEach((btn) => {
+          btn.classList.remove("bg-primary", "text-white");
+          btn.classList.add("text-slate-300");
+        });
+        const activeBtn = document.getElementById(`nav-${sectionId}`);
+        activeBtn.classList.add("bg-primary", "text-white");
+        activeBtn.classList.remove("text-slate-300");
+
+        // Hide all sections
+        document.querySelectorAll(".section-container").forEach((sec) => {
+          sec.classList.add("hidden");
+          sec.classList.remove("block");
+        });
+
+        // Show target section
+        document.getElementById(`sec-${sectionId}`).classList.remove("hidden");
+        document.getElementById(`sec-${sectionId}`).classList.add("block");
+
+        // Set Page Title
+        const titles = {
+          assigned: "Assigned Students",
+          performance: "Student Performance Review",
+          resumes: "Resume Review Portal",
+          feedback: "Mentor Feedback System",
+        };
+        document.getElementById("page-title").innerText = titles[sectionId];
+      }
+
+      // --- 3. UI RENDER FUNCTIONS ---
+
+      function renderAssignedStudents() {
+        const grid = document.getElementById("mentee-grid");
+        grid.innerHTML = "";
+
+        state.students.forEach((student) => {
+          grid.innerHTML += `
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-4 mb-4 border-b border-slate-100 pb-4">
+                            <div class="w-14 h-14 rounded-full bg-slate-200 border-2 border-primary overflow-hidden shrink-0">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${student.avatar}" class="w-full h-full object-cover">
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-800 leading-tight">${student.name}</h3>
+                                <p class="text-slate-500 text-xs mt-1"><i class="fas fa-envelope mr-1"></i>${student.email}</p>
+                            </div>
+                        </div>
+                        <div class="flex-1 space-y-2 mb-6">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-500">Course</span>
+                                <span class="font-medium text-slate-800">${student.course}</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-slate-500">Performance</span>
+                                <span class="font-bold ${student.statusColor}">${student.performance}</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 mt-auto">
+                            <button onclick="jumpToPerformance('${student.id}')" class="py-2 text-center text-sm font-semibold rounded bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100 transition">View Stats</button>
+                            <button onclick="jumpToFeedback('${student.id}')" class="py-2 text-center text-sm font-semibold rounded bg-primary text-white hover:bg-primaryHover transition">Feedback</button>
+                        </div>
+                    </div>
+                `;
+        });
+      }
+
+      function populateStudentDropdowns() {
+        const perfSelect = document.getElementById("perf-student-select");
+        const fbSelect = document.getElementById("fb-student-select");
+
+        perfSelect.innerHTML =
+          '<option value="" disabled selected>Select a student...</option>';
+        fbSelect.innerHTML =
+          '<option value="" disabled selected>Select a student...</option>';
+
+        state.students.forEach((s) => {
+          const opt = `<option value="${s.id}">${s.name} (${s.course})</option>`;
+          perfSelect.innerHTML += opt;
+          fbSelect.innerHTML += opt;
+        });
+      }
+
+      function renderResumes() {
+        const tbody = document.getElementById("resumes-table-body");
+        tbody.innerHTML = "";
+
+        if (state.resumes.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="5" class="text-center py-6 text-slate-500 italic">No resumes pending review.</td></tr>';
+          return;
+        }
+
+        state.resumes.forEach((res) => {
+          let statusBadge =
+            res.status === "Reviewed"
+              ? '<span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-bold">Reviewed</span>'
+              : '<span class="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs font-bold">Pending Review</span>';
+
+          tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-6 py-4 font-bold text-slate-800">${res.studentName}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2 text-blue-600">
+                                <i class="fas fa-file-pdf text-red-500"></i>
+                                <span class="font-medium text-sm">${res.fileName}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-slate-600 text-sm">${res.date}</td>
+                        <td class="px-6 py-4">${statusBadge}</td>
+                        <td class="px-6 py-4 text-right">
+                            <button onclick="viewDocument()" class="text-slate-400 hover:text-primary p-2 transition" title="View Document"><i class="fas fa-eye"></i></button>
+                            <button onclick="openResumeReviewModal('${res.id}', '${res.studentId}', '${res.studentName}', '${res.fileName}')" class="text-slate-400 hover:text-green-500 p-2 transition" title="Add Feedback"><i class="fas fa-comment-medical"></i></button>
+                        </td>
+                    </tr>
+                `;
+        });
+      }
+
+      function renderFeedbacks() {
+        const list = document.getElementById("feedback-history-list");
+        list.innerHTML = "";
+
+        if (state.feedbacks.length === 0) {
+          list.innerHTML =
+            '<p class="text-slate-500 italic text-sm py-4">You have not sent any feedback yet.</p>';
+          return;
+        }
+
+        // Reverse to show newest first
+        const sortedFb = [...state.feedbacks].reverse();
+
+        sortedFb.forEach((fb) => {
+          list.innerHTML += `
+                    <div class="border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <span class="font-bold text-slate-800">To: ${fb.studentName}</span>
+                                <span class="ml-2 px-2 py-0.5 bg-purple-50 text-primary rounded text-xs font-semibold border border-purple-100">${fb.type}</span>
+                            </div>
+                            <span class="text-xs text-slate-400"><i class="far fa-clock mr-1"></i>${fb.date}</span>
+                        </div>
+                        <p class="text-slate-600 text-sm leading-relaxed">${fb.text}</p>
+                    </div>
+                `;
+        });
+      }
+
+      // --- 4. LOGIC & ACTIONS ---
+
+      function loadStudentPerformance() {
+        const studentId = document.getElementById("perf-student-select").value;
+        if (!studentId) return;
+
+        document.getElementById("performance-empty").classList.add("hidden");
+        document
+          .getElementById("performance-content")
+          .classList.remove("hidden");
+
+        const history = state.history[studentId] || [];
+
+        // Calculate Stats
+        let totalScore = 0;
+        let totalMax = 0;
+        let highest = 0;
+
+        document.getElementById("perf-total-attempts").innerText =
+          history.length;
+
+        const tbody = document.getElementById("perf-history-body");
+        tbody.innerHTML = "";
+
+        if (history.length === 0) {
+          document.getElementById("perf-avg-accuracy").innerText = "0%";
+          document.getElementById("perf-high-score").innerText = "0";
+          tbody.innerHTML =
+            '<tr><td colspan="3" class="text-center py-4 text-slate-500 italic">No assessment data available.</td></tr>';
+        } else {
+          history.forEach((h) => {
+            totalScore += h.score;
+            totalMax += h.max;
+            if (h.score > highest) highest = h.score;
+
+            const percentage = Math.round((h.score / h.max) * 100);
+            let colorClass =
+              percentage >= 70 ? "text-green-600" : "text-orange-500";
+
+            tbody.innerHTML =
+              `
+                        <tr>
+                            <td class="px-6 py-3 text-slate-600">${h.date}</td>
+                            <td class="px-6 py-3 font-medium text-slate-800">${h.company}</td>
+                            <td class="px-6 py-3 font-bold ${colorClass}">${h.score}/${h.max} (${percentage}%)</td>
+                        </tr>
+                    ` + tbody.innerHTML; // Prepend to show latest first
+          });
+
+          const avg = Math.round((totalScore / totalMax) * 100);
+          document.getElementById("perf-avg-accuracy").innerText = avg + "%";
+          document.getElementById("perf-high-score").innerText = highest;
+        }
+
+        // Draw Chart
+        drawStudentChart(history);
+      }
+
+      function submitFeedback() {
+        const studentId = document.getElementById("fb-student-select").value;
+        const type = document.getElementById("fb-type-select").value;
+        const message = document.getElementById("fb-message").value;
+
+        if (!studentId || !message) return;
+
+        const studentName = state.students.find((s) => s.id === studentId).name;
+
+        state.feedbacks.push({
+          id: "f" + Date.now(),
+          studentId: studentId,
+          studentName: studentName,
+          type: type,
+          text: message,
+          date: new Date().toISOString().split("T")[0],
+        });
+
+        renderFeedbacks();
+        showToast("Feedback sent to student successfully!", "success");
+
+        // Reset form
+        document.getElementById("fb-message").value = "";
+        document.getElementById("fb-student-select").value = "";
+      }
+
+      function submitResumeFeedback() {
+        const studentId = document.getElementById("modal-student-id").value;
+        const studentName =
+          document.getElementById("modal-student-name").innerText;
+        const message = document.getElementById("modal-feedback-text").value;
+
+        if (!message) return;
+
+        // Add to feedback array
+        state.feedbacks.push({
+          id: "f" + Date.now(),
+          studentId: studentId,
+          studentName: studentName,
+          type: "Resume",
+          text: message,
+          date: new Date().toISOString().split("T")[0],
+        });
+
+        // Update resume status
+        const resumeId =
+          document.getElementById("resume-review-form").dataset.resumeId;
+        const resumeIndex = state.resumes.findIndex((r) => r.id === resumeId);
+        if (resumeIndex > -1) {
+          state.resumes[resumeIndex].status = "Reviewed";
+        }
+
+        renderResumes();
+        renderFeedbacks();
+
+        showToast("Resume feedback submitted!", "success");
+        closeModal("resume-modal");
+      }
+
+      // --- 5. HELPERS & MODALS ---
+
+      function jumpToPerformance(studentId) {
+        navigate("performance");
+        document.getElementById("perf-student-select").value = studentId;
+        loadStudentPerformance();
+      }
+
+      function jumpToFeedback(studentId) {
+        navigate("feedback");
+        document.getElementById("fb-student-select").value = studentId;
+      }
+
+      function openResumeReviewModal(
+        resumeId,
+        studentId,
+        studentName,
+        fileName,
+      ) {
+        document.getElementById("modal-resume-name").innerText = fileName;
+        document.getElementById("modal-student-name").innerText = studentName;
+        document.getElementById("modal-student-id").value = studentId;
+        document.getElementById("modal-feedback-text").value = "";
+
+        // Store resumeId in form dataset for updating status later
+        document.getElementById("resume-review-form").dataset.resumeId =
+          resumeId;
+
+        document.getElementById("resume-modal").classList.remove("hidden");
+      }
+
+      function closeModal(id) {
+        document.getElementById(id).classList.add("hidden");
+      }
+
+      function viewDocument() {
+        showToast("Opening document viewer...", "info");
+      }
+
+      function showToast(message, type = "info") {
+        const container = document.getElementById("toast-container");
+        const toast = document.createElement("div");
+
+        const colors = {
+          success: "bg-green-500",
+          error: "bg-red-500",
+          info: "bg-primary",
+        };
+
+        toast.className = `${colors[type]} text-white px-6 py-3 rounded shadow-lg fade-in flex items-center gap-3`;
+        toast.innerHTML = `
+                <i class="fas ${type === "success" ? "fa-check-circle" : type === "error" ? "fa-exclamation-circle" : "fa-info-circle"}"></i>
+                <span class="font-medium text-sm">${message}</span>
+            `;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          toast.style.transform = "translateY(-10px)";
+          toast.style.transition = "all 0.3s ease";
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
+
+      function logout() {
+            showToast('Logging out...', 'info');
+            
+            // Clear the saved user session from the browser!
+            localStorage.removeItem('ami_user');
+
+            setTimeout(() => {
+               document.body.innerHTML = '<div class="h-screen w-full flex items-center justify-center bg-slate-50"><h1 class="text-2xl font-bold text-slate-500">Redirecting to Login...</h1></div>';
+               
+               setTimeout(() => {
+                   window.location.href = 'index.html';
+               }, 500);
+               
+            }, 1000);
+        }
+
+      // --- 6. CHARTS ---
+
+      let studentChartInstance = null;
+
+      function drawStudentChart(historyData) {
+        const ctx = document
+          .getElementById("studentTrendChart")
+          .getContext("2d");
+
+        if (studentChartInstance) studentChartInstance.destroy();
+
+        if (historyData.length === 0) {
+          // Empty state chart
+          studentChartInstance = new Chart(ctx, {
+            type: "line",
+            data: { labels: ["No Data"], datasets: [{ data: [] }] },
+            options: {
+              responsive: true,
+              animation: false,
+              scales: { y: { display: false }, x: { display: false } },
+              plugins: { legend: { display: false } },
+            },
+          });
+          return;
+        }
+
+        const labels = historyData.map((h) => h.date);
+        const scores = historyData.map((h) =>
+          Math.round((h.score / h.max) * 100),
+        ); // Percentage
+
+        studentChartInstance = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Accuracy %",
+                data: scores,
+                borderColor: "#7c3aed", // Mentor violet
+                backgroundColor: "rgba(124, 58, 237, 0.1)",
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: "#7c3aed",
+                pointRadius: 4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            animation: false, // Keep it static as requested
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+              },
+            },
+            plugins: {
+              legend: { display: false },
+            },
+          },
+        });
+      }
+    </script>
+  </body>
+</html>
