@@ -78,7 +78,7 @@
 
     <!-- Sidebar Navigation -->
     <aside
-      class="w-64 bg-dark text-white flex flex-col transition-all duration-300 shadow-xl z-20"
+      class="w-64 bg-dark text-white flex flex-col transition-all duration-300 shadow-xl z-20 hidden md:flex"
     >
       <div class="p-6 border-b border-slate-700 flex items-center gap-3">
         <div
@@ -155,22 +155,20 @@
             <i
               class="fas fa-bell text-slate-400 text-xl cursor-pointer hover:text-primary"
             ></i>
-            <span
-              class="absolute -top-1 -right-1 bg-red-500 w-3 h-3 rounded-full border-2 border-white"
-            ></span>
           </div>
           <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
             <div class="text-right hidden sm:block">
               <p class="text-sm font-bold text-slate-700" id="header-user-name">
-                Anita Sharma
+                Loading...
               </p>
-              <p class="text-xs text-slate-500">Senior SDE Mentor</p>
+              <p class="text-xs text-slate-500">Mentor</p>
             </div>
             <div
               class="w-10 h-10 rounded-full bg-slate-200 border-2 border-primary flex items-center justify-center overflow-hidden"
             >
               <img
-                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Anita"
+                id="header-avatar"
+                src=""
                 alt="Avatar"
                 class="w-full h-full object-cover"
               />
@@ -199,7 +197,11 @@
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             id="mentee-grid"
           >
-            <!-- Rendered by JS -->
+            <div
+              class="col-span-full flex items-center justify-center py-12 text-slate-400"
+            >
+              <i class="fas fa-spinner fa-spin text-3xl"></i>
+            </div>
           </div>
         </div>
 
@@ -562,109 +564,104 @@
 
     <!-- Application Logic -->
     <script>
-      // --- 1. MENTOR STATE & MOCK DATA ---
+      // --- SMART API BASE ---
+      const API_BASE =
+        window.location.hostname === "127.0.0.1" ||
+        window.location.hostname === "localhost"
+          ? "http://localhost:5000"
+          : "";
+
+      // --- 1. MENTOR DYNAMIC STATE ---
       const state = {
-        currentUser: {
-          name: "Anita Sharma",
-          role: "Senior SDE Mentor",
-          avatar: "Anita",
-        },
-        students: [
-          {
-            id: "s1",
-            name: "Rahul Kumar",
-            course: "B.Tech CSE",
-            email: "rahul.k@example.com",
-            avatar: "Rahul",
-            performance: "Good",
-            statusColor: "text-green-600",
-          },
-          {
-            id: "s2",
-            name: "Priya Singh",
-            course: "MCA",
-            email: "priya.s@example.com",
-            avatar: "Priya",
-            performance: "Needs Review",
-            statusColor: "text-orange-500",
-          },
-          {
-            id: "s3",
-            name: "Amit Patel",
-            course: "BCA",
-            email: "amit.p@example.com",
-            avatar: "Amit",
-            performance: "Excellent",
-            statusColor: "text-green-600",
-          },
-        ],
-        history: {
-          s1: [
-            { date: "2023-10-20", company: "TCS", score: 8, max: 10 },
-            { date: "2023-10-25", company: "Google", score: 6, max: 10 },
-            { date: "2023-11-01", company: "Amazon", score: 9, max: 10 },
-          ],
-          s2: [
-            { date: "2023-10-15", company: "Infosys", score: 4, max: 10 },
-            { date: "2023-10-22", company: "Wipro", score: 5, max: 10 },
-          ],
-          s3: [
-            { date: "2023-10-28", company: "Microsoft", score: 9, max: 10 },
-            { date: "2023-11-02", company: "Google", score: 10, max: 10 },
-          ],
-        },
-        resumes: [
-          {
-            id: "r1",
-            studentId: "s1",
-            studentName: "Rahul Kumar",
-            fileName: "Rahul_SDE_Resume.pdf",
-            date: "2023-11-02",
-            status: "Pending Review",
-          },
-          {
-            id: "r2",
-            studentId: "s2",
-            studentName: "Priya Singh",
-            fileName: "Priya_MCA_CV.pdf",
-            date: "2023-10-28",
-            status: "Reviewed",
-          },
-        ],
-        feedbacks: [
-          {
-            id: "f1",
-            studentId: "s1",
-            studentName: "Rahul Kumar",
-            type: "Technical",
-            text: "Good attempt on the Google practice set. Focus more on Dynamic Programming questions as you struggled with the optimization part.",
-            date: "2023-10-26",
-          },
-        ],
+        currentUser: null,
+        students: [], // Assigned students
+        resumes: [], // Resumes for assigned students
+        feedbacks: [], // Feedback history
       };
 
-      // --- 2. INITIALIZATION & NAVIGATION ---
-      window.onload = () => {
-        // 1. Fetch the real user from Local Storage
+      // --- 2. INITIALIZATION & DATA FETCHING ---
+      window.onload = async () => {
+        // 1. Authenticate user
         const loggedInUser = JSON.parse(localStorage.getItem("ami_user"));
-
-        // 2. Security Check: If no user is logged in, redirect to login
-        if (!loggedInUser) {
+        if (!loggedInUser || loggedInUser.role !== "mentor") {
           window.location.href = "index.html";
           return;
         }
+        state.currentUser = loggedInUser;
 
-        // 3. Update the Header UI with real name
-        const headerNameEl = document.getElementById("header-user-name");
-        if (headerNameEl) headerNameEl.innerText = loggedInUser.name;
+        // 2. Set Up UI basics
+        document.getElementById("header-user-name").innerText =
+          loggedInUser.name;
+        const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(loggedInUser.name)}`;
+        document.getElementById("header-avatar").src = avatarUrl;
 
-        // 4. Update the Avatar dynamically
-        const avatarImgs = document.querySelectorAll('img[alt="Avatar"]');
-        avatarImgs.forEach((img) => {
-          img.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(loggedInUser.name)}`;
-        });
+        // 3. Fetch Real Data from Database
+        try {
+          // Fetch assigned students
+          const studentsRes = await fetch(
+            `${API_BASE}/api/mentor/${loggedInUser.id}/students`,
+          );
+          if (studentsRes.ok) {
+            const assigned = await studentsRes.json();
 
-        // 5. Initialize Mentor Dashboard features
+            // Map DB data to UI format
+            state.students = assigned.map((s) => ({
+              id: s.student_id,
+              name: s.name,
+              email: s.email,
+              course: "Candidate",
+              avatar: s.name,
+              performance: "Evaluating",
+              statusColor: "text-blue-500",
+            }));
+
+            // Fetch resumes and feedback dynamically for each assigned student
+            for (let student of state.students) {
+              const resRes = await fetch(
+                `${API_BASE}/api/student/${student.id}/resumes`,
+              );
+              if (resRes.ok) {
+                const resumes = await resRes.json();
+                state.resumes.push(
+                  ...resumes.map((r) => ({
+                    id: r.resume_id,
+                    studentId: student.id,
+                    studentName: student.name,
+                    fileName: r.file_name,
+                    date: r.upload_date,
+                    status: r.status || "Pending Review",
+                  })),
+                );
+              }
+
+              const fbRes = await fetch(
+                `${API_BASE}/api/student/${student.id}/feedback`,
+              );
+              if (fbRes.ok) {
+                const feedbacks = await fbRes.json();
+                // Filter only feedback given by THIS mentor
+                const myFeedbacks = feedbacks.filter(
+                  (f) => f.mentor_id === loggedInUser.id,
+                );
+                state.feedbacks.push(
+                  ...myFeedbacks.map((f) => ({
+                    id: f.feedback_id,
+                    studentId: student.id,
+                    studentName: student.name,
+                    type: f.feedback_type,
+                    text: f.feedback_text,
+                    date: f.feedback_date,
+                  })),
+                );
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching mentor data:", error);
+          showToast("Could not connect to server. Running locally.", "error");
+        }
+
+        // 4. Render UI Elements
         renderAssignedStudents();
         populateStudentDropdowns();
         renderResumes();
@@ -681,8 +678,10 @@
           btn.classList.add("text-slate-300");
         });
         const activeBtn = document.getElementById(`nav-${sectionId}`);
-        activeBtn.classList.add("bg-primary", "text-white");
-        activeBtn.classList.remove("text-slate-300");
+        if (activeBtn) {
+          activeBtn.classList.add("bg-primary", "text-white");
+          activeBtn.classList.remove("text-slate-300");
+        }
 
         // Hide all sections
         document.querySelectorAll(".section-container").forEach((sec) => {
@@ -704,18 +703,28 @@
         document.getElementById("page-title").innerText = titles[sectionId];
       }
 
-      // --- 3. UI RENDER FUNCTIONS ---
+      // --- 3. DYNAMIC UI RENDERERS (With Empty States) ---
 
       function renderAssignedStudents() {
         const grid = document.getElementById("mentee-grid");
         grid.innerHTML = "";
+
+        if (state.students.length === 0) {
+          grid.innerHTML = `
+                    <div class="col-span-full text-center p-12 text-slate-500 bg-white rounded-2xl border border-slate-200 shadow-sm">
+                        <i class="fas fa-user-graduate text-4xl text-slate-300 mb-3"></i>
+                        <p class="font-bold">No students assigned yet.</p>
+                        <p class="text-sm mt-1">When an admin assigns mentees to you, they will appear here.</p>
+                    </div>`;
+          return;
+        }
 
         state.students.forEach((student) => {
           grid.innerHTML += `
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col hover:shadow-md transition-shadow">
                         <div class="flex items-center gap-4 mb-4 border-b border-slate-100 pb-4">
                             <div class="w-14 h-14 rounded-full bg-slate-200 border-2 border-primary overflow-hidden shrink-0">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${student.avatar}" class="w-full h-full object-cover">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(student.avatar)}" class="w-full h-full object-cover">
                             </div>
                             <div>
                                 <h3 class="text-lg font-bold text-slate-800 leading-tight">${student.name}</h3>
@@ -751,7 +760,7 @@
           '<option value="" disabled selected>Select a student...</option>';
 
         state.students.forEach((s) => {
-          const opt = `<option value="${s.id}">${s.name} (${s.course})</option>`;
+          const opt = `<option value="${s.id}">${s.name}</option>`;
           perfSelect.innerHTML += opt;
           fbSelect.innerHTML += opt;
         });
@@ -763,7 +772,7 @@
 
         if (state.resumes.length === 0) {
           tbody.innerHTML =
-            '<tr><td colspan="5" class="text-center py-6 text-slate-500 italic">No resumes pending review.</td></tr>';
+            '<tr><td colspan="5" class="text-center py-10 text-slate-500 italic">No resumes pending review from your mentees.</td></tr>';
           return;
         }
 
@@ -771,7 +780,7 @@
           let statusBadge =
             res.status === "Reviewed"
               ? '<span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-bold">Reviewed</span>'
-              : '<span class="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs font-bold">Pending Review</span>';
+              : '<span class="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs font-bold">Pending</span>';
 
           tbody.innerHTML += `
                     <tr class="hover:bg-slate-50 transition-colors">
@@ -782,7 +791,7 @@
                                 <span class="font-medium text-sm">${res.fileName}</span>
                             </div>
                         </td>
-                        <td class="px-6 py-4 text-slate-600 text-sm">${res.date}</td>
+                        <td class="px-6 py-4 text-slate-600 text-sm">${new Date(res.date).toLocaleDateString()}</td>
                         <td class="px-6 py-4">${statusBadge}</td>
                         <td class="px-6 py-4 text-right">
                             <button onclick="viewDocument()" class="text-slate-400 hover:text-primary p-2 transition" title="View Document"><i class="fas fa-eye"></i></button>
@@ -798,8 +807,11 @@
         list.innerHTML = "";
 
         if (state.feedbacks.length === 0) {
-          list.innerHTML =
-            '<p class="text-slate-500 italic text-sm py-4">You have not sent any feedback yet.</p>';
+          list.innerHTML = `
+                    <div class="text-center p-10 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 flex flex-col items-center">
+                        <i class="fas fa-comment-slash text-3xl text-slate-300 mb-3"></i>
+                        <p class="text-slate-500 font-medium">You haven't sent any feedback yet.</p>
+                    </div>`;
           return;
         }
 
@@ -814,7 +826,7 @@
                                 <span class="font-bold text-slate-800">To: ${fb.studentName}</span>
                                 <span class="ml-2 px-2 py-0.5 bg-purple-50 text-primary rounded text-xs font-semibold border border-purple-100">${fb.type}</span>
                             </div>
-                            <span class="text-xs text-slate-400"><i class="far fa-clock mr-1"></i>${fb.date}</span>
+                            <span class="text-xs text-slate-400"><i class="far fa-clock mr-1"></i>${new Date(fb.date).toLocaleDateString()}</span>
                         </div>
                         <p class="text-slate-600 text-sm leading-relaxed">${fb.text}</p>
                     </div>
@@ -824,7 +836,7 @@
 
       // --- 4. LOGIC & ACTIONS ---
 
-      function loadStudentPerformance() {
+      async function loadStudentPerformance() {
         const studentId = document.getElementById("perf-student-select").value;
         if (!studentId) return;
 
@@ -833,7 +845,23 @@
           .getElementById("performance-content")
           .classList.remove("hidden");
 
-        const history = state.history[studentId] || [];
+        const tbody = document.getElementById("perf-history-body");
+        tbody.innerHTML =
+          '<tr><td colspan="3" class="text-center py-4 text-slate-400"><i class="fas fa-spinner fa-spin text-xl"></i> Loading...</td></tr>';
+
+        let history = [];
+
+        try {
+          // Fetch performance dynamically
+          const res = await fetch(
+            `${API_BASE}/api/student/${studentId}/attempts`,
+          );
+          if (res.ok) {
+            history = await res.json();
+          }
+        } catch (e) {
+          console.error("Failed to fetch performance", e);
+        }
 
         // Calculate Stats
         let totalScore = 0;
@@ -842,31 +870,29 @@
 
         document.getElementById("perf-total-attempts").innerText =
           history.length;
-
-        const tbody = document.getElementById("perf-history-body");
         tbody.innerHTML = "";
 
         if (history.length === 0) {
           document.getElementById("perf-avg-accuracy").innerText = "0%";
           document.getElementById("perf-high-score").innerText = "0";
           tbody.innerHTML =
-            '<tr><td colspan="3" class="text-center py-4 text-slate-500 italic">No assessment data available.</td></tr>';
+            '<tr><td colspan="3" class="text-center py-6 text-slate-500 italic">No assessment data available.</td></tr>';
         } else {
           history.forEach((h) => {
-            totalScore += h.score;
-            totalMax += h.max;
-            if (h.score > highest) highest = h.score;
+            totalScore += h.total_score;
+            totalMax += h.max_score;
+            if (h.total_score > highest) highest = h.total_score;
 
-            const percentage = Math.round((h.score / h.max) * 100);
+            const percentage = Math.round((h.total_score / h.max_score) * 100);
             let colorClass =
               percentage >= 70 ? "text-green-600" : "text-orange-500";
 
             tbody.innerHTML =
               `
                         <tr>
-                            <td class="px-6 py-3 text-slate-600">${h.date}</td>
-                            <td class="px-6 py-3 font-medium text-slate-800">${h.company}</td>
-                            <td class="px-6 py-3 font-bold ${colorClass}">${h.score}/${h.max} (${percentage}%)</td>
+                            <td class="px-6 py-4 text-slate-600">${new Date(h.attempt_date).toLocaleDateString()}</td>
+                            <td class="px-6 py-4 font-medium text-slate-800">${h.company_name}</td>
+                            <td class="px-6 py-4 font-bold ${colorClass}">${h.total_score}/${h.max_score} (${percentage}%)</td>
                         </tr>
                     ` + tbody.innerHTML; // Prepend to show latest first
           });
@@ -880,22 +906,27 @@
         drawStudentChart(history);
       }
 
-      function submitFeedback() {
+      async function submitFeedback() {
         const studentId = document.getElementById("fb-student-select").value;
         const type = document.getElementById("fb-type-select").value;
         const message = document.getElementById("fb-message").value;
 
         if (!studentId || !message) return;
 
-        const studentName = state.students.find((s) => s.id === studentId).name;
+        const studentName = state.students.find((s) => s.id == studentId).name;
+        const today = new Date().toISOString().split("T")[0];
 
+        // NOTE: In a full app, we would POST this to the backend:
+        // await fetch(`${API_BASE}/api/feedback`, { method: "POST", ... })
+
+        // For now, simulate successful database insertion in local state
         state.feedbacks.push({
           id: "f" + Date.now(),
           studentId: studentId,
           studentName: studentName,
           type: type,
           text: message,
-          date: new Date().toISOString().split("T")[0],
+          date: today,
         });
 
         renderFeedbacks();
@@ -906,13 +937,15 @@
         document.getElementById("fb-student-select").value = "";
       }
 
-      function submitResumeFeedback() {
+      async function submitResumeFeedback() {
         const studentId = document.getElementById("modal-student-id").value;
         const studentName =
           document.getElementById("modal-student-name").innerText;
         const message = document.getElementById("modal-feedback-text").value;
 
         if (!message) return;
+
+        const today = new Date().toISOString().split("T")[0];
 
         // Add to feedback array
         state.feedbacks.push({
@@ -921,13 +954,13 @@
           studentName: studentName,
           type: "Resume",
           text: message,
-          date: new Date().toISOString().split("T")[0],
+          date: today,
         });
 
-        // Update resume status
+        // Update resume status locally
         const resumeId =
           document.getElementById("resume-review-form").dataset.resumeId;
-        const resumeIndex = state.resumes.findIndex((r) => r.id === resumeId);
+        const resumeIndex = state.resumes.findIndex((r) => r.id == resumeId);
         if (resumeIndex > -1) {
           state.resumes[resumeIndex].status = "Reviewed";
         }
@@ -963,10 +996,8 @@
         document.getElementById("modal-student-id").value = studentId;
         document.getElementById("modal-feedback-text").value = "";
 
-        // Store resumeId in form dataset for updating status later
         document.getElementById("resume-review-form").dataset.resumeId =
           resumeId;
-
         document.getElementById("resume-modal").classList.remove("hidden");
       }
 
@@ -1005,20 +1036,16 @@
       }
 
       function logout() {
-            showToast('Logging out...', 'info');
-            
-            // Clear the saved user session from the browser!
-            localStorage.removeItem('ami_user');
-
-            setTimeout(() => {
-               document.body.innerHTML = '<div class="h-screen w-full flex items-center justify-center bg-slate-50"><h1 class="text-2xl font-bold text-slate-500">Redirecting to Login...</h1></div>';
-               
-               setTimeout(() => {
-                   window.location.href = 'index.html';
-               }, 500);
-               
-            }, 1000);
-        }
+        showToast("Logging out...", "info");
+        localStorage.removeItem("ami_user");
+        setTimeout(() => {
+          document.body.innerHTML =
+            '<div class="h-screen w-full flex items-center justify-center bg-slate-50"><h1 class="text-2xl font-bold text-slate-500">Redirecting to Login...</h1></div>';
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 500);
+        }, 1000);
+      }
 
       // --- 6. CHARTS ---
 
@@ -1046,9 +1073,12 @@
           return;
         }
 
-        const labels = historyData.map((h) => h.date);
-        const scores = historyData.map((h) =>
-          Math.round((h.score / h.max) * 100),
+        const chronologicalHistory = [...historyData].reverse();
+        const labels = chronologicalHistory.map((h) =>
+          new Date(h.attempt_date).toLocaleDateString(),
+        );
+        const scores = chronologicalHistory.map((h) =>
+          Math.round((h.total_score / h.max_score) * 100),
         ); // Percentage
 
         studentChartInstance = new Chart(ctx, {
@@ -1070,16 +1100,9 @@
           },
           options: {
             responsive: true,
-            animation: false, // Keep it static as requested
-            scales: {
-              y: {
-                beginAtZero: true,
-                max: 100,
-              },
-            },
-            plugins: {
-              legend: { display: false },
-            },
+            animation: false,
+            scales: { y: { beginAtZero: true, max: 100 } },
+            plugins: { legend: { display: false } },
           },
         });
       }
