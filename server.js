@@ -25,12 +25,9 @@ const pool = new Pool({
   connectionTimeoutMillis: 10000,
 });
 
-// Catch errors on idle clients in the pool
+// Catch errors on idle clients in the pool (Prevents Neon Sleep Crashes)
 pool.on("error", (err, client) => {
-  console.error(
-    "Idle client error (Neon DB likely went to sleep):",
-    err.message,
-  );
+  console.log("Neon DB background disconnect (ignoring):", err.message);
 });
 
 // Test Connection safely
@@ -43,35 +40,20 @@ const testDbConnection = async () => {
     console.error("Database connection error:", err.message);
   }
 };
-
 testDbConnection();
 
-// --- FIX FOR NEON DB SLEEP CRASHES ---
-// This prevents the app from crashing when Neon disconnects idle clients
-pool.on("error", (err, client) => {
-  console.error(
-    "Unexpected error on idle client (Neon DB went to sleep):",
-    err.message,
-  );
-});
+// ==========================================
+// 1. AUTHENTICATION ROUTES
+// ==========================================
 
-// Test Connection
-pool
-  .connect()
-  .then(() => console.log("Successfully connected to PostgreSQL (Neon DB)!"))
-  .catch((err) => console.error("Database connection error:", err.stack));
-
-// --- 1. USER AUTHENTICATION SYSTEM (REGISTER) ---
 app.post("/api/auth/register", async (req, res) => {
   const { name, email, password, role } = req.body;
 
-  // Validation
   if (!name || !email || !password || !role) {
     return res.status(400).json({ error: "All fields are required" });
   }
 
   try {
-    // Check if user exists
     const userExists = await pool.query(
       "SELECT * FROM users WHERE email = $1",
       [email],
@@ -80,11 +62,9 @@ app.post("/api/auth/register", async (req, res) => {
       return res.status(400).json({ error: "User already exists" });
     }
 
-    // Hash password before saving to DB
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Save new user
     const result = await pool.query(
       "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id, name, email, role",
       [name, email, hashedPassword, role],
@@ -96,12 +76,10 @@ app.post("/api/auth/register", async (req, res) => {
   }
 });
 
-// --- 2. USER AUTHENTICATION SYSTEM (LOGIN) ---
 app.post("/api/auth/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Find user by email
     const user = await pool.query("SELECT * FROM users WHERE email = $1", [
       email,
     ]);
@@ -109,13 +87,11 @@ app.post("/api/auth/login", async (req, res) => {
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
-    // Compare hashed password
     const isMatch = await bcrypt.compare(password, user.rows[0].password);
     if (!isMatch) {
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
-    // Return user data
     res.json({
       id: user.rows[0].id,
       name: user.rows[0].name,
@@ -128,7 +104,10 @@ app.post("/api/auth/login", async (req, res) => {
   }
 });
 
-// --- 3. COMPANIES API ---
+// ==========================================
+// 2. SHARED ROUTES (Companies & Questions)
+// ==========================================
+
 app.get("/api/companies", async (req, res) => {
   try {
     const result = await pool.query(
@@ -156,7 +135,6 @@ app.post("/api/companies", async (req, res) => {
   }
 });
 
-// --- 4. INTERVIEW QUESTIONS API ---
 app.get("/api/questions/:companyId", async (req, res) => {
   try {
     const { companyId } = req.params;
@@ -171,7 +149,11 @@ app.get("/api/questions/:companyId", async (req, res) => {
   }
 });
 
-// --- 5. STUDENT ATTEMPTS API ---
+// ==========================================
+// 3. STUDENT DYNAMIC ROUTES (For Empty States)
+// ==========================================
+
+// Save a new test attempt
 app.post("/api/attempts", async (req, res) => {
   const { student_id, company_id, total_score, max_score } = req.body;
   try {
@@ -186,7 +168,97 @@ app.post("/api/attempts", async (req, res) => {
   }
 });
 
-// --- SERVER LISTENING / VERCEL EXPORT ---
+// Get a specific student's attempt history (Returns [] if new user)
+app.get("/api/student/:id/attempts", async (req, res) => {
+  try {
+    const query = `
+      SELECT sa.*, c.company_name, c.icon_class, c.bg_color, c.text_color
+      FROM student_attempts sa
+      JOIN companies c ON sa.company_id = c.company_id
+      WHERE sa.student_id = $1
+      ORDER BY sa.attempt_date DESC
+    `;
+    const result = await pool.query(query, [req.params.id]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Fetch Student Attempts Error:", err);
+    res.status(500).json({ error: "Server error fetching history" });
+  }
+});
+
+// Get a specific student's resumes (Returns [] if new user)
+app.get("/api/student/:id/resumes", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM resumes WHERE student_id = $1 ORDER BY upload_date DESC",
+      [req.params.id],
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Fetch Resumes Error:", err);
+    res.status(500).json({ error: "Server error fetching resumes" });
+  }
+});
+
+// Get feedback for a specific student (Returns [] if new user)
+app.get("/api/student/:id/feedback", async (req, res) => {
+  try {
+    const query = `
+      SELECT f.*, u.name as mentor_name 
+      FROM mentor_feedback f
+      JOIN users u ON f.mentor_id = u.id
+      WHERE f.student_id = $1
+      ORDER BY f.feedback_date DESC
+    `;
+    const result = await pool.query(query, [req.params.id]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Fetch Feedback Error:", err);
+    res.status(500).json({ error: "Server error fetching feedback" });
+  }
+});
+
+// ==========================================
+// 4. MENTOR DYNAMIC ROUTES (For Empty States)
+// ==========================================
+
+// Get students assigned to a specific mentor
+app.get("/api/mentor/:id/students", async (req, res) => {
+  try {
+    const query = `
+      SELECT ma.assignment_id, u.id as student_id, u.name, u.email
+      FROM mentor_assignments ma
+      JOIN users u ON ma.student_id = u.id
+      WHERE ma.mentor_id = $1
+    `;
+    const result = await pool.query(query, [req.params.id]);
+    res.json(result.rows); // Returns [] if no students assigned
+  } catch (err) {
+    console.error("Fetch Assigned Students Error:", err);
+    res.status(500).json({ error: "Server error fetching assigned students" });
+  }
+});
+
+// ==========================================
+// 5. ADMIN DYNAMIC ROUTES (For Empty States)
+// ==========================================
+
+// Get all users in the system (for the Admin table)
+app.get("/api/admin/users", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC",
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Fetch All Users Error:", err);
+    res.status(500).json({ error: "Server error fetching users" });
+  }
+});
+
+// ==========================================
+// SERVER LISTENING / VERCEL EXPORT
+// ==========================================
 if (process.env.NODE_ENV !== "production") {
   app.listen(PORT, () => {
     console.log(`Backend Server running on http://localhost:${PORT}`);

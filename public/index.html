@@ -891,6 +891,14 @@
       }
 
       // --- 4. REAL BACKEND ROUTING via fetch() ---
+
+      // Smart API Base URL: Automatically switches between localhost and Vercel!
+      const API_BASE =
+        window.location.hostname === "127.0.0.1" ||
+        window.location.hostname === "localhost"
+          ? "http://localhost:5000"
+          : "";
+
       async function handleLogin(e) {
         e.preventDefault();
         const email = document.getElementById("login-email").value;
@@ -903,8 +911,8 @@
           '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
 
         try {
-          // Talk to local Node.js server
-          const response = await fetch("/api/auth/login", {
+          // Talk to Node.js server
+          const response = await fetch(API_BASE + "/api/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),
@@ -951,8 +959,8 @@
           '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
 
         try {
-          // Talk to local Node.js server
-          const response = await fetch("/api/auth/login", {
+          // Talk to Node.js server (FIXED: Now routes to /register!)
+          const response = await fetch(API_BASE + "/api/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name, email, password, role }),
