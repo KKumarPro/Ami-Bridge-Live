@@ -18,6 +18,7 @@
       tailwind.config = {
         theme: {
           extend: {
+            fontFamily: { sans: ["Inter", "sans-serif"] },
             colors: {
               primary: "#2563eb",
               primaryHover: "#1d4ed8",
@@ -70,7 +71,7 @@
 
     <!-- Sidebar Navigation -->
     <aside
-      class="w-64 bg-dark text-white flex flex-col transition-all duration-300 shadow-xl z-20"
+      class="w-64 bg-dark text-white flex flex-col transition-all duration-300 shadow-xl z-20 hidden md:flex"
     >
       <div class="p-6 border-b border-slate-700 flex items-center gap-3">
         <div
@@ -164,15 +165,16 @@
           <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
             <div class="text-right hidden sm:block">
               <p class="text-sm font-bold text-slate-700" id="header-user-name">
-                Rahul Kumar
+                Loading...
               </p>
-              <p class="text-xs text-slate-500">B.Tech CSE</p>
+              <p class="text-xs text-slate-500">Student</p>
             </div>
             <div
               class="w-10 h-10 rounded-full bg-slate-200 border-2 border-primary flex items-center justify-center overflow-hidden"
             >
               <img
-                src="https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul"
+                id="header-avatar"
+                src=""
                 alt="Avatar"
                 class="w-full h-full object-cover"
               />
@@ -183,7 +185,7 @@
 
       <!-- Scrollable Content -->
       <div class="flex-1 overflow-y-auto p-8 bg-slate-50">
-        <!-- SECTION: ANALYTICS (Default now) -->
+        <!-- SECTION: ANALYTICS -->
         <div
           id="sec-analytics"
           class="section-container block fade-in max-w-6xl mx-auto"
@@ -284,12 +286,15 @@
                 </p>
               </div>
             </div>
-
             <div
               class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
               id="company-grid"
             >
-              <!-- Rendered by JS -->
+              <div
+                class="col-span-full flex items-center justify-center py-12 text-slate-400"
+              >
+                <i class="fas fa-spinner fa-spin text-3xl"></i>
+              </div>
             </div>
           </div>
 
@@ -324,7 +329,7 @@
                 id="question-text"
                 class="text-lg font-medium text-slate-800 mb-6"
               >
-                Question text goes here?
+                Loading question...
               </h4>
               <div id="options-container" class="space-y-3">
                 <!-- Options rendered by JS -->
@@ -348,7 +353,7 @@
               <button
                 id="submit-test-btn"
                 onclick="submitTest()"
-                class="hidden px-6 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors font-medium"
+                class="hidden px-6 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors font-medium flex items-center gap-2"
               >
                 Submit Assessment
               </button>
@@ -411,200 +416,6 @@
           </div>
         </div>
 
-        <!-- SECTION: PROFILE -->
-        <div
-          id="sec-profile"
-          class="section-container hidden fade-in max-w-4xl mx-auto"
-        >
-          <div
-            class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
-          >
-            <!-- Cover Image Background -->
-            <div
-              class="h-40 bg-gradient-to-r from-blue-500 to-indigo-600 relative overflow-hidden"
-            >
-              <!-- Decorative Abstract Shapes -->
-              <div
-                class="absolute -top-10 -right-10 w-40 h-40 bg-white opacity-10 rounded-full"
-              ></div>
-              <div
-                class="absolute top-10 right-20 w-20 h-20 bg-white opacity-10 rounded-full"
-              ></div>
-              <div
-                class="absolute -bottom-8 left-10 w-24 h-24 bg-white opacity-10 rounded-full"
-              ></div>
-            </div>
-
-            <div class="px-8 pb-8">
-              <!-- Profile Header (Avatar and Name) -->
-              <div
-                class="flex flex-col sm:flex-row justify-between items-start sm:items-end -mt-12 mb-8 gap-4"
-              >
-                <div
-                  class="flex flex-col sm:flex-row items-start sm:items-end gap-4 sm:gap-6"
-                >
-                  <div
-                    class="w-28 h-28 rounded-full border-4 border-white bg-slate-100 overflow-hidden shadow-md shrink-0 relative z-10"
-                  >
-                    <img
-                      src="https://api.dicebear.com/7.x/avataaars/svg?seed=Rahul"
-                      alt="Avatar"
-                      class="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div class="pb-1">
-                    <h2 class="text-2xl font-bold text-slate-800">
-                      Rahul Kumar
-                    </h2>
-                    <p class="text-slate-500 font-medium">
-                      B.Tech Computer Science
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onclick="saveProfile()"
-                  class="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primaryHover transition-all flex items-center gap-2 text-sm font-semibold shadow-md hover:shadow-lg shrink-0"
-                >
-                  <i class="fas fa-save"></i> Save Profile
-                </button>
-              </div>
-
-              <!-- Section Title -->
-              <div class="mb-6 pt-2 border-t border-slate-100">
-                <h3 class="text-lg font-bold text-slate-800">
-                  Personal Details
-                </h3>
-                <p class="text-slate-500 text-sm">
-                  Update your information and skills.
-                </p>
-              </div>
-
-              <!-- Profile Form -->
-              <form
-                id="profile-form"
-                class="grid grid-cols-1 md:grid-cols-2 gap-6"
-                onsubmit="
-                  event.preventDefault();
-                  saveProfile();
-                "
-              >
-                <div>
-                  <label class="block text-sm font-semibold text-slate-700 mb-2"
-                    >Full Name</label
-                  >
-                  <div class="relative">
-                    <div
-                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                    >
-                      <i class="fas fa-user text-slate-400"></i>
-                    </div>
-                    <input
-                      type="text"
-                      id="prof-name"
-                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:bg-white transition-colors outline-none text-slate-700"
-                      value="Rahul Kumar"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label class="block text-sm font-semibold text-slate-700 mb-2"
-                    >Email Address</label
-                  >
-                  <div class="relative">
-                    <div
-                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                    >
-                      <i class="fas fa-envelope text-slate-400"></i>
-                    </div>
-                    <input
-                      type="email"
-                      id="prof-email"
-                      class="w-full pl-10 pr-4 py-2.5 bg-slate-100 border border-slate-200 rounded-lg text-slate-500 cursor-not-allowed outline-none"
-                      value="rahul.k@example.com"
-                      disabled
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label class="block text-sm font-semibold text-slate-700 mb-2"
-                    >Course / Degree</label
-                  >
-                  <div class="relative">
-                    <div
-                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                    >
-                      <i class="fas fa-graduation-cap text-slate-400"></i>
-                    </div>
-                    <input
-                      type="text"
-                      id="prof-degree"
-                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:bg-white transition-colors outline-none text-slate-700"
-                      value="B.Tech Computer Science"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label class="block text-sm font-semibold text-slate-700 mb-2"
-                    >College / University</label
-                  >
-                  <div class="relative">
-                    <div
-                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                    >
-                      <i class="fas fa-university text-slate-400"></i>
-                    </div>
-                    <input
-                      type="text"
-                      id="prof-college"
-                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:bg-white transition-colors outline-none text-slate-700"
-                      value="National Institute of Technology"
-                    />
-                  </div>
-                </div>
-                <div class="md:col-span-2">
-                  <label class="block text-sm font-semibold text-slate-700 mb-2"
-                    >Technical Skills</label
-                  >
-                  <div class="relative">
-                    <div
-                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                    >
-                      <i class="fas fa-code text-slate-400"></i>
-                    </div>
-                    <input
-                      type="text"
-                      id="prof-skills"
-                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:bg-white transition-colors outline-none text-slate-700"
-                      value="Java, Python, SQL, React, Data Structures"
-                    />
-                  </div>
-                  <p class="text-xs text-slate-500 mt-1 ml-1">
-                    Separate skills with a comma
-                  </p>
-                </div>
-                <div class="md:col-span-2">
-                  <label class="block text-sm font-semibold text-slate-700 mb-2"
-                    >Target Companies</label
-                  >
-                  <div class="relative">
-                    <div
-                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                    >
-                      <i class="fas fa-building text-slate-400"></i>
-                    </div>
-                    <input
-                      type="text"
-                      id="prof-targets"
-                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary focus:bg-white transition-colors outline-none text-slate-700"
-                      value="Google, Amazon, Microsoft"
-                    />
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-
         <!-- SECTION: RESUME -->
         <div
           id="sec-resume"
@@ -626,7 +437,7 @@
                   class="fas fa-cloud-upload-alt text-4xl text-slate-400 mb-3"
                 ></i>
                 <p class="text-sm text-slate-600 font-medium">
-                  Click to browse or drag & drop
+                  Click to browse
                 </p>
                 <p class="text-xs text-slate-400 mt-1">
                   PDF files only (Max 5MB)
@@ -640,14 +451,17 @@
                 />
               </div>
             </div>
-
             <!-- Resume List -->
             <div
               class="md:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-6"
             >
               <h3 class="text-lg font-bold text-slate-800 mb-4">My Resumes</h3>
               <div id="resume-list" class="space-y-3">
-                <!-- Rendered by JS -->
+                <div
+                  class="flex items-center justify-center py-8 text-slate-400"
+                >
+                  <i class="fas fa-spinner fa-spin text-2xl"></i>
+                </div>
               </div>
             </div>
           </div>
@@ -667,9 +481,6 @@
               <h3 class="text-lg font-bold text-slate-800">
                 Assessment History
               </h3>
-              <button class="text-sm text-primary font-medium hover:underline">
-                <i class="fas fa-download mr-1"></i> Export Report
-              </button>
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-left border-collapse">
@@ -687,7 +498,11 @@
                   id="history-table-body"
                   class="divide-y divide-slate-100 text-sm"
                 >
-                  <!-- Rendered by JS -->
+                  <tr>
+                    <td colspan="4" class="text-center py-6 text-slate-400">
+                      <i class="fas fa-spinner fa-spin text-2xl"></i>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -706,737 +521,793 @@
             </p>
           </div>
           <div id="feedback-list" class="space-y-4">
-            <!-- Rendered by JS -->
+            <div class="flex items-center justify-center py-8 text-slate-400">
+              <i class="fas fa-spinner fa-spin text-2xl"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION: PROFILE -->
+        <div
+          id="sec-profile"
+          class="section-container hidden fade-in max-w-4xl mx-auto"
+        >
+          <div
+            class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
+          >
+            <div
+              class="h-40 bg-gradient-to-r from-blue-500 to-indigo-600 relative overflow-hidden"
+            ></div>
+            <div class="px-8 pb-8">
+              <div
+                class="flex flex-col sm:flex-row justify-between items-start sm:items-end -mt-12 mb-8 gap-4"
+              >
+                <div
+                  class="flex flex-col sm:flex-row items-start sm:items-end gap-4 sm:gap-6"
+                >
+                  <div
+                    class="w-28 h-28 rounded-full border-4 border-white bg-slate-100 overflow-hidden shadow-md shrink-0 relative z-10"
+                  >
+                    <img
+                      id="profile-avatar"
+                      src=""
+                      alt="Avatar"
+                      class="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div class="pb-1">
+                    <h2
+                      id="profile-name-display"
+                      class="text-2xl font-bold text-slate-800"
+                    >
+                      Loading...
+                    </h2>
+                    <p class="text-slate-500 font-medium">Student Candidate</p>
+                  </div>
+                </div>
+                <button
+                  onclick="saveProfile()"
+                  class="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primaryHover transition-all flex items-center gap-2 text-sm font-semibold shadow-md"
+                >
+                  <i class="fas fa-save"></i> Save Profile
+                </button>
+              </div>
+
+              <div class="mb-6 pt-2 border-t border-slate-100">
+                <h3 class="text-lg font-bold text-slate-800">
+                  Personal Details
+                </h3>
+              </div>
+
+              <form
+                id="profile-form"
+                class="grid grid-cols-1 md:grid-cols-2 gap-6"
+                onsubmit="
+                  event.preventDefault();
+                  saveProfile();
+                "
+              >
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-2"
+                    >Full Name</label
+                  >
+                  <div class="relative">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                    >
+                      <i class="fas fa-user text-slate-400"></i>
+                    </div>
+                    <input
+                      type="text"
+                      id="prof-name"
+                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg outline-none text-slate-700"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-2"
+                    >Email Address</label
+                  >
+                  <div class="relative">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                    >
+                      <i class="fas fa-envelope text-slate-400"></i>
+                    </div>
+                    <input
+                      type="email"
+                      id="prof-email"
+                      class="w-full pl-10 pr-4 py-2.5 bg-slate-100 border border-slate-200 rounded-lg text-slate-500 cursor-not-allowed outline-none"
+                      disabled
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-2"
+                    >Course / Degree</label
+                  >
+                  <div class="relative">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                    >
+                      <i class="fas fa-graduation-cap text-slate-400"></i>
+                    </div>
+                    <input
+                      type="text"
+                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg outline-none text-slate-700"
+                      placeholder="e.g. B.Tech Computer Science"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-slate-700 mb-2"
+                    >College / University</label
+                  >
+                  <div class="relative">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                    >
+                      <i class="fas fa-university text-slate-400"></i>
+                    </div>
+                    <input
+                      type="text"
+                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg outline-none text-slate-700"
+                      placeholder="e.g. NIT"
+                    />
+                  </div>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
     </main>
 
     <!-- Application Logic -->
-    <!doctype html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Student Dashboard | Ami-Bridge</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-        <script>
-          tailwind.config = {
-            theme: {
-              extend: {
-                fontFamily: { sans: ["Inter", "sans-serif"] },
-                colors: {
-                  brand: {
-                    50: "#eff6ff",
-                    100: "#dbeafe",
-                    500: "#3b82f6",
-                    600: "#2563eb",
-                    700: "#1d4ed8",
-                  },
-                },
-              },
-            },
-          };
-        </script>
-      </head>
-      <body
-        class="bg-slate-50 font-sans text-slate-800 antialiased selection:bg-brand-500 selection:text-white"
-      >
-        <div class="flex h-screen overflow-hidden">
-          <!-- SIDEBAR -->
-          <aside
-            class="w-72 bg-white border-r border-slate-200 flex flex-col transition-all duration-300 z-20 hidden md:flex"
-          >
-            <div class="h-20 flex items-center px-8 border-b border-slate-100">
-              <div
-                class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white font-bold mr-3 shadow-md"
-              >
-                A
-              </div>
-              <span class="font-bold text-xl tracking-tight text-slate-800"
-                >Ami-Bridge</span
-              >
-            </div>
+    <script>
+      // --- SMART API BASE ---
+      const API_BASE =
+        window.location.hostname === "127.0.0.1" ||
+        window.location.hostname === "localhost"
+          ? "http://localhost:5000"
+          : "";
 
-            <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
-              <div
-                class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 px-4"
-              >
-                Menu
-              </div>
+      // --- 1. GLOBAL DYNAMIC STATE ---
+      const state = {
+        currentUser: null,
+        companies: [],
+        resumes: [],
+        history: [],
+        feedback: [],
+        activeTest: {
+          isActive: false,
+          companyId: null,
+          questions: [],
+          currentIndex: 0,
+          score: 0,
+        },
+      };
 
-              <button
-                onclick="navigate('analytics')"
-                id="nav-analytics"
-                class="nav-item w-full flex items-center px-4 py-3 text-sm font-semibold rounded-xl bg-brand-50 text-brand-600 border-r-4 border-brand-600 transition-all"
-              >
-                <i class="fas fa-chart-pie w-6 text-lg"></i> Overview
-              </button>
-              <button
-                onclick="navigate('practice')"
-                id="nav-practice"
-                class="nav-item w-full flex items-center px-4 py-3 text-sm font-semibold rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all"
-              >
-                <i class="fas fa-code w-6 text-lg"></i> Practice Tests
-              </button>
-              <button
-                onclick="navigate('resume')"
-                id="nav-resume"
-                class="nav-item w-full flex items-center px-4 py-3 text-sm font-semibold rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all"
-              >
-                <i class="fas fa-file-alt w-6 text-lg"></i> My Resumes
-              </button>
-              <button
-                onclick="navigate('profile')"
-                id="nav-profile"
-                class="nav-item w-full flex items-center px-4 py-3 text-sm font-semibold rounded-xl text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all"
-              >
-                <i class="fas fa-user w-6 text-lg"></i> Profile settings
-              </button>
-            </nav>
+      // Mock Question Bank Factory (Used until database questions are fully populated)
+      const generateQuestions = (companyName) => {
+        return [
+          {
+            q: `Which data structure is best for a LRU cache at ${companyName}?`,
+            options: [
+              "Array & Linked List",
+              "Hash Map & Doubly Linked List",
+              "Queue & Stack",
+              "Binary Tree",
+            ],
+            correct: 1,
+          },
+          {
+            q: `How would you handle distributed transactions?`,
+            options: [
+              "Two-Phase Commit",
+              "Saga Pattern",
+              "Both A and B",
+              "Neither",
+            ],
+            correct: 2,
+          },
+          {
+            q: `Time complexity of finding an element in a balanced BST?`,
+            options: ["O(1)", "O(n)", "O(log n)", "O(n log n)"],
+            correct: 2,
+          },
+        ];
+      };
 
-            <div class="p-4 border-t border-slate-200">
-              <button
-                onclick="logout()"
-                class="w-full flex items-center justify-center px-4 py-3 text-sm font-bold rounded-xl text-red-600 bg-red-50 hover:bg-red-100 transition-colors"
-              >
-                <i class="fas fa-sign-out-alt mr-2"></i> Log Out
-              </button>
-            </div>
-          </aside>
+      // --- 2. INITIALIZATION & DATA FETCHING ---
+      window.onload = async () => {
+        // 1. Authenticate user
+        const loggedInUser = JSON.parse(localStorage.getItem("ami_user"));
+        if (!loggedInUser || loggedInUser.role !== "student") {
+          window.location.href = "index.html";
+          return;
+        }
+        state.currentUser = loggedInUser;
 
-          <!-- MAIN CONTENT -->
-          <div class="flex-1 flex flex-col h-screen overflow-hidden relative">
-            <!-- HEADER -->
-            <header
-              class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 z-10 sticky top-0"
-            >
-              <h1 class="text-2xl font-bold text-slate-800">Student Portal</h1>
-              <div class="flex items-center gap-6">
-                <button
-                  class="relative text-slate-400 hover:text-brand-600 transition-colors"
-                >
-                  <i class="fas fa-bell text-xl"></i>
-                  <span
-                    class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"
-                  ></span>
+        // 2. Set Up UI basics
+        document.getElementById("header-user-name").innerText =
+          loggedInUser.name;
+        document.getElementById("profile-name-display").innerText =
+          loggedInUser.name;
+        document.getElementById("prof-name").value = loggedInUser.name;
+        document.getElementById("prof-email").value = loggedInUser.email;
+
+        const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(loggedInUser.name)}`;
+        document.getElementById("header-avatar").src = avatarUrl;
+        document.getElementById("profile-avatar").src = avatarUrl;
+
+        // 3. Fetch Real Data from Database
+        try {
+          const [companiesRes, historyRes, resumesRes, feedbackRes] =
+            await Promise.all([
+              fetch(`${API_BASE}/api/companies`),
+              fetch(`${API_BASE}/api/student/${loggedInUser.id}/attempts`),
+              fetch(`${API_BASE}/api/student/${loggedInUser.id}/resumes`),
+              fetch(`${API_BASE}/api/student/${loggedInUser.id}/feedback`),
+            ]);
+
+          if (companiesRes.ok) state.companies = await companiesRes.json();
+          if (historyRes.ok) state.history = await historyRes.json();
+          if (resumesRes.ok) state.resumes = await resumesRes.json();
+          if (feedbackRes.ok) state.feedback = await feedbackRes.json();
+        } catch (error) {
+          console.error("Error fetching dashboard data:", error);
+          showToast(
+            "Could not load full data from server. Is the backend running?",
+            "error",
+          );
+        }
+
+        // 4. Render UI Elements
+        renderCompanyGrid();
+        renderResumes();
+        renderHistory();
+        renderFeedback();
+        updateDashboardStats();
+
+        // 5. Start at analytics
+        navigate("analytics");
+      };
+
+      function navigate(sectionId) {
+        // Handle Sidebar Selection UI
+        document.querySelectorAll("aside nav button").forEach((btn) => {
+          btn.classList.remove("bg-primary", "text-white");
+          btn.classList.add("text-slate-300");
+        });
+        const activeBtn = document.getElementById(`nav-${sectionId}`);
+        if (activeBtn) {
+          activeBtn.classList.add("bg-primary", "text-white");
+          activeBtn.classList.remove("text-slate-300");
+        }
+
+        // Handle Section Visibility
+        document.querySelectorAll(".section-container").forEach((sec) => {
+          sec.classList.add("hidden");
+          sec.classList.remove("block");
+        });
+        document.getElementById(`sec-${sectionId}`).classList.remove("hidden");
+        document.getElementById(`sec-${sectionId}`).classList.add("block");
+
+        // Handle Titles
+        const titles = {
+          practice: "Company Interview Practice",
+          profile: "My Profile",
+          resume: "Resume Management",
+          history: "Assessment History",
+          analytics: "Performance Analytics",
+          feedback: "Mentor Feedback",
+        };
+        document.getElementById("page-title").innerText = titles[sectionId];
+
+        // Ensure charts render correctly when visible
+        if (sectionId === "analytics") {
+          initCharts();
+        }
+      }
+
+      // --- 3. DYNAMIC UI RENDERERS (With Empty States) ---
+
+      function renderCompanyGrid() {
+        const grid = document.getElementById("company-grid");
+        grid.innerHTML = "";
+
+        if (state.companies.length === 0) {
+          grid.innerHTML = `<div class="col-span-full text-center p-12 text-slate-500 bg-white rounded-2xl border border-slate-200 shadow-sm">
+                <i class="fas fa-building text-4xl text-slate-300 mb-3"></i>
+                <p class="font-bold">No practice tests available yet.</p>
+                <p class="text-sm">Check back later for new company assessments.</p>
+            </div>`;
+          return;
+        }
+
+        state.companies.forEach((company) => {
+          grid.innerHTML += `
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow group">
+                <div class="w-14 h-14 rounded-lg ${company.bg_color} ${company.text_color} flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+                    <i class="${company.icon_class}"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800">${company.company_name}</h3>
+                <p class="text-slate-500 text-sm mb-4 line-clamp-2">${company.description}</p>
+                <button onclick="startPractice(${company.company_id})" class="w-full py-2 rounded-lg bg-slate-50 text-primary font-medium border border-slate-200 hover:bg-primary hover:text-white hover:border-primary transition-colors">
+                    Start Practice
                 </button>
-                <div
-                  class="flex items-center gap-3 pl-6 border-l border-slate-200 cursor-pointer"
-                >
-                  <img
-                    src=""
-                    alt="Avatar"
-                    class="w-10 h-10 rounded-full border border-slate-200 bg-slate-100"
-                  />
-                  <div class="hidden md:block text-right">
-                    <p
-                      id="header-user-name"
-                      class="text-sm font-bold text-slate-700 leading-tight"
-                    >
-                      Student
-                    </p>
-                    <p class="text-xs text-slate-500">Candidate</p>
-                  </div>
-                </div>
-              </div>
-            </header>
+            </div>
+          `;
+        });
+      }
 
-            <!-- SCROLLABLE AREA -->
-            <main
-              class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-8"
-            >
-              <!-- 1. ANALYTICS / OVERVIEW SECTION -->
-              <div id="sec-analytics" class="space-y-8 animate-fade-in">
-                <!-- Stats Row -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div
-                    class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-5"
-                  >
-                    <div
-                      class="w-14 h-14 bg-blue-50 text-brand-600 rounded-xl flex items-center justify-center text-2xl"
-                    >
-                      <i class="fas fa-laptop-code"></i>
+      function renderResumes() {
+        const list = document.getElementById("resume-list");
+        list.innerHTML = "";
+
+        if (state.resumes.length === 0) {
+          list.innerHTML = `
+            <div class="text-center p-8 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 flex flex-col items-center">
+                <i class="fas fa-file-pdf text-3xl text-slate-300 mb-2"></i>
+                <p class="text-slate-500 font-medium">No resumes uploaded yet.</p>
+            </div>`;
+          return;
+        }
+
+        state.resumes.forEach((res) => {
+          list.innerHTML += `
+            <div class="flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded bg-red-50 text-red-500 flex items-center justify-center text-lg">
+                        <i class="fas fa-file-pdf"></i>
                     </div>
                     <div>
-                      <p
-                        class="text-sm font-bold text-slate-500 uppercase tracking-wide"
-                      >
-                        Tests Taken
-                      </p>
-                      <!-- EMPTY STATE ID ADDED -->
-                      <h3
-                        id="stat-tests-taken"
-                        class="text-3xl font-extrabold text-slate-800"
-                      >
-                        0
-                      </h3>
+                        <p class="font-medium text-slate-800 text-sm">${res.file_name}</p>
+                        <p class="text-xs text-slate-500">Uploaded on ${new Date(res.upload_date).toLocaleDateString()}</p>
                     </div>
-                  </div>
-                  <div
-                    class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-5"
-                  >
-                    <div
-                      class="w-14 h-14 bg-green-50 text-green-600 rounded-xl flex items-center justify-center text-2xl"
-                    >
-                      <i class="fas fa-bullseye"></i>
-                    </div>
-                    <div>
-                      <p
-                        class="text-sm font-bold text-slate-500 uppercase tracking-wide"
-                      >
-                        Avg Score
-                      </p>
-                      <!-- EMPTY STATE ID ADDED -->
-                      <h3
-                        id="stat-avg-score"
-                        class="text-3xl font-extrabold text-slate-800"
-                      >
-                        0%
-                      </h3>
-                    </div>
-                  </div>
-                  <div
-                    class="bg-gradient-to-br from-brand-600 to-brand-800 p-6 rounded-2xl shadow-lg text-white flex items-center justify-between relative overflow-hidden"
-                  >
-                    <div class="relative z-10">
-                      <p class="text-brand-100 text-sm font-semibold mb-1">
-                        Next Step
-                      </p>
-                      <h3 class="text-xl font-bold mb-3">Upload Resume</h3>
-                      <button
-                        onclick="navigate('resume')"
-                        class="px-4 py-2 bg-white text-brand-700 text-xs font-bold rounded-lg shadow hover:shadow-md transition-all"
-                      >
-                        Upload Now
-                      </button>
-                    </div>
-                    <i
-                      class="fas fa-rocket text-6xl text-white opacity-20 absolute -right-2 -bottom-2 transform -rotate-12"
-                    ></i>
-                  </div>
                 </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  <!-- History Panel -->
-                  <div
-                    class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6"
-                  >
-                    <h3 class="text-lg font-bold text-slate-800 mb-6">
-                      Recent Activity
-                    </h3>
-
-                    <!-- JAVASCRIPT WILL INJECT CARDS OR EMPTY STATE HERE -->
-                    <div id="history-container" class="space-y-4">
-                      <div
-                        class="flex items-center justify-center py-8 text-slate-400"
-                      >
-                        <i class="fas fa-spinner fa-spin text-2xl"></i>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Feedback Panel -->
-                  <div
-                    class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6"
-                  >
-                    <h3 class="text-lg font-bold text-slate-800 mb-6">
-                      Mentor Feedback
-                    </h3>
-
-                    <!-- JAVASCRIPT WILL INJECT FEEDBACK OR EMPTY STATE HERE -->
-                    <div id="feedback-list" class="space-y-4">
-                      <div
-                        class="flex items-center justify-center py-8 text-slate-400"
-                      >
-                        <i class="fas fa-spinner fa-spin text-2xl"></i>
-                      </div>
-                    </div>
-                  </div>
+                <div class="flex gap-2">
+                    <button onclick="deleteResume(${res.resume_id})" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center" title="Delete">
+                        <i class="fas fa-trash text-xs"></i>
+                    </button>
                 </div>
-              </div>
+            </div>
+          `;
+        });
+      }
 
-              <!-- 2. PRACTICE SECTION -->
-              <div id="sec-practice" class="hidden space-y-6 animate-fade-in">
-                <div class="flex justify-between items-end mb-6">
-                  <div>
-                    <h2 class="text-2xl font-bold text-slate-800">
-                      Company Banks
-                    </h2>
-                    <p class="text-slate-500 text-sm mt-1">
-                      Practice actual interview questions from top tech
-                      companies.
-                    </p>
-                  </div>
-                  <div class="relative">
-                    <i
-                      class="fas fa-search absolute left-4 top-3 text-slate-400"
-                    ></i>
-                    <input
-                      type="text"
-                      placeholder="Search companies..."
-                      class="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 outline-none w-64"
-                    />
-                  </div>
-                </div>
+      function renderHistory() {
+        const tbody = document.getElementById("history-table-body");
+        tbody.innerHTML = "";
 
-                <!-- JAVASCRIPT WILL INJECT COMPANIES HERE -->
-                <div
-                  id="company-grid"
-                  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-                >
-                  <div
-                    class="col-span-full flex items-center justify-center py-12 text-slate-400"
-                  >
-                    <i class="fas fa-spinner fa-spin text-3xl"></i>
-                  </div>
-                </div>
-              </div>
+        if (state.history.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="4" class="text-center py-10 text-slate-500 italic">No assessment history found. Head to the Practice tab to take your first test!</td></tr>';
+          return;
+        }
 
-              <!-- 3. RESUME SECTION -->
-              <div id="sec-resume" class="hidden space-y-6 animate-fade-in">
-                <h2 class="text-2xl font-bold text-slate-800 mb-6">
-                  Resume Management
-                </h2>
+        state.history.forEach((record) => {
+          const percentage = Math.round(
+            (record.total_score / record.max_score) * 100,
+          );
+          let statusBadge =
+            percentage >= 70
+              ? '<span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-bold">Passed</span>'
+              : '<span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-bold">Needs Review</span>';
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <!-- Upload Area -->
-                  <div
-                    class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-8 shadow-sm"
-                  >
-                    <div
-                      class="border-2 border-dashed border-brand-200 bg-brand-50 rounded-xl p-10 flex flex-col items-center justify-center text-center hover:bg-brand-100 transition-colors cursor-pointer group"
-                    >
-                      <div
-                        class="w-16 h-16 bg-white text-brand-500 rounded-full flex items-center justify-center text-3xl mb-4 shadow-sm group-hover:scale-110 transition-transform"
-                      >
-                        <i class="fas fa-cloud-upload-alt"></i>
-                      </div>
-                      <h4 class="font-bold text-brand-700 text-lg">
-                        Click to upload your resume
-                      </h4>
-                      <p class="text-brand-600/70 text-sm mt-2 mb-6">
-                        PDF, DOCX up to 5MB
-                      </p>
-                      <button
-                        class="px-6 py-2.5 bg-brand-600 text-white font-bold rounded-lg shadow-md hover:bg-brand-700 transition"
-                      >
-                        Select File
-                      </button>
+          tbody.innerHTML += `
+            <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4 text-slate-600">${new Date(record.attempt_date).toLocaleDateString()}</td>
+                <td class="px-6 py-4 font-medium text-slate-800">${record.company_name}</td>
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-slate-800">${record.total_score}/${record.max_score}</span>
+                        <span class="text-xs text-slate-500">(${percentage}%)</span>
                     </div>
-                  </div>
+                </td>
+                <td class="px-6 py-4">${statusBadge}</td>
+            </tr>
+          `;
+        });
+      }
 
-                  <!-- Uploaded List -->
-                  <div
-                    class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm"
-                  >
-                    <h3 class="font-bold text-slate-800 mb-4">My Resumes</h3>
+      function renderFeedback() {
+        const list = document.getElementById("feedback-list");
+        list.innerHTML = "";
 
-                    <!-- JAVASCRIPT WILL INJECT RESUMES OR EMPTY STATE HERE -->
-                    <div id="resume-list" class="space-y-3">
-                      <div
-                        class="flex items-center justify-center py-8 text-slate-400"
-                      >
-                        <i class="fas fa-spinner fa-spin text-2xl"></i>
-                      </div>
+        if (state.feedback.length === 0) {
+          list.innerHTML = `
+                <div class="text-center p-10 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 flex flex-col items-center">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm mb-3">
+                        <i class="fas fa-comment-dots text-2xl text-slate-300"></i>
                     </div>
-                  </div>
+                    <p class="text-slate-500 font-medium">No mentor feedback yet.</p>
+                </div>`;
+          return;
+        }
+
+        state.feedback.forEach((fb) => {
+          list.innerHTML += `
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex gap-4">
+                <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-xl text-slate-500 shrink-0">
+                    <i class="fas fa-user-tie"></i>
                 </div>
-              </div>
-
-              <!-- 4. PROFILE SECTION -->
-              <div id="sec-profile" class="hidden animate-fade-in">
-                <!-- Banner -->
-                <div
-                  class="w-full h-48 rounded-2xl bg-gradient-to-r from-brand-600 to-purple-600 shadow-inner relative mb-20"
-                >
-                  <!-- Avatar - OVERLAP FIXED HERE -->
-                  <div
-                    class="w-32 h-32 rounded-full border-4 border-white bg-slate-100 absolute -bottom-16 left-8 overflow-hidden shadow-lg z-10"
-                  >
-                    <img
-                      src=""
-                      alt="Avatar"
-                      class="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-
-                <div
-                  class="max-w-3xl bg-white rounded-2xl border border-slate-200 shadow-sm p-8"
-                >
-                  <h2
-                    class="text-2xl font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4"
-                  >
-                    Personal Information
-                  </h2>
-
-                  <form class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label
-                          class="block text-sm font-semibold text-slate-600 mb-2"
-                          >Full Name</label
-                        >
-                        <input
-                          type="text"
-                          id="prof-name"
-                          class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all outline-none"
-                          readonly
-                        />
-                      </div>
-                      <div>
-                        <label
-                          class="block text-sm font-semibold text-slate-600 mb-2"
-                          >Email Address</label
-                        >
-                        <input
-                          type="email"
-                          id="prof-email"
-                          class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all outline-none"
-                          readonly
-                        />
-                      </div>
-                      <div>
-                        <label
-                          class="block text-sm font-semibold text-slate-600 mb-2"
-                          >College/University</label
-                        >
-                        <input
-                          type="text"
-                          placeholder="e.g. MIT"
-                          class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all outline-none"
-                        />
-                      </div>
-                      <div>
-                        <label
-                          class="block text-sm font-semibold text-slate-600 mb-2"
-                          >Degree</label
-                        >
-                        <input
-                          type="text"
-                          placeholder="e.g. B.Tech Computer Science"
-                          class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all outline-none"
-                        />
-                      </div>
+                <div>
+                    <div class="flex items-center gap-3 mb-1">
+                        <h4 class="font-bold text-slate-800">${fb.mentor_name}</h4>
+                        <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-xs font-semibold">${fb.feedback_type}</span>
+                        <span class="text-xs text-slate-400"><i class="far fa-clock mr-1"></i>${new Date(fb.feedback_date).toLocaleDateString()}</span>
                     </div>
-
-                    <div
-                      class="pt-4 border-t border-slate-100 flex justify-end"
-                    >
-                      <button
-                        type="button"
-                        class="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition-all"
-                      >
-                        Save Changes
-                      </button>
-                    </div>
-                  </form>
+                    <p class="text-slate-600 text-sm leading-relaxed mt-2">${fb.feedback_text}</p>
                 </div>
-              </div>
-            </main>
-          </div>
-        </div>
+            </div>
+          `;
+        });
+      }
 
-        <!-- JAVASCRIPT LOGIC -->
-        <script>
-          // --- SMART API BASE ---
-          const API_BASE =
-            window.location.hostname === "127.0.0.1" ||
-            window.location.hostname === "localhost"
-              ? "http://localhost:5000"
-              : "";
+      function updateDashboardStats() {
+        document.getElementById("stat-total-attempts").innerText =
+          state.history.length;
 
-          // --- 1. GLOBAL STATE ---
-          const state = {
-            currentUser: null,
-            companies: [],
-            history: [],
-            resumes: [],
-            feedback: [],
+        if (state.history.length > 0) {
+          let totalScore = 0;
+          let totalMax = 0;
+          let highest = 0;
+
+          state.history.forEach((h) => {
+            totalScore += h.total_score;
+            totalMax += h.max_score;
+            if (h.total_score > highest) highest = h.total_score;
+          });
+
+          const avg = Math.round((totalScore / totalMax) * 100);
+          document.getElementById("stat-avg-accuracy").innerText = avg + "%";
+          document.getElementById("stat-high-score").innerText = highest;
+        } else {
+          document.getElementById("stat-avg-accuracy").innerText = "0%";
+          document.getElementById("stat-high-score").innerText = "0";
+        }
+      }
+
+      // --- 4. TEST / PRACTICE LOGIC ---
+
+      async function startPractice(companyId) {
+        const company = state.companies.find((c) => c.company_id === companyId);
+
+        state.activeTest.isActive = true;
+        state.activeTest.companyId = companyId;
+        state.activeTest.currentIndex = 0;
+        state.activeTest.score = 0;
+
+        // Try to fetch real questions, fallback to mock if none exist in DB yet
+        try {
+          const res = await fetch(`${API_BASE}/api/questions/${companyId}`);
+          const realQuestions = await res.json();
+
+          if (realQuestions.length > 0) {
+            // Format real DB questions to match our UI state format
+            state.activeTest.questions = realQuestions.map((rq) => ({
+              q: rq.question_text,
+              options: [rq.option_a, rq.option_b, rq.option_c, rq.option_d],
+              correct: parseInt(rq.correct_answer),
+            }));
+          } else {
+            state.activeTest.questions = generateQuestions(
+              company.company_name,
+            );
+          }
+        } catch (e) {
+          state.activeTest.questions = generateQuestions(company.company_name);
+        }
+
+        // UI Transitions
+        document.getElementById("practice-dashboard").classList.add("hidden");
+        document.getElementById("active-test-view").classList.remove("hidden");
+        document.getElementById("test-company-name").innerText =
+          company.company_name;
+        document.getElementById("total-q-num").innerText =
+          state.activeTest.questions.length;
+
+        loadQuestion();
+      }
+
+      function loadQuestion() {
+        const qIndex = state.activeTest.currentIndex;
+        const qData = state.activeTest.questions[qIndex];
+
+        document.getElementById("current-q-num").innerText = qIndex + 1;
+        document.getElementById("question-text").innerText = qData.q;
+
+        const optionsContainer = document.getElementById("options-container");
+        optionsContainer.innerHTML = "";
+
+        qData.options.forEach((opt, index) => {
+          optionsContainer.innerHTML += `
+            <label class="flex items-center gap-3 p-4 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
+                <input type="radio" name="test-option" value="${index}" class="w-4 h-4 text-primary focus:ring-primary border-slate-300">
+                <span class="text-slate-700 text-sm">${opt}</span>
+            </label>
+          `;
+        });
+
+        // Toggle Next/Submit buttons
+        if (qIndex === state.activeTest.questions.length - 1) {
+          document.getElementById("next-btn").classList.add("hidden");
+          document.getElementById("submit-test-btn").classList.remove("hidden");
+        } else {
+          document.getElementById("next-btn").classList.remove("hidden");
+          document.getElementById("submit-test-btn").classList.add("hidden");
+        }
+      }
+
+      function nextQuestion() {
+        const selected = document.querySelector(
+          'input[name="test-option"]:checked',
+        );
+        if (!selected) {
+          showToast("Please select an answer to continue.", "error");
+          return;
+        }
+
+        const currentQ =
+          state.activeTest.questions[state.activeTest.currentIndex];
+        if (parseInt(selected.value) === currentQ.correct) {
+          state.activeTest.score++;
+        }
+
+        state.activeTest.currentIndex++;
+        loadQuestion();
+      }
+
+      async function submitTest() {
+        const selected = document.querySelector(
+          'input[name="test-option"]:checked',
+        );
+        if (!selected) {
+          showToast("Please select an answer to submit.", "error");
+          return;
+        }
+
+        // Grade last question
+        const currentQ =
+          state.activeTest.questions[state.activeTest.currentIndex];
+        if (parseInt(selected.value) === currentQ.correct) {
+          state.activeTest.score++;
+        }
+
+        const maxScore = state.activeTest.questions.length;
+
+        // Show loading state on button
+        const submitBtn = document.getElementById("submit-test-btn");
+        const origText = submitBtn.innerHTML;
+        submitBtn.innerHTML =
+          '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+        try {
+          // 1. Save to Database!
+          const payload = {
+            student_id: state.currentUser.id,
+            company_id: state.activeTest.companyId,
+            total_score: state.activeTest.score,
+            max_score: maxScore,
           };
 
-          // --- 2. INITIALIZATION & DATA FETCHING ---
-          window.onload = async () => {
-            // Check auth
-            const loggedInUser = JSON.parse(localStorage.getItem("ami_user"));
-            if (!loggedInUser || loggedInUser.role !== "student") {
-              window.location.href = "index.html";
-              return;
-            }
-            state.currentUser = loggedInUser;
+          await fetch(`${API_BASE}/api/attempts`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
 
-            // Update UI with user info
-            document.getElementById("header-user-name").innerText =
-              loggedInUser.name;
-            const avatarImgs = document.querySelectorAll('img[alt="Avatar"]');
-            avatarImgs.forEach((img) => {
-              img.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(loggedInUser.name)}`;
-            });
+          // 2. Fetch updated history from Database
+          const histRes = await fetch(
+            `${API_BASE}/api/student/${state.currentUser.id}/attempts`,
+          );
+          state.history = await histRes.json();
 
-            const profNameInput = document.getElementById("prof-name");
-            const profEmailInput = document.getElementById("prof-email");
-            if (profNameInput) profNameInput.value = loggedInUser.name;
-            if (profEmailInput) profEmailInput.value = loggedInUser.email;
+          // 3. Update UI Views
+          document.getElementById("active-test-view").classList.add("hidden");
+          document
+            .getElementById("test-result-view")
+            .classList.remove("hidden");
 
-            // Fetch Real Data from Database
-            try {
-              const [companiesRes, historyRes, resumesRes, feedbackRes] =
-                await Promise.all([
-                  fetch(`${API_BASE}/api/companies`),
-                  fetch(`${API_BASE}/api/student/${loggedInUser.id}/attempts`),
-                  fetch(`${API_BASE}/api/student/${loggedInUser.id}/resumes`),
-                  fetch(`${API_BASE}/api/student/${loggedInUser.id}/feedback`),
-                ]);
+          document.getElementById("result-score").innerText =
+            state.activeTest.score;
+          document.getElementById("result-max").innerText = maxScore;
+          document.getElementById("result-percentage").innerText = Math.round(
+            (state.activeTest.score / maxScore) * 100,
+          );
 
-              if (companiesRes.ok) state.companies = await companiesRes.json();
-              if (historyRes.ok) state.history = await historyRes.json();
-              if (resumesRes.ok) state.resumes = await resumesRes.json();
-              if (feedbackRes.ok) state.feedback = await feedbackRes.json();
-            } catch (error) {
-              console.error("Error fetching dashboard data:", error);
-              showToast("Could not load latest data from server.", "error");
-            }
+          // 4. Re-render dynamic elements
+          renderHistory();
+          updateDashboardStats();
+          showToast("Assessment saved to your history!", "success");
+        } catch (error) {
+          console.error(error);
+          showToast("Error saving test results.", "error");
+        } finally {
+          submitBtn.innerHTML = origText;
+        }
+      }
 
-            // Render UI based on fetched data
-            renderCompanyGrid();
-            renderHistory();
-            renderResumes();
-            renderFeedback();
-            updateDashboardStats();
+      function cancelTest() {
+        state.activeTest.isActive = false;
+        resetPracticeDashboard();
+      }
 
-            navigate("analytics"); // Default view
-          };
+      function resetPracticeDashboard() {
+        document.getElementById("test-result-view").classList.add("hidden");
+        document.getElementById("active-test-view").classList.add("hidden");
+        document
+          .getElementById("practice-dashboard")
+          .classList.remove("hidden");
+      }
 
-          // --- 3. NAVIGATION LOGIC ---
-          function navigate(sectionId) {
-            document
-              .querySelectorAll("main > div")
-              .forEach((el) => el.classList.add("hidden"));
-            document
-              .getElementById(`sec-${sectionId}`)
-              .classList.remove("hidden");
+      // --- 5. UTILITY & ACTIONS ---
 
-            document.querySelectorAll(".nav-item").forEach((el) => {
-              el.classList.remove(
-                "bg-brand-50",
-                "text-brand-600",
-                "border-r-4",
-                "border-brand-600",
-              );
-              el.classList.add("text-slate-500");
-            });
-            const activeNav = document.getElementById(`nav-${sectionId}`);
-            if (activeNav) {
-              activeNav.classList.remove("text-slate-500");
-              activeNav.classList.add(
-                "bg-brand-50",
-                "text-brand-600",
-                "border-r-4",
-                "border-brand-600",
-              );
-            }
-          }
+      function saveProfile() {
+        showToast("Profile updated successfully!", "success");
+      }
 
-          // --- 4. RENDER FUNCTIONS WITH EMPTY STATES ---
-          function renderCompanyGrid() {
-            const grid = document.getElementById("company-grid");
-            if (!grid) return;
+      function handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+          // Placeholder for real S3/Database upload logic
+          showToast(
+            "Resume uploaded locally! (Backend upload logic needed)",
+            "success",
+          );
+        }
+      }
 
-            if (state.companies.length === 0) {
-              grid.innerHTML = `<div class="col-span-full text-center p-12 text-slate-500 bg-white rounded-2xl border border-slate-200">
-                    <i class="fas fa-building text-4xl text-slate-300 mb-3"></i>
-                    <p class="font-bold">No practice tests available yet.</p>
-                    <p class="text-sm">Check back later for new company assessments.</p>
-                </div>`;
-              return;
-            }
+      function deleteResume(id) {
+        showToast("Resume deleted.", "info");
+      }
 
-            grid.innerHTML = state.companies
-              .map(
-                (c) => `
-                <div class="bg-white rounded-2xl p-6 border border-slate-200 hover:shadow-xl hover:-translate-y-1 transition-all group cursor-pointer">
-                    <div class="w-14 h-14 ${c.bg_color} ${c.text_color} rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
-                        <i class="${c.icon_class}"></i>
-                    </div>
-                    <h3 class="font-bold text-lg text-slate-800">${c.company_name}</h3>
-                    <p class="text-slate-500 text-sm mt-1 mb-4 line-clamp-2">${c.description}</p>
-                    <button class="w-full py-2 bg-slate-50 hover:bg-brand-50 text-brand-600 font-semibold rounded-lg transition-colors border border-slate-100 hover:border-brand-200">Start Practice</button>
-                </div>
-            `,
-              )
-              .join("");
-          }
+      // Custom Toast Notification
+      function showToast(message, type = "info") {
+        const container = document.getElementById("toast-container");
+        const toast = document.createElement("div");
 
-          function renderHistory() {
-            const container = document.getElementById("history-container");
-            if (!container) return;
+        const colors = {
+          success: "bg-green-500",
+          error: "bg-red-500",
+          info: "bg-blue-500",
+        };
 
-            if (state.history.length === 0) {
-              container.innerHTML = `
-                    <div class="flex flex-col items-center justify-center p-10 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50">
-                        <div class="w-16 h-16 bg-white text-slate-300 shadow-sm rounded-full flex items-center justify-center text-3xl mb-4">
-                            <i class="fas fa-clipboard-list"></i>
-                        </div>
-                        <h3 class="text-lg font-bold text-slate-700">No Activity Yet</h3>
-                        <p class="text-slate-500 mt-2 max-w-sm text-sm">You haven't completed any assessments yet. Head over to the Practice tab to start your journey!</p>
-                        <button onclick="navigate('practice')" class="mt-4 px-5 py-2 text-sm bg-white border border-slate-200 text-brand-600 font-bold rounded-lg hover:bg-slate-50 transition">Go to Practice</button>
-                    </div>`;
-              return;
-            }
+        toast.className = `${colors[type]} text-white px-6 py-3 rounded shadow-lg fade-in flex items-center gap-3`;
+        toast.innerHTML = `
+            <i class="fas ${type === "success" ? "fa-check-circle" : type === "error" ? "fa-exclamation-circle" : "fa-info-circle"}"></i>
+            <span class="font-medium text-sm">${message}</span>
+        `;
+        container.appendChild(toast);
 
-            container.innerHTML = state.history
-              .map((h) => {
-                const percentage = Math.round(
-                  (h.total_score / h.max_score) * 100,
-                );
-                const isGood = percentage >= 70;
-                return `
-                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-slate-200 transition-colors">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 ${h.bg_color} ${h.text_color} rounded-xl flex items-center justify-center text-xl">
-                            <i class="${h.icon_class}"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-slate-800">${h.company_name} Assessment</h4>
-                            <p class="text-xs text-slate-500">${new Date(h.attempt_date).toLocaleDateString()}</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="font-bold text-lg ${isGood ? "text-green-600" : "text-orange-500"}">${percentage}%</div>
-                        <div class="text-xs font-semibold text-slate-500">${h.total_score}/${h.max_score} Score</div>
-                    </div>
-                </div>`;
-              })
-              .join("");
-          }
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          toast.style.transform = "translateY(-10px)";
+          toast.style.transition = "all 0.3s ease";
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
 
-          function renderResumes() {
-            const list = document.getElementById("resume-list");
-            if (!list) return;
+      function logout() {
+        showToast("Logging out...", "info");
+        localStorage.removeItem("ami_user");
+        setTimeout(() => {
+          document.body.innerHTML =
+            '<div class="h-screen w-full flex items-center justify-center bg-slate-50"><h1 class="text-2xl font-bold text-slate-500">Redirecting to Login...</h1></div>';
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 500);
+        }, 1000);
+      }
 
-            if (state.resumes.length === 0) {
-              list.innerHTML = `
-                    <div class="text-center p-8 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 flex flex-col items-center">
-                        <i class="fas fa-file-pdf text-3xl text-slate-300 mb-2"></i>
-                        <p class="text-slate-500 font-medium">No resumes uploaded yet.</p>
-                        <p class="text-xs text-slate-400 mt-1">Upload one on the left to get feedback.</p>
-                    </div>`;
-              return;
-            }
+      // --- 6. CHART.JS INTEGRATION ---
+      let trendChartInstance = null;
+      let companyChartInstance = null;
 
-            list.innerHTML = state.resumes
-              .map(
-                (r) => `
-                <div class="flex items-center justify-between p-3 border border-slate-100 rounded-lg hover:bg-slate-50 transition bg-white">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-red-50 text-red-500 rounded-lg flex items-center justify-center text-lg"><i class="fas fa-file-pdf"></i></div>
-                        <div>
-                            <p class="text-sm font-semibold text-slate-800">${r.file_name}</p>
-                            <p class="text-xs text-slate-500">${new Date(r.upload_date).toLocaleDateString()}</p>
-                        </div>
-                    </div>
-                    <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-md text-xs font-bold border border-yellow-200">${r.status}</span>
-                </div>
-            `,
-              )
-              .join("");
-          }
+      function initCharts() {
+        // Prevent drawing charts if history is empty
+        if (state.history.length === 0) {
+          const noDataCanvas1 = document
+            .getElementById("trendChart")
+            .getContext("2d");
+          const noDataCanvas2 = document
+            .getElementById("companyChart")
+            .getContext("2d");
 
-          function renderFeedback() {
-            const list = document.getElementById("feedback-list");
-            if (!list) return;
+          if (trendChartInstance) trendChartInstance.destroy();
+          if (companyChartInstance) companyChartInstance.destroy();
 
-            if (state.feedback.length === 0) {
-              list.innerHTML = `
-                    <div class="text-center p-10 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 flex flex-col items-center">
-                        <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm mb-3">
-                            <i class="fas fa-comment-dots text-2xl text-slate-300"></i>
-                        </div>
-                        <p class="text-slate-500 font-medium">No mentor feedback yet.</p>
-                    </div>`;
-              return;
-            }
+          trendChartInstance = new Chart(noDataCanvas1, {
+            type: "line",
+            data: { labels: ["No Data"], datasets: [{ data: [] }] },
+            options: {
+              plugins: { legend: { display: false } },
+              scales: { y: { display: false }, x: { display: false } },
+            },
+          });
+          companyChartInstance = new Chart(noDataCanvas2, {
+            type: "bar",
+            data: { labels: ["No Data"], datasets: [{ data: [] }] },
+            options: {
+              plugins: { legend: { display: false } },
+              scales: { y: { display: false }, x: { display: false } },
+            },
+          });
+          return;
+        }
 
-            list.innerHTML = state.feedback
-              .map(
-                (f) => `
-                <div class="p-4 bg-brand-50 rounded-xl border border-brand-100 relative">
-                    <div class="absolute top-4 right-4 text-xs text-slate-400 font-medium">${new Date(f.feedback_date).toLocaleDateString()}</div>
-                    <div class="flex items-start gap-3 mb-2">
-                        <div class="w-8 h-8 bg-brand-600 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-sm">
-                            ${f.mentor_name.charAt(0)}
-                        </div>
-                        <div>
-                            <span class="text-xs font-bold text-brand-600 uppercase tracking-wider bg-white px-2 py-0.5 rounded-full border border-brand-200">${f.feedback_type}</span>
-                            <p class="text-sm font-bold text-slate-800 mt-1">${f.mentor_name}</p>
-                        </div>
-                    </div>
-                    <p class="text-sm text-slate-700 italic bg-white p-3 rounded-lg border border-brand-100 mt-2">"${f.feedback_text}"</p>
-                </div>
-            `,
-              )
-              .join("");
-          }
+        // Prepare Data from History
+        // Reverse it back for chronological chart display
+        const chronologicalHistory = [...state.history].reverse();
+        const labels = chronologicalHistory.map((h) =>
+          new Date(h.attempt_date).toLocaleDateString(),
+        );
+        const scores = chronologicalHistory.map((h) =>
+          Math.round((h.total_score / h.max_score) * 100),
+        );
 
-          function updateDashboardStats() {
-            let totalTests = state.history.length;
-            let avgScore = 0;
+        const companyCounts = {};
+        state.history.forEach((h) => {
+          companyCounts[h.company_name] =
+            (companyCounts[h.company_name] || 0) + 1;
+        });
 
-            if (totalTests > 0) {
-              const sum = state.history.reduce(
-                (acc, curr) => acc + curr.total_score / curr.max_score,
-                0,
-              );
-              avgScore = Math.round((sum / totalTests) * 100);
-            }
+        // Trend Chart
+        const ctxTrend = document.getElementById("trendChart").getContext("2d");
+        if (trendChartInstance) trendChartInstance.destroy();
+        trendChartInstance = new Chart(ctxTrend, {
+          type: "line",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Accuracy %",
+                data: scores,
+                borderColor: "#2563eb",
+                backgroundColor: "rgba(37, 99, 235, 0.1)",
+                tension: 0.4,
+                fill: true,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true, max: 100 } },
+          },
+        });
 
-            const testsEl = document.getElementById("stat-tests-taken");
-            const avgEl = document.getElementById("stat-avg-score");
-
-            if (testsEl) testsEl.innerText = totalTests;
-            if (avgEl) avgEl.innerText = `${avgScore}%`;
-          }
-
-          // --- 5. UTILS ---
-          function logout() {
-            showToast("Logging out...", "info");
-            localStorage.removeItem("ami_user");
-            setTimeout(() => {
-              document.body.innerHTML =
-                '<div class="h-screen w-full flex items-center justify-center bg-slate-50"><h1 class="text-2xl font-bold text-slate-500">Redirecting to Login...</h1></div>';
-              setTimeout(() => {
-                window.location.href = "index.html";
-              }, 500);
-            }, 1000);
-          }
-
-          function showToast(message, type = "success") {
-            const toast = document.createElement("div");
-            toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-xl text-white font-semibold shadow-xl transform transition-all translate-y-20 opacity-0 z-50 flex items-center gap-2
-                ${type === "success" ? "bg-green-500" : type === "error" ? "bg-red-500" : "bg-brand-500"}`;
-
-            toast.innerHTML = `<i class="fas ${type === "success" ? "fa-check-circle" : type === "error" ? "fa-exclamation-circle" : "fa-info-circle"}"></i> ${message}`;
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-              toast.classList.remove("translate-y-20", "opacity-0");
-            }, 10);
-            setTimeout(() => {
-              toast.classList.add("translate-y-20", "opacity-0");
-              setTimeout(() => toast.remove(), 300);
-            }, 3000);
-          }
-        </script>
-      </body>
-    </html>
+        // Company Chart
+        const ctxComp = document
+          .getElementById("companyChart")
+          .getContext("2d");
+        if (companyChartInstance) companyChartInstance.destroy();
+        companyChartInstance = new Chart(ctxComp, {
+          type: "bar",
+          data: {
+            labels: Object.keys(companyCounts),
+            datasets: [
+              {
+                label: "Attempts",
+                data: Object.values(companyCounts),
+                backgroundColor: [
+                  "#ef4444",
+                  "#f97316",
+                  "#3b82f6",
+                  "#8b5cf6",
+                  "#10b981",
+                ],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+          },
+        });
+      }
+    </script>
   </body>
 </html>
