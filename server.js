@@ -258,6 +258,116 @@ app.get("/api/admin/users", async (req, res) => {
   }
 });
 
+// --- INITIALIZE GEMINI AI ---
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+
+// The AI client is initialized with your specific API key
+const genAI = new GoogleGenerativeAI(
+  process.env.GEMINI_API_KEY || "AIzaSyBngMb6vsfnecqOBEwswcAt_doIDU9GABA",
+);
+
+// --- 6. AI RESUME FEEDBACK API ---
+app.post("/api/ai/resume-feedback", async (req, res) => {
+  const { resumeText, targetRole } = req.body;
+
+  if (!resumeText) {
+    return res
+      .status(400)
+      .json({ error: "Resume text is required for analysis." });
+  }
+
+  try {
+    // We use the fast and efficient Gemini 1.5 Flash model
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    const prompt = `
+      You are an expert strict Technical Recruiter and ATS system analyzing a resume.
+      The candidate is targeting the role of: ${targetRole || "Software Engineer"}.
+      
+      Review the following resume text and provide structured feedback in exactly 3 sections:
+      1. Technical Strengths (What they did well)
+      2. Areas for Improvement (Missing skills, weak phrasing)
+      3. ATS Formatting & General Advice
+      
+      Keep the tone professional, direct, and actionable. Do not use markdown formatting like ** or *, just plain text separated by newlines.
+      
+      RESUME TEXT:
+      """
+      ${resumeText}
+      """
+    `;
+
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text();
+
+    res.json({ feedback: responseText });
+  } catch (err) {
+    console.error("Gemini API Error:", err);
+    res.status(500).json({ error: "Failed to generate AI feedback." });
+  }
+});
+
+const multer = require("multer");
+const pdfParse = require("pdf-parse");
+
+// Configure Multer to store the uploaded file in RAM (Memory) temporarily
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+});
+
+// --- 7. RESUME UPLOAD & AI ANALYSIS ROUTE ---
+// This route expects a file attached to the field name "resume"
+app.post("/api/resumes/analyze", upload.single("resume"), async (req, res) => {
+  // 1. Check if file exists
+  if (!req.file) {
+    return res.status(400).json({ error: "No PDF file uploaded." });
+  }
+
+  try {
+    // 2. Extract Text from the PDF Buffer
+    const pdfData = await pdfParse(req.file.buffer);
+    const extractedText = pdfData.text;
+
+    if (!extractedText || extractedText.trim().length === 0) {
+      return res
+        .status(400)
+        .json({ error: "Could not extract text. Is this a scanned image?" });
+    }
+
+    // 3. Send the extracted text to Gemini AI for analysis
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    const prompt = `
+            You are an expert strict Technical Recruiter reviewing a resume.
+            Review the following resume text and provide structured feedback in exactly 3 sections:
+            1. Technical Strengths
+            2. Areas for Improvement
+            3. ATS Formatting Advice
+            
+            Keep it professional, direct, and under 150 words total. Do not use markdown like **.
+            
+            RESUME TEXT:
+            """
+            ${extractedText}
+            """
+        `;
+
+    const aiResult = await model.generateContent(prompt);
+    const aiFeedback = aiResult.response.text();
+
+    // 4. Send the successful response back to the frontend
+    res.json({
+      message: "Resume analyzed successfully!",
+      extractedText: extractedText.substring(0, 200) + "...", // Sending a preview back
+      aiFeedback: aiFeedback,
+    });
+  } catch (err) {
+    console.error("PDF Parsing or AI Error:", err);
+    res.status(500).json({ error: "Failed to process the resume." });
+  }
+});
+
 // ==========================================
 // SERVER LISTENING / VERCEL EXPORT
 // ==========================================

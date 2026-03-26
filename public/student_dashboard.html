@@ -1151,14 +1151,53 @@
         showToast("Profile updated successfully!", "success");
       }
 
-      function handleFileUpload(event) {
+      async function handleFileUpload(event) {
         const file = event.target.files[0];
-        if (file) {
-          // Placeholder for real S3/Database upload logic
-          showToast(
-            "Resume uploaded locally! (Backend upload logic needed)",
-            "success",
-          );
+        if (!file) return;
+
+        if (file.type !== "application/pdf") {
+          showToast("Only PDF files are allowed!", "error");
+          return;
+        }
+
+        showToast("Uploading and analyzing resume...", "info");
+
+        // 1. Package the file into a FormData object
+        const formData = new FormData();
+        formData.append("resume", file);
+
+        try {
+          // 2. Send to our new Node.js / Multer route
+          const response = await fetch(`${API_BASE}/api/resumes/analyze`, {
+            method: "POST",
+            body: formData, // Note: Do NOT set Content-Type header when using FormData!
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            // 3. Show the AI Feedback in an alert (or you can render it beautifully in the UI!)
+            alert("🤖 AI Resume Feedback:\n\n" + data.aiFeedback);
+
+            // Add to local state so it shows up in the list
+            const newRes = {
+              id: Date.now(),
+              studentId: state.currentUser.id,
+              studentName: state.currentUser.name,
+              fileName: file.name,
+              date: new Date().toISOString(),
+              status: "Pending Review",
+            };
+            state.resumes.unshift(newRes);
+            renderResumes();
+
+            showToast("Resume uploaded successfully!", "success");
+          } else {
+            showToast(data.error || "Upload failed.", "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showToast("Server error during upload.", "error");
         }
       }
 
