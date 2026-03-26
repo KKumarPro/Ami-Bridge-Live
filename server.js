@@ -314,56 +314,65 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
 });
 
-// --- 7. RESUME UPLOAD & AI ANALYSIS ROUTE ---
-// This route expects a file attached to the field name "resume"
-app.post("/api/resumes/analyze", upload.single("resume"), async (req, res) => {
-  // 1. Check if file exists
+// --- 7. RESUME UPLOAD & AI ANALYSIS ROUTE (Serverless Safe) ---
+app.post("/api/resumes/analyze", upload.single("resume"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "No PDF file uploaded." });
   }
 
-  try {
-    // 2. Extract Text from the PDF Buffer
-    const pdfData = await pdfParse(req.file.buffer);
-    const extractedText = pdfData.text;
+  // Initialize the serverless-safe PDF parser
+  const pdfParser = new PDFParser(this, 1);
 
-    if (!extractedText || extractedText.trim().length === 0) {
-      return res
-        .status(400)
-        .json({ error: "Could not extract text. Is this a scanned image?" });
+  // Event 1: If the PDF fails to parse
+  pdfParser.on("pdfParser_dataError", (errData) => {
+    console.error("PDF Parsing Error:", errData.parserError);
+    res.status(500).json({ error: "Failed to parse the PDF document." });
+  });
+
+  // Event 2: If the PDF parses successfully
+  pdfParser.on("pdfParser_dataReady", async (pdfData) => {
+    try {
+      const extractedText = pdfParser.getRawTextContent();
+
+      if (!extractedText || extractedText.trim().length === 0) {
+        return res
+          .status(400)
+          .json({ error: "Could not extract text. Is this a scanned image?" });
+      }
+
+      // Feed the text to Gemini AI
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const prompt = `
+                You are an expert strict Technical Recruiter reviewing a resume.
+                Review the following resume text and provide structured feedback in exactly 3 sections:
+                1. Technical Strengths
+                2. Areas for Improvement
+                3. ATS Formatting Advice
+                
+                Keep it professional, direct, and under 150 words total. Do not use markdown like **.
+                
+                RESUME TEXT:
+                """
+                ${extractedText}
+                """
+            `;
+
+      const aiResult = await model.generateContent(prompt);
+      const aiFeedback = aiResult.response.text();
+
+      res.json({
+        message: "Resume analyzed successfully!",
+        extractedText: extractedText.substring(0, 200) + "...",
+        aiFeedback: aiFeedback,
+      });
+    } catch (err) {
+      console.error("Gemini AI Error:", err);
+      res.status(500).json({ error: "Failed to generate AI feedback." });
     }
+  });
 
-    // 3. Send the extracted text to Gemini AI for analysis
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    const prompt = `
-            You are an expert strict Technical Recruiter reviewing a resume.
-            Review the following resume text and provide structured feedback in exactly 3 sections:
-            1. Technical Strengths
-            2. Areas for Improvement
-            3. ATS Formatting Advice
-            
-            Keep it professional, direct, and under 150 words total. Do not use markdown like **.
-            
-            RESUME TEXT:
-            """
-            ${extractedText}
-            """
-        `;
-
-    const aiResult = await model.generateContent(prompt);
-    const aiFeedback = aiResult.response.text();
-
-    // 4. Send the successful response back to the frontend
-    res.json({
-      message: "Resume analyzed successfully!",
-      extractedText: extractedText.substring(0, 200) + "...", // Sending a preview back
-      aiFeedback: aiFeedback,
-    });
-  } catch (err) {
-    console.error("PDF Parsing or AI Error:", err);
-    res.status(500).json({ error: "Failed to process the resume." });
-  }
+  // Start parsing the file buffer from RAM
+  pdfParser.parseBuffer(req.file.buffer);
 });
 
 // ==========================================
