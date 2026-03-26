@@ -1,11 +1,12 @@
-// Main changes done for the vercel live deployment
-
 // --- EXPRESS BACKEND SETUP ---
 const express = require("express");
 const { Pool } = require("pg");
 const cors = require("cors");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken"); // Kept for future auth expansion
+const bcrypt = require("bcryptjs"); // FIXED: Using bcryptjs to prevent Vercel crashes
+const jwt = require("jsonwebtoken");
+const multer = require("multer");
+const PDFParser = require("pdf2json"); // FIXED: Serverless-safe PDF parser
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 require("dotenv").config();
 
 const app = express();
@@ -23,7 +24,6 @@ if (!process.env.DATABASE_URL) {
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
-  // Add connection timeout so it doesn't hang forever if the DB is waking up
   connectionTimeoutMillis: 10000,
 });
 
@@ -35,14 +35,22 @@ pool.on("error", (err, client) => {
 // Test Connection safely
 const testDbConnection = async () => {
   try {
-    // Query the current time just to prove the connection works
-    const res = await pool.query("SELECT NOW()");
+    await pool.query("SELECT NOW()");
     console.log("Successfully connected to PostgreSQL (Neon DB)!");
   } catch (err) {
     console.error("Database connection error:", err.message);
   }
 };
 testDbConnection();
+
+// --- INITIALIZE GEMINI AI & MULTER ---
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+// Configure Multer to store the uploaded file in RAM (Memory) temporarily
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+});
 
 // ==========================================
 // 1. AUTHENTICATION ROUTES
@@ -152,10 +160,9 @@ app.get("/api/questions/:companyId", async (req, res) => {
 });
 
 // ==========================================
-// 3. STUDENT DYNAMIC ROUTES (For Empty States)
+// 3. STUDENT DYNAMIC ROUTES
 // ==========================================
 
-// Save a new test attempt
 app.post("/api/attempts", async (req, res) => {
   const { student_id, company_id, total_score, max_score } = req.body;
   try {
@@ -170,7 +177,6 @@ app.post("/api/attempts", async (req, res) => {
   }
 });
 
-// Get a specific student's attempt history (Returns [] if new user)
 app.get("/api/student/:id/attempts", async (req, res) => {
   try {
     const query = `
@@ -188,7 +194,6 @@ app.get("/api/student/:id/attempts", async (req, res) => {
   }
 });
 
-// Get a specific student's resumes (Returns [] if new user)
 app.get("/api/student/:id/resumes", async (req, res) => {
   try {
     const result = await pool.query(
@@ -202,7 +207,6 @@ app.get("/api/student/:id/resumes", async (req, res) => {
   }
 });
 
-// Get feedback for a specific student (Returns [] if new user)
 app.get("/api/student/:id/feedback", async (req, res) => {
   try {
     const query = `
@@ -221,10 +225,9 @@ app.get("/api/student/:id/feedback", async (req, res) => {
 });
 
 // ==========================================
-// 4. MENTOR DYNAMIC ROUTES (For Empty States)
+// 4. MENTOR DYNAMIC ROUTES
 // ==========================================
 
-// Get students assigned to a specific mentor
 app.get("/api/mentor/:id/students", async (req, res) => {
   try {
     const query = `
@@ -234,7 +237,7 @@ app.get("/api/mentor/:id/students", async (req, res) => {
       WHERE ma.mentor_id = $1
     `;
     const result = await pool.query(query, [req.params.id]);
-    res.json(result.rows); // Returns [] if no students assigned
+    res.json(result.rows);
   } catch (err) {
     console.error("Fetch Assigned Students Error:", err);
     res.status(500).json({ error: "Server error fetching assigned students" });
@@ -242,10 +245,9 @@ app.get("/api/mentor/:id/students", async (req, res) => {
 });
 
 // ==========================================
-// 5. ADMIN DYNAMIC ROUTES (For Empty States)
+// 5. ADMIN DYNAMIC ROUTES
 // ==========================================
 
-// Get all users in the system (for the Admin table)
 app.get("/api/admin/users", async (req, res) => {
   try {
     const result = await pool.query(
@@ -258,13 +260,11 @@ app.get("/api/admin/users", async (req, res) => {
   }
 });
 
-// --- INITIALIZE GEMINI AI ---
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+// ==========================================
+// 6. AI & RESUME UPLOAD ROUTES
+// ==========================================
 
-// The AI client is initialized with your specific API key
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-// --- 6. AI RESUME FEEDBACK API ---
+// Raw Text AI Feedback Route (Fallback)
 app.post("/api/ai/resume-feedback", async (req, res) => {
   const { resumeText, targetRole } = req.body;
 
@@ -275,9 +275,7 @@ app.post("/api/ai/resume-feedback", async (req, res) => {
   }
 
   try {
-    // We use the fast and efficient Gemini 1.5 Flash model
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
     const prompt = `
       You are an expert strict Technical Recruiter and ATS system analyzing a resume.
       The candidate is targeting the role of: ${targetRole || "Software Engineer"}.
@@ -305,16 +303,7 @@ app.post("/api/ai/resume-feedback", async (req, res) => {
   }
 });
 
-const multer = require("multer");
-const pdfParse = require("pdf-parse");
-
-// Configure Multer to store the uploaded file in RAM (Memory) temporarily
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
-});
-
-// --- 7. RESUME UPLOAD & AI ANALYSIS ROUTE (Serverless Safe) ---
+// File Upload & Parse AI Route (Serverless Safe)
 app.post("/api/resumes/analyze", upload.single("resume"), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "No PDF file uploaded." });
@@ -340,22 +329,21 @@ app.post("/api/resumes/analyze", upload.single("resume"), (req, res) => {
           .json({ error: "Could not extract text. Is this a scanned image?" });
       }
 
-      // Feed the text to Gemini AI
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       const prompt = `
-                You are an expert strict Technical Recruiter reviewing a resume.
-                Review the following resume text and provide structured feedback in exactly 3 sections:
-                1. Technical Strengths
-                2. Areas for Improvement
-                3. ATS Formatting Advice
-                
-                Keep it professional, direct, and under 150 words total. Do not use markdown like **.
-                
-                RESUME TEXT:
-                """
-                ${extractedText}
-                """
-            `;
+        You are an expert strict Technical Recruiter reviewing a resume.
+        Review the following resume text and provide structured feedback in exactly 3 sections:
+        1. Technical Strengths
+        2. Areas for Improvement
+        3. ATS Formatting Advice
+        
+        Keep it professional, direct, and under 150 words total. Do not use markdown like **.
+        
+        RESUME TEXT:
+        """
+        ${extractedText}
+        """
+      `;
 
       const aiResult = await model.generateContent(prompt);
       const aiFeedback = aiResult.response.text();
