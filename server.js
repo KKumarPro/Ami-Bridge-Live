@@ -262,9 +262,7 @@ app.get("/api/admin/users", async (req, res) => {
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 // The AI client is initialized with your specific API key
-const genAI = new GoogleGenerativeAI(
-  process.env.GEMINI_API_KEY || "AIzaSyBngMb6vsfnecqOBEwswcAt_doIDU9GABA",
-);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // --- 6. AI RESUME FEEDBACK API ---
 app.post("/api/ai/resume-feedback", async (req, res) => {
