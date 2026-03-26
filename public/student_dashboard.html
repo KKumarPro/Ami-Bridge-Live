@@ -1267,33 +1267,50 @@
 
         if (file.type !== "application/pdf") {
           showToast("Only PDF files are allowed!", "error");
+          event.target.value = ""; // Reset the input so they can try again
           return;
         }
 
-        showToast("Uploading and analyzing resume...", "info");
+        showToast(
+          "Analyzing resume... This may take up to 10 seconds.",
+          "info",
+        );
 
-        // 1. Package the file into a FormData object
+        // 1. Package the file
         const formData = new FormData();
         formData.append("resume", file);
 
         try {
-          // 2. Send to our new Node.js / Multer route
+          // 2. Send to Node.js route
           const response = await fetch(`${API_BASE}/api/resumes/analyze`, {
             method: "POST",
-            body: formData, // Note: Do NOT set Content-Type header when using FormData!
+            body: formData,
           });
 
-          const data = await response.json();
+          // 3. SECURE PARSING: Read as text first in case Vercel throws an HTML timeout page!
+          const rawText = await response.text();
+          let data;
+          try {
+            data = JSON.parse(rawText);
+          } catch (e) {
+            console.error("Vercel returned a non-JSON error:", rawText);
+            showToast(
+              "Server timed out or crashed. Please check Vercel Logs.",
+              "error",
+            );
+            event.target.value = ""; // Reset input
+            return;
+          }
 
           if (response.ok) {
-            // 3. Display the beautifully formatted AI Feedback Modal instead of an ugly alert!
+            // 4. Show the AI Feedback Modal
             document.getElementById("ai-feedback-content").innerText =
               data.aiFeedback;
             document
               .getElementById("ai-feedback-modal")
               .classList.remove("hidden");
 
-            // Add to local state so it shows up in the list
+            // Add to local state list
             const newRes = {
               id: Date.now(),
               studentId: state.currentUser.id,
@@ -1311,7 +1328,10 @@
           }
         } catch (err) {
           console.error(err);
-          showToast("Server error during upload.", "error");
+          showToast("Network error. Could not reach server.", "error");
+        } finally {
+          // ALWAYS reset the file input so the user can click it again!
+          event.target.value = "";
         }
       }
 

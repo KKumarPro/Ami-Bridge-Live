@@ -310,12 +310,13 @@ app.post("/api/resumes/analyze", upload.single("resume"), (req, res) => {
   }
 
   // Initialize the serverless-safe PDF parser
-  const pdfParser = new PDFParser(this, 1);
+  // FIXED: Using `null` instead of `this` to prevent Vercel crashes
+  const pdfParser = new PDFParser(null, 1);
 
   // Event 1: If the PDF fails to parse
   pdfParser.on("pdfParser_dataError", (errData) => {
     console.error("PDF Parsing Error:", errData.parserError);
-    res.status(500).json({ error: "Failed to parse the PDF document." });
+    return res.status(500).json({ error: "Failed to parse the PDF document." });
   });
 
   // Event 2: If the PDF parses successfully
@@ -348,19 +349,24 @@ app.post("/api/resumes/analyze", upload.single("resume"), (req, res) => {
       const aiResult = await model.generateContent(prompt);
       const aiFeedback = aiResult.response.text();
 
-      res.json({
+      return res.json({
         message: "Resume analyzed successfully!",
         extractedText: extractedText.substring(0, 200) + "...",
         aiFeedback: aiFeedback,
       });
     } catch (err) {
       console.error("Gemini AI Error:", err);
-      res.status(500).json({ error: "Failed to generate AI feedback." });
+      return res.status(500).json({ error: "Failed to generate AI feedback." });
     }
   });
 
   // Start parsing the file buffer from RAM
-  pdfParser.parseBuffer(req.file.buffer);
+  try {
+    pdfParser.parseBuffer(req.file.buffer);
+  } catch (err) {
+    console.error("Buffer Parse Error:", err);
+    return res.status(500).json({ error: "Failed to read file buffer." });
+  }
 });
 
 // ==========================================
