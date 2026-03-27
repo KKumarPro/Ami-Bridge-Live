@@ -12,6 +12,10 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const geminiRoutes = require("./routes/geminiRoutes");
+app.use(express.json());
+app.use("/api/gemini", geminiRoutes);
+
 // Middleware
 app.use(cors());
 app.use(express.json()); // Parses incoming JSON requests
@@ -110,7 +114,10 @@ app.post("/api/auth/login", async (req, res) => {
     });
   } catch (err) {
     console.error("Login Error:", err);
-    res.status(500).json({ error: "Server error during login" });
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 });
 
