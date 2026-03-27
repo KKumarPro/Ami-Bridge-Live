@@ -1,3 +1,5 @@
+<!-- Student Dashboard with all the updates done -->
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -57,11 +59,6 @@
           opacity: 1;
           transform: translateY(0);
         }
-      }
-      /* Modal Backdrop */
-      .modal-backdrop {
-        background-color: rgba(15, 23, 42, 0.6);
-        backdrop-filter: blur(4px);
       }
     </style>
   </head>
@@ -424,50 +421,172 @@
         <!-- SECTION: RESUME -->
         <div
           id="sec-resume"
-          class="section-container hidden fade-in max-w-4xl mx-auto"
+          class="section-container hidden fade-in max-w-5xl mx-auto"
         >
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Upload Area -->
-            <div
-              class="md:col-span-1 bg-white rounded-xl shadow-sm border border-slate-200 p-6 h-fit"
-            >
-              <h3 class="text-lg font-bold text-slate-800 mb-4">
-                Upload New Resume
-              </h3>
+            <div class="md:col-span-1 space-y-4">
               <div
-                class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:bg-slate-50 transition-colors cursor-pointer"
-                onclick="document.getElementById('file-upload').click()"
+                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
               >
-                <i
-                  class="fas fa-cloud-upload-alt text-4xl text-slate-400 mb-3"
-                ></i>
-                <p class="text-sm text-slate-600 font-medium">
-                  Click to browse
-                </p>
-                <p class="text-xs text-slate-400 mt-1">
-                  PDF files only (Max 5MB)
-                </p>
-                <input
-                  type="file"
-                  id="file-upload"
-                  class="hidden"
-                  accept=".pdf"
-                  onchange="handleFileUpload(event)"
-                />
-              </div>
-            </div>
-            <!-- Resume List -->
-            <div
-              class="md:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-6"
-            >
-              <h3 class="text-lg font-bold text-slate-800 mb-4">My Resumes</h3>
-              <div id="resume-list" class="space-y-3">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">
+                  Upload Resume
+                </h3>
                 <div
-                  class="flex items-center justify-center py-8 text-slate-400"
+                  id="upload-drop-zone"
+                  class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer"
+                  onclick="document.getElementById('file-upload').click()"
+                  ondragover="
+                    event.preventDefault();
+                    this.classList.add('border-blue-400', 'bg-blue-50');
+                  "
+                  ondragleave="
+                    this.classList.remove('border-blue-400', 'bg-blue-50')
+                  "
+                  ondrop="handleDrop(event)"
                 >
-                  <i class="fas fa-spinner fa-spin text-2xl"></i>
+                  <i
+                    class="fas fa-cloud-upload-alt text-4xl text-slate-400 mb-3"
+                  ></i>
+                  <p class="text-sm text-slate-600 font-medium">
+                    Click or drag & drop
+                  </p>
+                  <p class="text-xs text-slate-400 mt-1">PDF only · Max 5MB</p>
+                  <input
+                    type="file"
+                    id="file-upload"
+                    class="hidden"
+                    accept=".pdf"
+                    onchange="handleFileUpload(event)"
+                  />
+                </div>
+                <div id="upload-progress" class="hidden mt-3">
+                  <div class="flex justify-between text-xs text-slate-500 mb-1">
+                    <span
+                      id="upload-filename"
+                      class="truncate max-w-[160px]"
+                    ></span>
+                    <span id="upload-pct">0%</span>
+                  </div>
+                  <div class="w-full bg-slate-200 rounded-full h-1.5">
+                    <div
+                      id="upload-bar"
+                      class="bg-blue-500 h-1.5 rounded-full transition-all"
+                      style="width: 0%"
+                    ></div>
+                  </div>
                 </div>
               </div>
+              <!-- AI Score Summary Card -->
+              <div
+                id="ai-score-card"
+                class="hidden bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-5 text-white shadow-md"
+              >
+                <div class="flex items-center gap-2 mb-3">
+                  <i class="fas fa-robot text-lg"></i>
+                  <span class="font-bold text-sm">AI Resume Score</span>
+                </div>
+                <div class="text-5xl font-black mb-1" id="ai-score-display">
+                  --
+                </div>
+                <div class="text-xs text-indigo-200 mb-3">
+                  ATS Compatibility:
+                  <span id="ai-ats-score" class="text-white font-semibold"
+                    >--</span
+                  >/100
+                </div>
+                <div
+                  class="text-xs text-indigo-100"
+                  id="ai-summary-short"
+                ></div>
+              </div>
+            </div>
+
+            <!-- Resume List & Viewer -->
+            <div class="md:col-span-2 space-y-4">
+              <div
+                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+              >
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-lg font-bold text-slate-800">My Resumes</h3>
+                  <span class="text-xs text-slate-400" id="resume-count"></span>
+                </div>
+                <div id="resume-list" class="space-y-3">
+                  <div
+                    class="flex items-center justify-center py-8 text-slate-400"
+                  >
+                    <i class="fas fa-spinner fa-spin text-2xl"></i>
+                  </div>
+                </div>
+              </div>
+
+              <!-- AI Feedback Panel (shown after analysis) -->
+              <div
+                id="ai-feedback-panel"
+                class="hidden bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+              >
+                <div class="flex items-center justify-between mb-4">
+                  <h3
+                    class="text-lg font-bold text-slate-800 flex items-center gap-2"
+                  >
+                    <i class="fas fa-robot text-purple-500"></i> AI Feedback
+                  </h3>
+                  <button
+                    onclick="
+                      document
+                        .getElementById('ai-feedback-panel')
+                        .classList.add('hidden')
+                    "
+                    class="text-slate-400 hover:text-slate-600"
+                  >
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+                <div id="ai-feedback-content"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PDF VIEWER MODAL -->
+        <div
+          id="pdf-viewer-modal"
+          class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4"
+        >
+          <div
+            class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col"
+          >
+            <div
+              class="flex items-center justify-between p-4 border-b border-slate-200"
+            >
+              <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                <i class="fas fa-file-pdf text-red-500"></i>
+                <span id="pdf-viewer-title">Resume Preview</span>
+              </h3>
+              <div class="flex gap-2">
+                <a
+                  id="pdf-download-link"
+                  href="#"
+                  download
+                  class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm flex items-center gap-2 transition-colors"
+                >
+                  <i class="fas fa-download"></i> Download
+                </a>
+                <button
+                  onclick="closePdfViewer()"
+                  class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-sm flex items-center gap-2 transition-colors"
+                >
+                  <i class="fas fa-times"></i> Close
+                </button>
+              </div>
+            </div>
+            <div class="flex-1 overflow-hidden rounded-b-2xl">
+              <iframe
+                id="pdf-viewer-iframe"
+                src=""
+                class="w-full h-full border-0"
+                title="Resume Preview"
+              ></iframe>
             </div>
           </div>
         </div>
@@ -666,104 +785,6 @@
           </div>
         </div>
       </div>
-
-      <!-- MODALS -->
-
-      <!-- Document Viewer Modal -->
-      <div
-        id="document-modal"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop fade-in"
-      >
-        <div
-          class="bg-white rounded-xl shadow-2xl w-full max-w-4xl h-[85vh] overflow-hidden flex flex-col m-4"
-        >
-          <div
-            class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0"
-          >
-            <div class="flex items-center gap-3">
-              <i class="fas fa-file-pdf text-red-500 text-xl"></i>
-              <h3 class="font-bold text-lg text-slate-800" id="doc-modal-title">
-                Viewing Document
-              </h3>
-            </div>
-            <button
-              onclick="
-                document
-                  .getElementById('document-modal')
-                  .classList.add('hidden')
-              "
-              class="text-slate-400 hover:text-red-500 transition"
-            >
-              <i class="fas fa-times text-xl"></i>
-            </button>
-          </div>
-          <div class="flex-1 bg-slate-300 p-2 sm:p-6">
-            <iframe
-              id="doc-iframe"
-              src=""
-              class="w-full h-full rounded shadow-sm border-0 bg-white"
-            ></iframe>
-          </div>
-        </div>
-      </div>
-
-      <!-- AI Feedback Modal -->
-      <div
-        id="ai-feedback-modal"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop fade-in"
-      >
-        <div
-          class="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col m-4 max-h-[80vh]"
-        >
-          <div
-            class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0"
-          >
-            <div class="flex items-center gap-3">
-              <div
-                class="w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xl"
-              >
-                <i class="fas fa-robot"></i>
-              </div>
-              <div>
-                <h3 class="font-bold text-lg text-slate-800">
-                  AI Resume Analysis
-                </h3>
-                <p class="text-xs text-slate-500">Powered by Gemini</p>
-              </div>
-            </div>
-            <button
-              onclick="
-                document
-                  .getElementById('ai-feedback-modal')
-                  .classList.add('hidden')
-              "
-              class="text-slate-400 hover:text-danger transition"
-            >
-              <i class="fas fa-times text-xl"></i>
-            </button>
-          </div>
-          <div
-            class="p-6 overflow-y-auto whitespace-pre-wrap text-slate-700 text-sm leading-relaxed"
-            id="ai-feedback-content"
-          >
-            <!-- Content injected by JS -->
-          </div>
-          <div
-            class="p-4 border-t border-slate-200 bg-slate-50 flex justify-end"
-          >
-            <button
-              onclick="
-                document
-                  .getElementById('ai-feedback-modal')
-                  .classList.add('hidden')
-              "
-              class="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primaryHover transition font-medium shadow-md"
-            >
-              Got it, thanks!
-            </button>
-          </div>
-        </div>
-      </div>
     </main>
 
     <!-- Application Logic -->
@@ -947,40 +968,56 @@
 
       function renderResumes() {
         const list = document.getElementById("resume-list");
+        const countEl = document.getElementById("resume-count");
         list.innerHTML = "";
 
         if (state.resumes.length === 0) {
+          if (countEl) countEl.textContent = "";
           list.innerHTML = `
             <div class="text-center p-8 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 flex flex-col items-center">
                 <i class="fas fa-file-pdf text-3xl text-slate-300 mb-2"></i>
                 <p class="text-slate-500 font-medium">No resumes uploaded yet.</p>
+                <p class="text-slate-400 text-sm mt-1">Upload a PDF to get AI-powered feedback</p>
             </div>`;
           return;
         }
 
+        if (countEl)
+          countEl.textContent = `${state.resumes.length} file${state.resumes.length !== 1 ? "s" : ""}`;
+
         state.resumes.forEach((res) => {
-          let statusBadge =
-            res.status === "Reviewed"
-              ? '<span class="px-3 py-1 bg-green-100 text-green-700 rounded-md text-xs font-bold border border-green-200">Reviewed</span>'
-              : '<span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-md text-xs font-bold border border-yellow-200">Pending Review</span>';
+          const scoreHTML =
+            res.gemini_score != null
+              ? `<span class="px-2 py-0.5 rounded-full text-xs font-bold ${res.gemini_score >= 70 ? "bg-green-100 text-green-700" : res.gemini_score >= 50 ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"}">
+                AI Score: ${res.gemini_score}/100
+               </span>`
+              : `<span class="px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full text-xs">Not analyzed</span>`;
 
           list.innerHTML += `
-            <div class="flex items-center justify-between p-4 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded bg-red-50 text-red-500 flex items-center justify-center text-lg">
+            <div class="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-blue-200 hover:bg-blue-50/30 transition-all group">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-10 h-10 rounded-lg bg-red-50 text-red-500 flex items-center justify-center text-lg shrink-0">
                         <i class="fas fa-file-pdf"></i>
                     </div>
-                    <div>
-                        <p class="font-medium text-slate-800 text-sm">${res.file_name}</p>
-                        <p class="text-xs text-slate-500">Uploaded on ${new Date(res.upload_date).toLocaleDateString()}</p>
+                    <div class="min-w-0">
+                        <p class="font-semibold text-slate-800 text-sm truncate">${res.resume_name || res.file_name || "Resume"}</p>
+                        <div class="flex items-center gap-2 mt-1 flex-wrap">
+                          <p class="text-xs text-slate-400">${new Date(res.upload_date).toLocaleDateString()}</p>
+                          ${scoreHTML}
+                        </div>
                     </div>
                 </div>
-                <div class="flex gap-2 items-center">
-                    ${statusBadge}
-                    <button onclick="viewDocument('${res.file_name}', 'dummy')" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 hover:bg-primary hover:text-white transition-colors flex items-center justify-center" title="View Document">
-                        <i class="fas fa-eye text-xs"></i>
+                <div class="flex gap-2 shrink-0 ml-2">
+                    <button onclick="viewResume(${res.resume_id}, '${(res.resume_name || "Resume").replace(/'/g, "\\'")}')"
+                      class="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors text-xs font-medium flex items-center gap-1" title="View PDF">
+                        <i class="fas fa-eye"></i> View
                     </button>
-                    <button onclick="deleteResume(${res.resume_id})" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center" title="Delete">
+                    <button onclick="analyzeResume(${res.resume_id})"
+                      class="px-3 py-1.5 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-colors text-xs font-medium flex items-center gap-1" title="AI Feedback">
+                        <i class="fas fa-robot"></i> AI Check
+                    </button>
+                    <button onclick="deleteResume(${res.resume_id})"
+                      class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center" title="Delete">
                         <i class="fas fa-trash text-xs"></i>
                     </button>
                 </div>
@@ -1261,98 +1298,204 @@
         showToast("Profile updated successfully!", "success");
       }
 
-      async function handleFileUpload(event) {
-        const file = event.target.files[0];
-        if (!file) return;
+      function handleDrop(event) {
+        event.preventDefault();
+        document
+          .getElementById("upload-drop-zone")
+          .classList.remove("border-blue-400", "bg-blue-50");
+        const file = event.dataTransfer.files[0];
+        if (file) processResumeFile(file);
+      }
 
+      function handleFileUpload(event) {
+        const file = event.target.files[0];
+        if (file) processResumeFile(file);
+      }
+
+      async function processResumeFile(file) {
         if (file.type !== "application/pdf") {
-          showToast("Only PDF files are allowed!", "error");
-          event.target.value = ""; // Reset the input so they can try again
+          showToast("Only PDF files are allowed.", "error");
+          return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          showToast("File too large. Max 5MB.", "error");
           return;
         }
 
-        showToast(
-          "Analyzing resume... This may take up to 10 seconds.",
-          "info",
-        );
+        // Show progress bar
+        const prog = document.getElementById("upload-progress");
+        const bar = document.getElementById("upload-bar");
+        const pct = document.getElementById("upload-pct");
+        const fname = document.getElementById("upload-filename");
+        prog.classList.remove("hidden");
+        fname.textContent = file.name;
 
-        // 1. Package the file
-        const formData = new FormData();
-        formData.append("resume", file);
+        // Animate progress bar
+        let p = 0;
+        const interval = setInterval(() => {
+          p = Math.min(p + Math.random() * 15, 85);
+          bar.style.width = p + "%";
+          pct.textContent = Math.round(p) + "%";
+        }, 200);
 
         try {
-          // 2. Send to Node.js route
-          const response = await fetch(`${API_BASE}/api/resumes/analyze`, {
-            method: "POST",
-            body: formData,
-          });
+          const formData = new FormData();
+          formData.append("resume", file);
 
-          // 3. SECURE PARSING: Read as text first in case Vercel throws an HTML timeout page!
-          const rawText = await response.text();
-          let data;
-          try {
-            data = JSON.parse(rawText);
-          } catch (e) {
-            console.error("Vercel returned a non-JSON error:", rawText);
-            showToast(
-              "Server timed out or crashed. Please check Vercel Logs.",
-              "error",
-            );
-            event.target.value = ""; // Reset input
-            return;
+          const res = await fetch(
+            `${API_BASE}/api/student/${state.currentUser.id}/resumes`,
+            {
+              method: "POST",
+              body: formData,
+            },
+          );
+
+          clearInterval(interval);
+          bar.style.width = "100%";
+          pct.textContent = "100%";
+
+          if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error || "Upload failed");
           }
 
-          if (response.ok) {
-            // 4. Show the AI Feedback Modal
-            document.getElementById("ai-feedback-content").innerText =
-              data.aiFeedback;
-            document
-              .getElementById("ai-feedback-modal")
-              .classList.remove("hidden");
+          const newResume = await res.json();
+          state.resumes.unshift(newResume);
+          renderResumes();
+          showToast("Resume uploaded successfully!", "success");
 
-            // Add to local state list
-            const newRes = {
-              id: Date.now(),
-              studentId: state.currentUser.id,
-              studentName: state.currentUser.name,
-              file_name: file.name,
-              upload_date: new Date().toISOString(),
-              status: "Pending Review",
-            };
-            state.resumes.unshift(newRes);
-            renderResumes();
-
-            showToast("Resume uploaded successfully!", "success");
-          } else {
-            showToast(data.error || "Upload failed.", "error");
-          }
+          // Reset file input
+          document.getElementById("file-upload").value = "";
+          setTimeout(() => {
+            prog.classList.add("hidden");
+            bar.style.width = "0%";
+          }, 1500);
         } catch (err) {
-          console.error(err);
-          showToast("Network error. Could not reach server.", "error");
-        } finally {
-          // ALWAYS reset the file input so the user can click it again!
-          event.target.value = "";
+          clearInterval(interval);
+          prog.classList.add("hidden");
+          showToast("Upload failed: " + err.message, "error");
         }
       }
 
-      function viewDocument(fileName, fileUrl) {
-        // Set the title of the modal to the resume's name
-        document.getElementById("doc-modal-title").innerText = fileName;
+      function viewResume(resumeId, name) {
+        const iframe = document.getElementById("pdf-viewer-iframe");
+        const title = document.getElementById("pdf-viewer-title");
+        const dlLink = document.getElementById("pdf-download-link");
+        const modal = document.getElementById("pdf-viewer-modal");
 
-        // Load the PDF into the iframe
-        // NOTE: For this MVP demonstration, we are using a sample PDF.
-        // In production, this would be the 'fileUrl' from your database!
-        const samplePdfUrl =
-          "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
-        document.getElementById("doc-iframe").src = samplePdfUrl;
-
-        // Show the modal
-        document.getElementById("document-modal").classList.remove("hidden");
+        const url = `${API_BASE}/api/resume/${resumeId}/view`;
+        iframe.src = url;
+        title.textContent = name || "Resume Preview";
+        dlLink.href = url;
+        dlLink.download = name || "resume.pdf";
+        modal.classList.remove("hidden");
+        document.body.style.overflow = "hidden";
       }
 
-      function deleteResume(id) {
-        // Here we would typically make a DELETE request to the backend.
-        showToast("Resume deleted.", "info");
+      function closePdfViewer() {
+        document.getElementById("pdf-viewer-modal").classList.add("hidden");
+        document.getElementById("pdf-viewer-iframe").src = "";
+        document.body.style.overflow = "";
+      }
+
+      async function analyzeResume(resumeId) {
+        showToast(
+          "Analyzing resume with Gemini AI... This may take a moment.",
+          "info",
+        );
+        try {
+          const res = await fetch(
+            `${API_BASE}/api/resume/${resumeId}/analyze`,
+            { method: "POST" },
+          );
+          if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error || "Analysis failed");
+          }
+          const data = await res.json();
+
+          // Update gemini_score in local state
+          const r = state.resumes.find((r) => r.resume_id === resumeId);
+          if (r) {
+            r.gemini_score = data.score;
+            renderResumes();
+          }
+
+          // Show score card
+          const scoreCard = document.getElementById("ai-score-card");
+          document.getElementById("ai-score-display").textContent =
+            data.score ?? "--";
+          document.getElementById("ai-ats-score").textContent =
+            data.ats_score ?? "--";
+          document.getElementById("ai-summary-short").textContent =
+            data.summary || "";
+          scoreCard.classList.remove("hidden");
+
+          // Build detailed feedback panel
+          const panel = document.getElementById("ai-feedback-panel");
+          const content = document.getElementById("ai-feedback-content");
+
+          const strengths = (data.strengths || [])
+            .map(
+              (s) =>
+                `<li class="flex gap-2"><i class="fas fa-check-circle text-green-500 mt-0.5 shrink-0"></i><span class="text-sm text-slate-700">${s}</span></li>`,
+            )
+            .join("");
+          const improvements = (data.improvements || [])
+            .map(
+              (i) =>
+                `<li class="flex gap-2"><i class="fas fa-arrow-up text-orange-500 mt-0.5 shrink-0"></i><span class="text-sm text-slate-700">${i}</span></li>`,
+            )
+            .join("");
+          const keywords = (data.keywords_missing || [])
+            .map(
+              (k) =>
+                `<span class="px-2 py-1 bg-slate-100 text-slate-600 rounded text-xs">${k}</span>`,
+            )
+            .join(" ");
+
+          const sections = data.sections_feedback || {};
+          const sectionsHTML = Object.entries(sections)
+            .map(
+              ([key, val]) =>
+                `<div class="p-3 bg-slate-50 rounded-lg"><p class="text-xs font-bold text-slate-500 uppercase mb-1">${key}</p><p class="text-sm text-slate-700">${val}</p></div>`,
+            )
+            .join("");
+
+          content.innerHTML = `
+            <div class="space-y-4">
+              <div class="grid grid-cols-2 gap-3">
+                <div class="bg-green-50 rounded-xl p-4">
+                  <p class="text-xs font-bold text-green-700 mb-2 uppercase tracking-wide">Strengths</p>
+                  <ul class="space-y-2">${strengths || "<li class='text-sm text-slate-500'>None identified</li>"}</ul>
+                </div>
+                <div class="bg-orange-50 rounded-xl p-4">
+                  <p class="text-xs font-bold text-orange-700 mb-2 uppercase tracking-wide">Improvements</p>
+                  <ul class="space-y-2">${improvements || "<li class='text-sm text-slate-500'>None identified</li>"}</ul>
+                </div>
+              </div>
+              ${keywords ? `<div><p class="text-xs font-bold text-slate-500 uppercase mb-2">Missing Keywords</p><div class="flex flex-wrap gap-2">${keywords}</div></div>` : ""}
+              ${sectionsHTML ? `<div><p class="text-xs font-bold text-slate-500 uppercase mb-2">Section Feedback</p><div class="grid grid-cols-1 gap-2">${sectionsHTML}</div></div>` : ""}
+            </div>`;
+
+          panel.classList.remove("hidden");
+          panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          showToast("AI analysis complete!", "success");
+        } catch (err) {
+          showToast("Analysis error: " + err.message, "error");
+        }
+      }
+
+      async function deleteResume(id) {
+        if (!confirm("Delete this resume?")) return;
+        try {
+          await fetch(`${API_BASE}/api/resume/${id}`, { method: "DELETE" });
+          state.resumes = state.resumes.filter((r) => r.resume_id !== id);
+          renderResumes();
+          showToast("Resume deleted.", "info");
+        } catch (err) {
+          showToast("Delete failed.", "error");
+        }
       }
 
       // Custom Toast Notification
