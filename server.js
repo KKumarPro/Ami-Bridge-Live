@@ -1,5 +1,3 @@
-// Main changes done for the vercel live deployment
-
 // --- EXPRESS BACKEND SETUP ---
 const express = require("express");
 const { Pool } = require("pg");
@@ -736,11 +734,9 @@ app.post(
       });
     } catch (err) {
       console.error("Bulk Register Error:", err);
-      res
-        .status(500)
-        .json({
-          error: "Server error during bulk registration: " + err.message,
-        });
+      res.status(500).json({
+        error: "Server error during bulk registration: " + err.message,
+      });
     }
   },
 );

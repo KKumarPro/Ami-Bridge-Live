@@ -1,4 +1,4 @@
-<!-- Admin Dashboard with all the updates done -->
+<!-- Admin Dashboard with all the updates done... -->
 
 <!doctype html>
 <html lang="en">
@@ -949,7 +949,8 @@
           ocr: "AI Resume OCR — All Students",
           bulkregister: "Bulk Register Students",
         };
-        document.getElementById("page-title").innerText = titles[sectionId] || sectionId;
+        document.getElementById("page-title").innerText =
+          titles[sectionId] || sectionId;
 
         if (sectionId === "questions") {
           renderQuestions();
@@ -1459,9 +1460,11 @@
       async function loadAdminOCR() {
         const btn = document.getElementById("admin-ocr-btn");
         const results = document.getElementById("admin-ocr-results");
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Analyzing all resumes...';
+        btn.innerHTML =
+          '<i class="fas fa-spinner fa-spin mr-2"></i>Analyzing all resumes...';
         btn.disabled = true;
-        results.innerHTML = '<div class="p-12 text-center text-slate-400"><i class="fas fa-spinner fa-spin text-3xl mb-3 block"></i><p>Gemini AI is reading all student resumes. This may take a moment...</p></div>';
+        results.innerHTML =
+          '<div class="p-12 text-center text-slate-400"><i class="fas fa-spinner fa-spin text-3xl mb-3 block"></i><p>Gemini AI is reading all student resumes. This may take a moment...</p></div>';
 
         try {
           const res = await fetch(`${API_BASE}/api/admin/resumes-ocr`);
@@ -1469,29 +1472,36 @@
           const data = await res.json();
 
           if (data.length === 0) {
-            results.innerHTML = '<div class="p-12 text-center text-slate-400"><i class="fas fa-inbox text-3xl mb-3 block"></i><p>No student resumes found in the system.</p></div>';
+            results.innerHTML =
+              '<div class="p-12 text-center text-slate-400"><i class="fas fa-inbox text-3xl mb-3 block"></i><p>No student resumes found in the system.</p></div>';
             return;
           }
 
-          const rows = data.map(d => `
+          const rows = data
+            .map(
+              (d) => `
             <tr class="hover:bg-slate-50 transition-colors">
               <td class="px-4 py-3 font-semibold text-slate-800 text-sm">${d.student_name}</td>
               <td class="px-4 py-3 text-xs text-slate-500">${d.student_email}</td>
               <td class="px-4 py-3 text-xs text-slate-600 max-w-[140px] truncate">${d.education || "—"}</td>
-              <td class="px-4 py-3 text-xs text-slate-600 max-w-[160px]">${Array.isArray(d.skills) ? d.skills.slice(0,4).join(", ") : (d.skills || "—")}</td>
-              <td class="px-4 py-3 text-xs text-slate-600 max-w-[140px] truncate">${Array.isArray(d.projects) ? d.projects.slice(0,2).join(", ") : "—"}</td>
+              <td class="px-4 py-3 text-xs text-slate-600 max-w-[160px]">${Array.isArray(d.skills) ? d.skills.slice(0, 4).join(", ") : d.skills || "—"}</td>
+              <td class="px-4 py-3 text-xs text-slate-600 max-w-[140px] truncate">${Array.isArray(d.projects) ? d.projects.slice(0, 2).join(", ") : "—"}</td>
               <td class="px-4 py-3 text-center">
-                ${d.gemini_score != null
-                  ? `<span class="px-2 py-1 rounded-full text-xs font-bold ${d.gemini_score >= 70 ? "bg-green-100 text-green-700" : d.gemini_score >= 50 ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"}">${d.gemini_score}/100</span>`
-                  : '<span class="text-slate-400 text-xs">N/A</span>'}
+                ${
+                  d.gemini_score != null
+                    ? `<span class="px-2 py-1 rounded-full text-xs font-bold ${d.gemini_score >= 70 ? "bg-green-100 text-green-700" : d.gemini_score >= 50 ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"}">${d.gemini_score}/100</span>`
+                    : '<span class="text-slate-400 text-xs">N/A</span>'
+                }
               </td>
               <td class="px-4 py-3 text-center">
-                <button onclick="adminViewResume(${d.resume_id}, '${(d.resume_name||"Resume").replace(/'/g, "\\\'")}')"
+                <button onclick="adminViewResume(${d.resume_id}, '${(d.resume_name || "Resume").replace(/'/g, "\\\'")}')"
                   class="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg text-xs transition flex items-center gap-1 mx-auto">
                   <i class="fas fa-eye"></i> View
                 </button>
               </td>
-            </tr>`).join("");
+            </tr>`,
+            )
+            .join("");
 
           results.innerHTML = `
             <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
@@ -1499,7 +1509,7 @@
                 <p class="text-sm font-bold text-slate-700">${data.length} resume${data.length !== 1 ? "s" : ""} analyzed</p>
                 <p class="text-xs text-slate-400 mt-0.5">Cached results shown — click Re-run to refresh with latest uploads</p>
               </div>
-              <button onclick="exportAdminOCRCSV()" data-ocr='${JSON.stringify(data).replace(/'/g,"&#39;")}'
+              <button onclick="exportAdminOCRCSV()" data-ocr='${JSON.stringify(data).replace(/'/g, "&#39;")}'
                 class="px-3 py-2 bg-green-50 text-green-700 hover:bg-green-600 hover:text-white rounded-xl text-xs font-medium transition flex items-center gap-2">
                 <i class="fas fa-download"></i> Export CSV
               </button>
@@ -1523,7 +1533,6 @@
 
           // Store data for CSV export
           window._adminOcrData = data;
-
         } catch (err) {
           results.innerHTML = `<div class="p-12 text-center text-red-500"><i class="fas fa-exclamation-triangle text-3xl mb-3 block"></i><p>${err.message}</p></div>`;
         } finally {
@@ -1535,12 +1544,27 @@
       function exportAdminOCRCSV() {
         const data = window._adminOcrData;
         if (!data) return;
-        const cols = ["student_name","student_email","education","skills","experience","projects","certifications","gemini_score"];
+        const cols = [
+          "student_name",
+          "student_email",
+          "education",
+          "skills",
+          "experience",
+          "projects",
+          "certifications",
+          "gemini_score",
+        ];
         const header = cols.join(",");
-        const rows = data.map(d => cols.map(c => {
-          const v = Array.isArray(d[c]) ? d[c].join("; ") : (d[c] ?? "");
-          return `"${String(v).replace(/"/g,'""')}"`;
-        }).join(",")).join("\n");
+        const rows = data
+          .map((d) =>
+            cols
+              .map((c) => {
+                const v = Array.isArray(d[c]) ? d[c].join("; ") : (d[c] ?? "");
+                return `"${String(v).replace(/"/g, '""')}"`;
+              })
+              .join(","),
+          )
+          .join("\n");
         const blob = new Blob([header + "\n" + rows], { type: "text/csv" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
@@ -1549,8 +1573,10 @@
       }
 
       function adminViewResume(resumeId, name) {
-        document.getElementById("admin-pdf-title").textContent = name || "Resume";
-        document.getElementById("admin-pdf-iframe").src = `${API_BASE}/api/resume/${resumeId}/view`;
+        document.getElementById("admin-pdf-title").textContent =
+          name || "Resume";
+        document.getElementById("admin-pdf-iframe").src =
+          `${API_BASE}/api/resume/${resumeId}/view`;
         document.getElementById("admin-pdf-modal").classList.remove("hidden");
         document.body.style.overflow = "hidden";
       }
@@ -1566,7 +1592,9 @@
       // ==========================================
       function adminHandleCSVDrop(e) {
         e.preventDefault();
-        document.getElementById("admin-csv-drop").classList.remove("border-blue-400","bg-blue-50");
+        document
+          .getElementById("admin-csv-drop")
+          .classList.remove("border-blue-400", "bg-blue-50");
         if (e.dataTransfer.files[0]) adminProcessCSV(e.dataTransfer.files[0]);
       }
 
@@ -1576,7 +1604,8 @@
 
       async function adminProcessCSV(file) {
         const div = document.getElementById("admin-bulk-result");
-        div.innerHTML = '<div class="flex items-center gap-2 text-slate-500 text-sm p-4"><i class="fas fa-spinner fa-spin"></i> Processing CSV and registering students...</div>';
+        div.innerHTML =
+          '<div class="flex items-center gap-2 text-slate-500 text-sm p-4"><i class="fas fa-spinner fa-spin"></i> Processing CSV and registering students...</div>';
         div.classList.remove("hidden");
 
         const formData = new FormData();
@@ -1584,7 +1613,10 @@
         formData.append("requester_role", "admin");
 
         try {
-          const res = await fetch(`${API_BASE}/api/admin/bulk-register`, { method: "POST", body: formData });
+          const res = await fetch(`${API_BASE}/api/admin/bulk-register`, {
+            method: "POST",
+            body: formData,
+          });
           const data = await res.json();
 
           if (!res.ok) {
@@ -1596,9 +1628,24 @@
             return;
           }
 
-          const successList = data.details.success.map(s => `<li class="text-green-700 text-xs py-0.5 border-b border-green-100 last:border-0">${s.name} — ${s.email}</li>`).join("");
-          const skipList = data.details.skipped.map(s => `<li class="text-yellow-700 text-xs py-0.5">${s.email} — ${s.reason}</li>`).join("");
-          const failList = data.details.failed.map(s => `<li class="text-red-700 text-xs py-0.5">${s.email} — ${s.reason}</li>`).join("");
+          const successList = data.details.success
+            .map(
+              (s) =>
+                `<li class="text-green-700 text-xs py-0.5 border-b border-green-100 last:border-0">${s.name} — ${s.email}</li>`,
+            )
+            .join("");
+          const skipList = data.details.skipped
+            .map(
+              (s) =>
+                `<li class="text-yellow-700 text-xs py-0.5">${s.email} — ${s.reason}</li>`,
+            )
+            .join("");
+          const failList = data.details.failed
+            .map(
+              (s) =>
+                `<li class="text-red-700 text-xs py-0.5">${s.email} — ${s.reason}</li>`,
+            )
+            .join("");
 
           div.innerHTML = `
             <div class="space-y-4">
@@ -1616,24 +1663,42 @@
                   <p class="text-xs text-red-600 font-medium mt-1">❌ Failed</p>
                 </div>
               </div>
-              ${successList ? `<div class="bg-green-50 border border-green-200 rounded-xl p-4">
+              ${
+                successList
+                  ? `<div class="bg-green-50 border border-green-200 rounded-xl p-4">
                 <p class="text-xs font-bold text-green-700 mb-2 uppercase tracking-wide">Created Students</p>
                 <ul class="max-h-40 overflow-y-auto">${successList}</ul>
-              </div>` : ""}
-              ${skipList ? `<div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
+              </div>`
+                  : ""
+              }
+              ${
+                skipList
+                  ? `<div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
                 <p class="text-xs font-bold text-yellow-700 mb-1">Skipped</p><ul>${skipList}</ul>
-              </div>` : ""}
-              ${failList ? `<div class="bg-red-50 border border-red-200 rounded-xl p-3">
+              </div>`
+                  : ""
+              }
+              ${
+                failList
+                  ? `<div class="bg-red-50 border border-red-200 rounded-xl p-3">
                 <p class="text-xs font-bold text-red-700 mb-1">Failed</p><ul>${failList}</ul>
-              </div>` : ""}
+              </div>`
+                  : ""
+              }
             </div>`;
 
-          showToast(`${data.created} students registered successfully!`, "success");
+          showToast(
+            `${data.created} students registered successfully!`,
+            "success",
+          );
 
           // Refresh user list
           const usersRes = await fetch(`${API_BASE}/api/admin/users`);
-          if (usersRes.ok) { state.users = await usersRes.json(); updateStats(); renderUsers(); }
-
+          if (usersRes.ok) {
+            state.users = await usersRes.json();
+            updateStats();
+            renderUsers();
+          }
         } catch (err) {
           div.innerHTML = `<div class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">Error: ${err.message}</div>`;
         }
@@ -1641,7 +1706,8 @@
 
       function adminDownloadSampleCSV(e) {
         e.preventDefault();
-        const csv = "name,email,password,mentor_email\nRahul Sharma,rahul@example.com,password123,mentor@college.edu\nPriya Singh,priya@example.com,password123,\nAmit Kumar,amit@example.com,password123,mentor@college.edu\n";
+        const csv =
+          "name,email,password,mentor_email\nRahul Sharma,rahul@example.com,password123,mentor@college.edu\nPriya Singh,priya@example.com,password123,\nAmit Kumar,amit@example.com,password123,mentor@college.edu\n";
         const a = document.createElement("a");
         a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
         a.download = "sample_students.csv";
@@ -1656,7 +1722,8 @@
         // --- OCR SECTION ---
         const ocrSection = document.createElement("div");
         ocrSection.id = "sec-ocr";
-        ocrSection.className = "section-container hidden fade-in max-w-7xl mx-auto";
+        ocrSection.className =
+          "section-container hidden fade-in max-w-7xl mx-auto";
         ocrSection.innerHTML = `
           <div class="mb-6 flex items-center justify-between flex-wrap gap-4">
             <div>
@@ -1680,7 +1747,8 @@
         // --- BULK REGISTER SECTION ---
         const bulkSection = document.createElement("div");
         bulkSection.id = "sec-bulkregister";
-        bulkSection.className = "section-container hidden fade-in max-w-3xl mx-auto";
+        bulkSection.className =
+          "section-container hidden fade-in max-w-3xl mx-auto";
         bulkSection.innerHTML = `
           <div class="mb-6">
             <h2 class="text-2xl font-bold text-slate-800">Bulk Register Students</h2>
@@ -1714,7 +1782,8 @@
         // --- PDF VIEWER MODAL ---
         const pdfModal = document.createElement("div");
         pdfModal.id = "admin-pdf-modal";
-        pdfModal.className = "hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4";
+        pdfModal.className =
+          "hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4";
         pdfModal.innerHTML = `
           <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col">
             <div class="flex items-center justify-between p-4 border-b border-slate-200 shrink-0">
