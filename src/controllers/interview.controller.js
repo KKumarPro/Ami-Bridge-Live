@@ -1,0 +1,157 @@
+"use strict";
+
+const companyService  = require("../services/company.service");
+const InterviewModel  = require("../models/interview.model");
+const UserModel       = require("../models/user.model");
+const { pool }        = require("../config/db");
+const R               = require("../utils/response");
+const bcrypt          = require("bcryptjs");
+const { parse }       = require("csv-parse/sync");
+
+// ── Questions ────────────────────────────────────────────────────────────────
+const getQuestions = async (req, res, next) => {
+  try {
+    const questions = await companyService.getQuestions(req.params.companyId);
+    return R.ok(res, questions);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ── Attempts ─────────────────────────────────────────────────────────────────
+const saveAttempt = async (req, res, next) => {
+  try {
+    const { student_id, company_id, total_score, max_score } = req.body;
+    const result = await InterviewModel.saveAttempt(student_id, company_id, total_score, max_score);
+    return R.created(res, result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getAttempts = async (req, res, next) => {
+  try {
+    const result = await InterviewModel.getAttemptsByStudent(req.params.id);
+    return R.ok(res, result.rows);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ── Feedback ─────────────────────────────────────────────────────────────────
+const getFeedback = async (req, res, next) => {
+  try {
+    const result = await InterviewModel.getFeedbackForStudent(req.params.id);
+    return R.ok(res, result.rows);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const saveFeedback = async (req, res, next) => {
+  try {
+    const { mentor_id, student_id, feedback_type, feedback_text } = req.body;
+    if (!mentor_id || !student_id || !feedback_text)
+      return R.badRequest(res, "mentor_id, student_id, and feedback_text are required");
+    const result = await InterviewModel.saveFeedback(
+      mentor_id, student_id, feedback_type || "General", feedback_text
+    );
+    return R.created(res, result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ── Mentor ───────────────────────────────────────────────────────────────────
+const getAssignedStudents = async (req, res, next) => {
+  try {
+    const result = await InterviewModel.getAssignedStudents(req.params.id);
+    return R.ok(res, result.rows);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ── Admin ─────────────────────────────────────────────────────────────────────
+const getAllUsers = async (req, res, next) => {
+  try {
+    const result = await UserModel.getAll();
+    return R.ok(res, result.rows);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const bulkRegister = async (req, res, next) => {
+  if (!req.file) return R.badRequest(res, "No CSV file uploaded");
+
+  try {
+    const csvText = req.file.buffer.toString("utf-8");
+    const records = parse(csvText, { columns: true, skip_empty_lines: true, trim: true });
+
+    if (records.length === 0) return R.badRequest(res, "CSV file is empty");
+
+    const firstRow = records[0];
+    const missing  = ["name", "email", "password"].filter((c) => !(c in firstRow));
+    if (missing.length > 0) {
+      return R.badRequest(res, "CSV missing required columns: " + missing.join(", ") +
+        ". Required: name, email, password. Optional: mentor_email");
+    }
+
+    const results = { success: [], failed: [], skipped: [] };
+
+    for (const record of records) {
+      const { name, email, password, mentor_email } = record;
+      if (!name || !email || !password) {
+        results.failed.push({ email: email || "?", reason: "Missing required fields" });
+        continue;
+      }
+
+      const exists = await pool.query("SELECT id FROM users WHERE email = $1", [email]);
+      if (exists.rows.length > 0) {
+        results.skipped.push({ email, reason: "Already exists" });
+        continue;
+      }
+
+      const salt    = await bcrypt.genSalt(10);
+      const hashed  = await bcrypt.hash(password, salt);
+      const newUser = await pool.query(
+        "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, 'student') RETURNING id, name, email",
+        [name, email, hashed]
+      );
+      const studentId = newUser.rows[0].id;
+
+      if (mentor_email) {
+        const mentorRes = await pool.query(
+          "SELECT id FROM users WHERE email = $1 AND role = 'mentor'", [mentor_email]
+        );
+        if (mentorRes.rows.length > 0) {
+          const mentorId    = mentorRes.rows[0].id;
+          const assignCheck = await InterviewModel.checkAssignmentExists(mentorId, studentId);
+          if (assignCheck.rows.length === 0) {
+            await InterviewModel.assignStudentToMentor(mentorId, studentId);
+          }
+        }
+      }
+
+      results.success.push({ name, email });
+    }
+
+    return R.created(res, {
+      message:  "Bulk registration complete.",
+      total:    records.length,
+      created:  results.success.length,
+      skipped:  results.skipped.length,
+      failed:   results.failed.length,
+      details:  results,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = {
+  getQuestions, saveAttempt, getAttempts,
+  getFeedback, saveFeedback,
+  getAssignedStudents, getAllUsers, bulkRegister,
+};
