@@ -32,40 +32,268 @@
         },
       };
     </script>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <style>
-      /* Custom Scrollbar */
+      * {
+        font-family: "Inter", sans-serif;
+      }
       ::-webkit-scrollbar {
-        width: 8px;
+        width: 6px;
       }
       ::-webkit-scrollbar-track {
-        background: #f1f5f9;
+        background: transparent;
       }
       ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 4px;
+        background: #d8b4fe;
+        border-radius: 8px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
+        background: #c084fc;
       }
-
+      aside {
+        background: linear-gradient(
+          175deg,
+          #0f172a 0%,
+          #2e1065 100%
+        ) !important;
+      }
+      header {
+        background: rgba(255, 255, 255, 0.97) !important;
+        backdrop-filter: blur(20px) !important;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.5) !important;
+        box-shadow: 0 2px 20px rgba(124, 58, 237, 0.07) !important;
+        height: 68px !important;
+      }
+      .welcome-banner {
+        background: linear-gradient(
+          135deg,
+          #7c3aed 0%,
+          #9333ea 60%,
+          #c026d3 100%
+        );
+        border-radius: 20px;
+        padding: 28px 32px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 28px;
+        box-shadow: 0 8px 32px rgba(124, 58, 237, 0.3);
+      }
+      .welcome-banner::before {
+        content: "";
+        position: absolute;
+        top: -60%;
+        right: -5%;
+        width: 380px;
+        height: 380px;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.13) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+      }
+      .stat-card {
+        background: white;
+        border-radius: 18px;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        padding: 24px;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #7c3aed, #c026d3);
+        transform: scaleX(0);
+        transition: transform 0.4s ease;
+        transform-origin: left;
+      }
+      .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 40px rgba(124, 58, 237, 0.15);
+      }
+      .stat-card:hover::before {
+        transform: scaleX(1);
+      }
+      .stat-card:hover .stat-icon {
+        transform: scale(1.12) rotate(-8deg);
+      }
+      .stat-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .panel-card {
+        background: white;
+        border-radius: 20px;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+        transition: box-shadow 0.3s ease;
+        overflow: hidden;
+      }
+      .panel-card:hover {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+      }
+      .mentee-card {
+        background: white;
+        border-radius: 18px;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        padding: 24px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+      .mentee-card::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #7c3aed, #c026d3);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+      }
+      .mentee-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 18px 45px rgba(124, 58, 237, 0.13);
+      }
+      .mentee-card:hover::after {
+        transform: scaleX(1);
+      }
+      aside nav button {
+        border-radius: 10px !important;
+        transition: all 0.2s ease !important;
+      }
       .fade-in {
-        animation: fadeIn 0.3s ease-in-out;
+        animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
       }
-      @keyframes fadeIn {
+      @keyframes fadeInUp {
         from {
           opacity: 0;
-          transform: translateY(10px);
+          transform: translateY(18px);
         }
         to {
           opacity: 1;
           transform: translateY(0);
         }
       }
-
-      /* Modal Backdrop */
+      .stagger-1 {
+        animation-delay: 0.05s;
+      }
+      .stagger-2 {
+        animation-delay: 0.1s;
+      }
+      .stagger-3 {
+        animation-delay: 0.15s;
+      }
+      .bounce-in {
+        animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      }
+      @keyframes bounceIn {
+        from {
+          opacity: 0;
+          transform: scale(0.85);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      .pulse-dot {
+        position: relative;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #10b981;
+        display: inline-block;
+      }
+      .pulse-dot::after {
+        content: "";
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        border: 2px solid #10b981;
+        animation: pulseAnim 1.8s infinite;
+      }
+      @keyframes pulseAnim {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(2.2);
+          opacity: 0;
+        }
+      }
       .modal-backdrop {
-        background-color: rgba(15, 23, 42, 0.6);
-        backdrop-filter: blur(4px);
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(10px);
+      }
+      .main-bg {
+        background: linear-gradient(180deg, #f5f3ff 0%, #fdf4ff10 100%);
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15) !important;
+      }
+      .avatar-ring {
+        box-shadow:
+          0 0 0 3px #7c3aed,
+          0 0 0 5px rgba(255, 255, 255, 0.9);
+      }
+      .section-title {
+        font-size: 24px;
+        font-weight: 800;
+        color: #1e293b;
+        letter-spacing: -0.5px;
+      }
+      .section-subtitle {
+        color: #64748b;
+        font-size: 14px;
+        margin-top: 4px;
+      }
+      .notif-dot {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        width: 9px;
+        height: 9px;
+        background: #ef4444;
+        border-radius: 50%;
+        border: 2px solid white;
+      }
+      .progress-track {
+        height: 6px;
+        background: #e2e8f0;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        border-radius: 6px;
+        background: linear-gradient(90deg, #7c3aed, #c026d3);
+        transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
       }
     </style>
   </head>
@@ -82,16 +310,24 @@
     <aside
       class="w-64 bg-dark text-white flex flex-col transition-all duration-300 shadow-xl z-20 hidden md:flex"
     >
-      <div class="p-6 border-b border-slate-700 flex items-center gap-3">
+      <div
+        class="p-6 border-b border-slate-700/50 flex items-center gap-3"
+        style="background: rgba(255, 255, 255, 0.04)"
+      >
         <div
-          class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-xl"
+          class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-lg"
+          style="
+            background: linear-gradient(135deg, #7c3aed, #c026d3);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.5);
+          "
         >
           A
         </div>
         <div>
           <h2 class="text-xl font-bold tracking-wide">Ami-Bridge</h2>
           <span
-            class="text-xs text-purple-300 font-semibold uppercase tracking-wider"
+            class="text-xs font-semibold uppercase tracking-wider"
+            style="color: #d8b4fe"
             >Mentor Portal</span
           >
         </div>
@@ -169,10 +405,11 @@
           Assigned Students
         </h1>
         <div class="flex items-center gap-4">
-          <div class="relative">
+          <div class="relative cursor-pointer group">
             <i
-              class="fas fa-bell text-slate-400 text-xl cursor-pointer hover:text-primary"
+              class="fas fa-bell text-slate-400 text-xl group-hover:text-primary transition-colors"
             ></i>
+            <span class="notif-dot"></span>
           </div>
           <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
             <div class="text-right hidden sm:block">
@@ -181,9 +418,7 @@
               </p>
               <p class="text-xs text-slate-500">Mentor</p>
             </div>
-            <div
-              class="w-10 h-10 rounded-full bg-slate-200 border-2 border-primary flex items-center justify-center overflow-hidden"
-            >
+            <div class="w-10 h-10 rounded-full overflow-hidden avatar-ring">
               <img
                 id="header-avatar"
                 src=""
@@ -196,16 +431,121 @@
       </header>
 
       <!-- Scrollable Content -->
-      <div class="flex-1 overflow-y-auto p-8 bg-slate-50">
+      <div class="flex-1 overflow-y-auto p-8 main-bg">
         <!-- SECTION: ASSIGNED STUDENTS (Default) -->
         <div
           id="sec-assigned"
           class="section-container block fade-in max-w-7xl mx-auto"
         >
+          <!-- Welcome Banner -->
+          <div class="welcome-banner">
+            <div style="position: relative; z-index: 1">
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 12px;
+                  margin-bottom: 8px;
+                "
+              >
+                <div
+                  style="
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.2);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 22px;
+                  "
+                >
+                  <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div>
+                  <p
+                    style="
+                      font-size: 13px;
+                      opacity: 0.8;
+                      font-weight: 500;
+                      letter-spacing: 0.5px;
+                    "
+                  >
+                    WELCOME BACK
+                  </p>
+                  <h2
+                    style="
+                      font-size: 22px;
+                      font-weight: 800;
+                      letter-spacing: -0.5px;
+                    "
+                    id="welcome-name"
+                  >
+                    Mentor
+                  </h2>
+                </div>
+              </div>
+              <p style="font-size: 14px; opacity: 0.85; max-width: 480px">
+                Guide your assigned students, review their resumes, and track
+                their interview performance — all from one place.
+              </p>
+              <div
+                style="
+                  display: flex;
+                  gap: 16px;
+                  margin-top: 16px;
+                  flex-wrap: wrap;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    font-size: 13px;
+                    background: rgba(255, 255, 255, 0.15);
+                    padding: 6px 14px;
+                    border-radius: 20px;
+                  "
+                >
+                  <span class="pulse-dot"></span>
+                  <span>Active Session</span>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    font-size: 13px;
+                    background: rgba(255, 255, 255, 0.15);
+                    padding: 6px 14px;
+                    border-radius: 20px;
+                  "
+                >
+                  <i class="fas fa-user-graduate"></i>
+                  <span id="banner-mentee-count">Loading students...</span>
+                </div>
+              </div>
+            </div>
+            <img
+              src="https://illustrations.popsy.co/violet/teacher.svg"
+              alt=""
+              style="
+                position: absolute;
+                right: 28px;
+                bottom: 0;
+                height: 155px;
+                opacity: 0.55;
+                z-index: 0;
+                pointer-events: none;
+              "
+            />
+          </div>
+
           <div class="mb-6 flex justify-between items-end">
             <div>
-              <h2 class="text-2xl font-bold text-slate-800">Your Mentees</h2>
-              <p class="text-slate-500 mt-1">
+              <h2 class="section-title">Your Mentees</h2>
+              <p class="section-subtitle">
                 Students currently assigned to you for guidance.
               </p>
             </div>
@@ -229,7 +569,7 @@
           class="section-container hidden fade-in max-w-7xl mx-auto"
         >
           <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4"
+            class="panel-card p-6 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4"
           >
             <div>
               <h3 class="text-lg font-bold text-slate-800">
@@ -254,60 +594,54 @@
           <div id="performance-content" class="hidden">
             <!-- Stats Row -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <div
-                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
-              >
-                <div
-                  class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl"
-                >
+              <div class="stat-card stagger-1">
+                <div class="stat-icon bg-blue-50 text-blue-600">
                   <i class="fas fa-tasks"></i>
                 </div>
                 <div>
-                  <p class="text-sm text-slate-500 font-medium">
+                  <p
+                    class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1"
+                  >
                     Total Attempts
                   </p>
                   <p
-                    class="text-2xl font-bold text-slate-800"
+                    class="text-3xl font-black text-slate-800"
                     id="perf-total-attempts"
                   >
                     0
                   </p>
                 </div>
               </div>
-              <div
-                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
-              >
-                <div
-                  class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xl"
-                >
+              <div class="stat-card stagger-2">
+                <div class="stat-icon bg-green-50 text-green-600">
                   <i class="fas fa-bullseye"></i>
                 </div>
                 <div>
-                  <p class="text-sm text-slate-500 font-medium">
-                    Average Accuracy
+                  <p
+                    class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1"
+                  >
+                    Avg Accuracy
                   </p>
                   <p
-                    class="text-2xl font-bold text-slate-800"
+                    class="text-3xl font-black text-slate-800"
                     id="perf-avg-accuracy"
                   >
                     0%
                   </p>
                 </div>
               </div>
-              <div
-                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
-              >
-                <div
-                  class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xl"
-                >
+              <div class="stat-card stagger-3">
+                <div class="stat-icon bg-purple-50 text-purple-600">
                   <i class="fas fa-trophy"></i>
                 </div>
                 <div>
-                  <p class="text-sm text-slate-500 font-medium">
+                  <p
+                    class="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1"
+                  >
                     Highest Score
                   </p>
                   <p
-                    class="text-2xl font-bold text-slate-800"
+                    class="text-3xl font-black text-slate-800"
                     id="perf-high-score"
                   >
                     0
@@ -317,19 +651,21 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <div
-                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
-              >
-                <h3 class="text-lg font-bold text-slate-800 mb-4">
-                  Accuracy Trend
-                </h3>
+              <div class="panel-card p-6">
+                <div class="flex justify-between items-center mb-4">
+                  <h3 class="text-lg font-bold text-slate-800">
+                    Accuracy Trend
+                  </h3>
+                  <span
+                    class="text-xs bg-purple-50 text-purple-600 px-3 py-1 rounded-full font-semibold"
+                    >Progress</span
+                  >
+                </div>
                 <canvas id="studentTrendChart" height="200"></canvas>
               </div>
 
               <!-- History Table -->
-              <div
-                class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col"
-              >
+              <div class="panel-card flex flex-col">
                 <div class="p-6 border-b border-slate-200 shrink-0">
                   <h3 class="text-lg font-bold text-slate-800">
                     Recent Assessments
@@ -381,16 +717,22 @@
           id="sec-resumes"
           class="section-container hidden fade-in max-w-6xl mx-auto"
         >
-          <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
-          >
-            <div class="p-6 border-b border-slate-200">
-              <h3 class="text-lg font-bold text-slate-800">
-                Resumes Pending Review
-              </h3>
-              <p class="text-sm text-slate-500">
-                Student resumes uploaded for mentor feedback.
-              </p>
+          <div class="panel-card">
+            <div
+              class="p-6 border-b border-slate-200 flex justify-between items-center"
+            >
+              <div>
+                <h3 class="text-lg font-bold text-slate-800">
+                  Resumes Pending Review
+                </h3>
+                <p class="text-sm text-slate-500 mt-0.5">
+                  Student resumes uploaded for mentor feedback.
+                </p>
+              </div>
+              <span
+                class="text-xs bg-yellow-50 text-yellow-600 px-3 py-1.5 rounded-full font-semibold"
+                ><i class="fas fa-clock mr-1"></i>Awaiting</span
+              >
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-left border-collapse">
@@ -423,12 +765,25 @@
         >
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Feedback Form -->
-            <div
-              class="lg:col-span-1 bg-white rounded-xl shadow-sm border border-slate-200 p-6 h-fit"
-            >
-              <h3 class="text-lg font-bold text-slate-800 mb-4">
-                Send Feedback
-              </h3>
+            <div class="panel-card p-6 h-fit lg:col-span-1">
+              <div class="flex items-center gap-3 mb-5">
+                <div
+                  style="
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 10px;
+                    background: linear-gradient(135deg, #7c3aed, #c026d3);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                    font-size: 15px;
+                  "
+                >
+                  <i class="fas fa-paper-plane"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800">Send Feedback</h3>
+              </div>
               <form
                 onsubmit="
                   event.preventDefault();
@@ -484,12 +839,16 @@
             </div>
 
             <!-- Feedback History -->
-            <div
-              class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-6"
-            >
-              <h3 class="text-lg font-bold text-slate-800 mb-4">
-                Past Feedback Sent
-              </h3>
+            <div class="panel-card p-6 lg:col-span-2">
+              <div class="flex items-center justify-between mb-5">
+                <h3 class="text-lg font-bold text-slate-800">
+                  Past Feedback Sent
+                </h3>
+                <span
+                  class="text-xs bg-green-50 text-green-600 px-3 py-1 rounded-full font-semibold"
+                  ><i class="fas fa-history mr-1"></i>History</span
+                >
+              </div>
               <div id="feedback-history-list" class="space-y-4">
                 <!-- Rendered by JS -->
               </div>
@@ -674,7 +1033,7 @@
             <i class="fas fa-robot"></i> Run AI Extraction
           </button>
         </div>
-        <div id="ocr-results" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div id="ocr-results" class="panel-card">
           <div class="p-10 text-center text-slate-400">
             <i class="fas fa-robot text-4xl mb-3 block text-slate-300"></i>
             <p class="font-medium">Click "Run AI Extraction" to analyze all student resumes.</p>
@@ -747,6 +1106,8 @@
         // 2. Set Up UI basics
         document.getElementById("header-user-name").innerText =
           loggedInUser.name;
+        const wn = document.getElementById("welcome-name");
+        if (wn) wn.textContent = loggedInUser.name;
         const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(loggedInUser.name)}`;
         document.getElementById("header-avatar").src = avatarUrl;
 
@@ -1376,7 +1737,8 @@
           info: "bg-primary",
         };
 
-        toast.className = `${colors[type]} text-white px-6 py-3 rounded shadow-lg fade-in flex items-center gap-3`;
+        toast.className = `${colors[type]} text-white px-5 py-3.5 rounded-2xl fade-in flex items-center gap-3`;
+        toast.style.minWidth = "280px";
         toast.innerHTML = `
                 <i class="fas ${type === "success" ? "fa-check-circle" : type === "error" ? "fa-exclamation-circle" : "fa-info-circle"}"></i>
                 <span class="font-medium text-sm">${message}</span>
