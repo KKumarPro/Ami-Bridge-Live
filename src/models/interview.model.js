@@ -42,18 +42,35 @@ const InterviewModel = {
       [mentor_id, student_id, feedback_type, feedback_text],
     ),
 
+  // ── Assignments ──────────────────────────────────────────────────────────────
+
   getAssignedStudents: (mentorId) =>
     pool.query(
       `SELECT ma.assignment_id, u.id AS student_id, u.name, u.email
        FROM mentor_assignments ma
        JOIN users u ON ma.student_id = u.id
-       WHERE ma.mentor_id = $1`,
+       WHERE ma.mentor_id = $1
+       ORDER BY ma.assignment_id DESC`,
       [mentorId],
+    ),
+
+  // NEW — fetch all assignments with names joined (for admin table)
+  getAllAssignments: () =>
+    pool.query(
+      `SELECT ma.assignment_id,
+              ma.mentor_id,  um.name AS mentor_name,
+              ma.student_id, us.name AS student_name
+       FROM mentor_assignments ma
+       JOIN users um ON ma.mentor_id  = um.id
+       JOIN users us ON ma.student_id = us.id
+       ORDER BY ma.assignment_id DESC`,
     ),
 
   assignStudentToMentor: (mentorId, studentId) =>
     pool.query(
-      "INSERT INTO mentor_assignments (mentor_id, student_id) VALUES ($1, $2)",
+      `INSERT INTO mentor_assignments (mentor_id, student_id)
+       VALUES ($1, $2)
+       RETURNING assignment_id`,
       [mentorId, studentId],
     ),
 
@@ -62,25 +79,13 @@ const InterviewModel = {
       "SELECT 1 FROM mentor_assignments WHERE mentor_id = $1 AND student_id = $2",
       [mentorId, studentId],
     ),
+
+  // NEW — remove one assignment row by PK
+  deleteAssignment: (assignmentId) =>
+    pool.query(
+      "DELETE FROM mentor_assignments WHERE assignment_id = $1 RETURNING assignment_id",
+      [assignmentId],
+    ),
 };
 
 module.exports = InterviewModel;
-
-// Patch: added by bug fix — these were missing
-InterviewModel.getAllAssignments = () =>
-  pool.query(
-    `SELECT ma.assignment_id,
-            ma.mentor_id,   m.name AS mentor_name,
-            ma.student_id,  s.name AS student_name,
-            COALESCE(ma.assigned_at::text, ma.created_at::text, NOW()::text) AS assigned_at
-     FROM mentor_assignments ma
-     JOIN users m ON ma.mentor_id  = m.id
-     JOIN users s ON ma.student_id = s.id
-     ORDER BY ma.assignment_id DESC`,
-  );
-
-InterviewModel.deleteAssignment = (assignmentId) =>
-  pool.query(
-    "DELETE FROM mentor_assignments WHERE assignment_id = $1 RETURNING *",
-    [assignmentId],
-  );

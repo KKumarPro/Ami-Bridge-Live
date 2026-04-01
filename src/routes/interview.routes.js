@@ -14,11 +14,13 @@ router.get("/student/:id/attempts", ctrl.getAttempts);
 router.get("/student/:id/feedback", ctrl.getFeedback);
 router.post("/feedback", ctrl.saveFeedback);
 
-// Mentor
+// Mentor — read assigned students
 router.get("/mentor/:id/students", ctrl.getAssignedStudents);
 
-// Admin
+// Admin — users
 router.get("/admin/users", ctrl.getAllUsers);
+
+// Admin — assignments (was completely missing — root cause of the bug)
 router.get("/admin/assignments", ctrl.getAllAssignments);
 router.post("/admin/assignments", ctrl.createAssignment);
 router.delete("/admin/assignments/:id", ctrl.deleteAssignment);

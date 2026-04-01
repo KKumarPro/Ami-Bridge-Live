@@ -1,4 +1,4 @@
-<!-- Admin Dashboard — UI Enhanced (JS untouched) -->
+<!-- Admin Dashboard with all the updates done... -->
 
 <!doctype html>
 <html lang="en">
@@ -6,13 +6,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ami-Bridge | Admin Dashboard</title>
-
-    <!-- Google Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="icon" href="logo.png" type="image/logo.png" />
 
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -43,33 +36,28 @@
       };
     </script>
     <style>
-      * {
-        font-family: "Plus Jakarta Sans", sans-serif;
-      }
-
-      /* ── Scrollbar ── */
+      /* Custom Scrollbar */
       ::-webkit-scrollbar {
-        width: 5px;
+        width: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: transparent;
+        background: #f1f5f9;
       }
       ::-webkit-scrollbar-thumb {
-        background: #c7d2fe;
-        border-radius: 10px;
+        background: #cbd5e1;
+        border-radius: 4px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #a5b4fc;
+        background: #94a3b8;
       }
 
-      /* ── Page fade-in ── */
       .fade-in {
-        animation: fadeInUp 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+        animation: fadeIn 0.3s ease-in-out;
       }
-      @keyframes fadeInUp {
+      @keyframes fadeIn {
         from {
           opacity: 0;
-          transform: translateY(14px);
+          transform: translateY(10px);
         }
         to {
           opacity: 1;
@@ -77,529 +65,136 @@
         }
       }
 
-      /* ── Sidebar ── */
-      aside {
-        background: linear-gradient(168deg, #0f172a 0%, #1e1b4b 100%);
-        border-right: 1px solid rgba(255, 255, 255, 0.05);
-      }
-      .nav-item {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 14px;
-        border-radius: 10px;
-        font-size: 14px;
-        font-weight: 600;
-        color: #94a3b8;
-        transition: all 0.18s ease;
-        cursor: pointer;
-        border: none;
-        background: transparent;
-        text-align: left;
-      }
-      .nav-item:hover {
-        background: rgba(255, 255, 255, 0.06);
-        color: #e2e8f0;
-      }
-      .nav-item.active {
-        background: linear-gradient(135deg, #4f46e5, #6d28d9);
-        color: white;
-        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
-      }
-      .nav-item .nav-icon {
-        width: 18px;
-        text-align: center;
-        flex-shrink: 0;
-      }
-
-      /* ── Header ── */
-      header {
-        background: rgba(255, 255, 255, 0.97);
-        backdrop-filter: blur(16px);
-        border-bottom: 1px solid rgba(226, 232, 240, 0.7);
-        box-shadow: 0 1px 12px rgba(79, 70, 229, 0.06);
-      }
-
-      /* ── Main background ── */
-      .main-bg {
-        background: linear-gradient(160deg, #f1f5f9 0%, #eef2ff 100%);
-      }
-
-      /* ── Stat cards ── */
-      .stat-card {
-        background: white;
-        border-radius: 16px;
-        border: 1px solid rgba(226, 232, 240, 0.8);
-        padding: 22px 24px;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-        transition:
-          transform 0.25s ease,
-          box-shadow 0.25s ease;
-        position: relative;
-        overflow: hidden;
-      }
-      .stat-card::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: var(--accent, #4f46e5);
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: transform 0.3s ease;
-      }
-      .stat-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.09);
-      }
-      .stat-card:hover::after {
-        transform: scaleX(1);
-      }
-      .stat-icon {
-        width: 52px;
-        height: 52px;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        flex-shrink: 0;
-        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-      .stat-card:hover .stat-icon {
-        transform: scale(1.12) rotate(-6deg);
-      }
-      .stat-label {
-        font-size: 11px;
-        font-weight: 700;
-        color: #94a3b8;
-        text-transform: uppercase;
-        letter-spacing: 0.6px;
-      }
-      .stat-value {
-        font-size: 28px;
-        font-weight: 800;
-        color: #1e293b;
-        line-height: 1.1;
-        margin-top: 2px;
-      }
-
-      /* ── Panel cards (charts, tables, forms) ── */
-      .panel {
-        background: white;
-        border-radius: 18px;
-        border: 1px solid rgba(226, 232, 240, 0.8);
-        box-shadow: 0 2px 14px rgba(0, 0, 0, 0.04);
-        overflow: hidden;
-        transition: box-shadow 0.25s ease;
-      }
-      .panel:hover {
-        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
-      }
-      .panel-header {
-        padding: 18px 24px;
-        border-bottom: 1px solid #f1f5f9;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-      .panel-title {
-        font-size: 15px;
-        font-weight: 700;
-        color: #1e293b;
-      }
-
-      /* ── Section heading ── */
-      .section-heading {
-        font-size: 22px;
-        font-weight: 800;
-        color: #1e293b;
-        letter-spacing: -0.4px;
-      }
-      .section-sub {
-        font-size: 13px;
-        color: #64748b;
-        margin-top: 3px;
-      }
-
-      /* ── Buttons ── */
-      .btn-primary {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        padding: 10px 18px;
-        background: linear-gradient(135deg, #4f46e5, #6d28d9);
-        color: white;
-        font-size: 13px;
-        font-weight: 700;
-        border-radius: 10px;
-        border: none;
-        cursor: pointer;
-        box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
-        transition: all 0.2s ease;
-      }
-      .btn-primary:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
-      }
-      .btn-primary:active {
-        transform: none;
-      }
-
-      /* ── Table rows ── */
-      .data-row {
-        transition: background 0.15s;
-      }
-      .data-row:hover {
-        background: #f8faff;
-      }
-
-      /* ── Role badges ── */
-      .badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
-      }
-      .badge-admin {
-        background: #fee2e2;
-        color: #b91c1c;
-      }
-      .badge-mentor {
-        background: #ede9fe;
-        color: #6d28d9;
-      }
-      .badge-student {
-        background: #dbeafe;
-        color: #1d4ed8;
-      }
-
-      /* ── Modal ── */
+      /* Modal Backdrop */
       .modal-backdrop {
-        background: rgba(15, 23, 42, 0.65);
-        backdrop-filter: blur(8px);
-      }
-      .modal-card {
-        border-radius: 20px !important;
-        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.22) !important;
-      }
-
-      /* ── Avatar ring ── */
-      .avatar-ring {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        overflow: hidden;
-        box-shadow:
-          0 0 0 2px #4f46e5,
-          0 0 0 4px rgba(79, 70, 229, 0.15);
-      }
-
-      /* ── Toast ── */
-      .toast-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 13px 18px;
-        border-radius: 14px;
-        font-size: 13px;
-        font-weight: 600;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        animation: toastIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        min-width: 260px;
-      }
-      @keyframes toastIn {
-        from {
-          opacity: 0;
-          transform: translateX(40px) scale(0.9);
-        }
-        to {
-          opacity: 1;
-          transform: translateX(0) scale(1);
-        }
-      }
-
-      /* ── Pulse dot ── */
-      .live-dot {
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #10b981;
-        position: relative;
-      }
-      .live-dot::after {
-        content: "";
-        position: absolute;
-        inset: -3px;
-        border-radius: 50%;
-        border: 2px solid #10b981;
-        animation: pulse 1.8s infinite;
-      }
-      @keyframes pulse {
-        0% {
-          transform: scale(1);
-          opacity: 1;
-        }
-        100% {
-          transform: scale(2.2);
-          opacity: 0;
-        }
-      }
-
-      /* ── Stagger ── */
-      .s1 {
-        animation-delay: 0.05s;
-      }
-      .s2 {
-        animation-delay: 0.1s;
-      }
-      .s3 {
-        animation-delay: 0.15s;
-      }
-      .s4 {
-        animation-delay: 0.2s;
-      }
-
-      /* ── Welcome banner ── */
-      .welcome-banner {
-        border-radius: 18px;
-        padding: 26px 30px;
-        background: linear-gradient(
-          135deg,
-          #4f46e5 0%,
-          #7c3aed 60%,
-          #9333ea 100%
-        );
-        color: white;
-        position: relative;
-        overflow: hidden;
-        box-shadow: 0 8px 32px rgba(79, 70, 229, 0.28);
-        margin-bottom: 24px;
-      }
-      .welcome-banner::before {
-        content: "";
-        position: absolute;
-        top: -50%;
-        right: -8%;
-        width: 340px;
-        height: 340px;
-        border-radius: 50%;
-        background: radial-gradient(
-          circle,
-          rgba(255, 255, 255, 0.12) 0%,
-          transparent 70%
-        );
-      }
-      .welcome-banner::after {
-        content: "";
-        position: absolute;
-        bottom: -40%;
-        right: 22%;
-        width: 180px;
-        height: 180px;
-        border-radius: 50%;
-        background: radial-gradient(
-          circle,
-          rgba(255, 255, 255, 0.07) 0%,
-          transparent 70%
-        );
-      }
-
-      /* ── Search & Filter ── */
-      #filter-dropdown {
-        animation: dropIn 0.18s cubic-bezier(0.4, 0, 0.2, 1);
-        transform-origin: top left;
-      }
-      @keyframes dropIn {
-        from {
-          opacity: 0;
-          transform: translateY(-6px) scale(0.97);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
-      }
-      .role-opt {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        width: 100%;
-        padding: 9px 14px;
-        font-size: 13px;
-        font-weight: 600;
-        color: #475569;
-        border: none;
-        background: transparent;
-        cursor: pointer;
-        transition: background 0.15s;
-        text-align: left;
-      }
-      .role-opt:hover {
-        background: #f8fafc;
-      }
-      .role-opt.active {
-        background: #eef2ff;
-        color: #4f46e5;
-      }
-      .role-opt .opt-icon {
-        width: 28px;
-        height: 28px;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 11px;
-        flex-shrink: 0;
-      }
-      #filter-btn.is-active {
-        border-color: #4f46e5;
-        background: #eef2ff;
-        color: #4f46e5;
+        background-color: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
       }
     </style>
   </head>
   <body
-    class="bg-slate-50 text-slate-800 antialiased flex h-screen overflow-hidden"
+    class="bg-slate-50 text-slate-800 font-sans antialiased flex h-screen overflow-hidden"
   >
-    <!-- Toast Container -->
+    <!-- Toast Notification Container -->
     <div
       id="toast-container"
       class="fixed top-5 right-5 z-50 flex flex-col gap-2"
     ></div>
 
-    <!-- ══════════════════════════════════════════
-         SIDEBAR
-    ══════════════════════════════════════════ -->
-    <aside class="w-64 flex flex-col shadow-2xl z-20 shrink-0">
-      <!-- Logo -->
-      <div class="p-5 border-b border-white/10 flex items-center gap-3">
+    <!-- Sidebar Navigation -->
+    <aside
+      class="w-64 bg-dark text-white flex flex-col transition-all duration-300 shadow-xl z-20"
+    >
+      <div class="p-6 border-b border-slate-700 flex items-center gap-3">
         <div
-          class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-white text-lg"
-          style="
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.5);
-          "
+          class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-xl"
         >
           A
         </div>
         <div>
-          <h2 class="text-lg font-bold text-white tracking-tight">
-            Ami-Bridge
-          </h2>
+          <h2 class="text-xl font-bold tracking-wide">Ami-Bridge</h2>
           <span
-            class="text-xs font-semibold uppercase tracking-widest"
-            style="color: #a5b4fc"
+            class="text-xs text-indigo-300 font-semibold uppercase tracking-wider"
             >Admin Portal</span
           >
         </div>
       </div>
 
-      <!-- Nav -->
-      <nav class="flex-1 py-5 px-3 space-y-1 overflow-y-auto">
+      <nav class="flex-1 py-6 px-3 space-y-2 overflow-y-auto">
         <button
           onclick="navigate('analytics')"
           id="nav-analytics"
-          class="nav-item active"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white transition-colors"
         >
-          <i class="fas fa-chart-pie nav-icon"></i
-          ><span>Platform Analytics</span>
+          <i class="fas fa-chart-pie w-5"></i>
+          <span class="font-medium">Platform Analytics</span>
         </button>
-        <button onclick="navigate('users')" id="nav-users" class="nav-item">
-          <i class="fas fa-users nav-icon"></i><span>User Management</span>
+        <button
+          onclick="navigate('users')"
+          id="nav-users"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+        >
+          <i class="fas fa-users w-5"></i>
+          <span class="font-medium">User Management</span>
         </button>
         <button
           onclick="navigate('companies')"
           id="nav-companies"
-          class="nav-item"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
         >
-          <i class="fas fa-building nav-icon"></i><span>Company Config</span>
+          <i class="fas fa-building w-5"></i>
+          <span class="font-medium">Company Config</span>
         </button>
         <button
           onclick="navigate('questions')"
           id="nav-questions"
-          class="nav-item"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
         >
-          <i class="fas fa-database nav-icon"></i><span>Question Bank</span>
+          <i class="fas fa-database w-5"></i>
+          <span class="font-medium">Question Bank</span>
         </button>
-        <button onclick="navigate('mentors')" id="nav-mentors" class="nav-item">
-          <i class="fas fa-chalkboard-teacher nav-icon"></i
-          ><span>Mentor Assignment</span>
+        <button
+          onclick="navigate('mentors')"
+          id="nav-mentors"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+        >
+          <i class="fas fa-chalkboard-teacher w-5"></i>
+          <span class="font-medium">Mentor Assignment</span>
         </button>
-        <button onclick="navigate('ocr')" id="nav-ocr" class="nav-item">
-          <i class="fas fa-robot nav-icon"></i><span>AI Resume OCR</span>
+        <button
+          onclick="navigate('ocr')"
+          id="nav-ocr"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+        >
+          <i class="fas fa-robot w-5"></i>
+          <span class="font-medium">AI Resume OCR</span>
         </button>
         <button
           onclick="navigate('bulkregister')"
           id="nav-bulkregister"
-          class="nav-item"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
         >
-          <i class="fas fa-file-csv nav-icon"></i><span>Bulk Register</span>
+          <i class="fas fa-file-csv w-5"></i>
+          <span class="font-medium">Bulk Register</span>
         </button>
       </nav>
 
-      <!-- Logout -->
-      <div class="p-4 border-t border-white/10">
+      <div class="p-4 border-t border-slate-700">
         <button
           onclick="logout()"
-          class="nav-item w-full"
-          style="color: #fca5a5"
-          onmouseover="
-            this.style.background = 'rgba(239,68,68,0.15)';
-            this.style.color = '#f87171';
-          "
-          onmouseout="
-            this.style.background = 'transparent';
-            this.style.color = '#fca5a5';
-          "
+          class="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-red-400 hover:bg-red-500 hover:text-white transition-colors"
         >
-          <i class="fas fa-sign-out-alt nav-icon"></i><span>Logout</span>
+          <i class="fas fa-sign-out-alt w-5"></i>
+          <span class="font-medium">Logout</span>
         </button>
       </div>
     </aside>
 
-    <!-- ══════════════════════════════════════════
-         MAIN
-    ══════════════════════════════════════════ -->
-    <main class="flex-1 flex flex-col h-screen overflow-hidden">
-      <!-- Header -->
-      <header class="h-16 flex items-center justify-between px-7 z-10 shrink-0">
-        <h1 id="page-title" class="text-lg font-bold text-slate-800">
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+      <!-- Top Header -->
+      <header
+        class="bg-white shadow-sm h-16 flex items-center justify-between px-8 z-10 shrink-0"
+      >
+        <h1 id="page-title" class="text-xl font-bold text-slate-800">
           Platform Analytics
         </h1>
         <div class="flex items-center gap-4">
-          <!-- Bell -->
-          <div class="relative cursor-pointer">
+          <div class="relative">
             <i
-              class="fas fa-bell text-slate-400 text-lg hover:text-primary transition-colors"
+              class="fas fa-bell text-slate-400 text-xl cursor-pointer hover:text-primary"
             ></i>
-            <span
-              class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"
-            ></span>
           </div>
-          <!-- User -->
           <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
             <div class="text-right hidden sm:block">
               <p class="text-sm font-bold text-slate-700" id="header-user-name">
                 Loading...
               </p>
-              <p class="text-xs text-slate-400 font-medium">Superuser</p>
+              <p class="text-xs text-slate-500">Superuser</p>
             </div>
-            <div class="avatar-ring">
+            <div
+              class="w-10 h-10 rounded-full bg-slate-200 border-2 border-primary flex items-center justify-center overflow-hidden"
+            >
               <img
                 id="header-avatar"
                 src=""
@@ -611,300 +206,156 @@
         </div>
       </header>
 
-      <!-- Scrollable content -->
-      <div class="flex-1 overflow-y-auto p-7 main-bg">
-        <!-- ── SECTION: ANALYTICS ── -->
+      <!-- Scrollable Content -->
+      <div class="flex-1 overflow-y-auto p-8 bg-slate-50">
+        <!-- SECTION: ANALYTICS -->
         <div
           id="sec-analytics"
           class="section-container block fade-in max-w-7xl mx-auto"
         >
-          <!-- Welcome Banner -->
-          <div class="welcome-banner">
-            <div style="position: relative; z-index: 1">
-              <p
-                class="text-xs font-bold uppercase tracking-widest mb-1"
-                style="opacity: 0.75"
-              >
-                Welcome back
-              </p>
-              <h2 class="text-2xl font-black tracking-tight" id="banner-name">
-                Admin
-              </h2>
-              <p class="text-sm mt-1.5 max-w-md" style="opacity: 0.8">
-                Monitor platform activity, manage users &amp; companies, and
-                assign mentors — all from one place.
-              </p>
-              <div class="flex items-center gap-3 mt-4 flex-wrap">
-                <span
-                  class="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full"
-                  style="background: rgba(255, 255, 255, 0.18)"
-                >
-                  <span class="live-dot"></span> Platform Live
-                </span>
-                <span
-                  class="flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full"
-                  style="background: rgba(255, 255, 255, 0.18)"
-                >
-                  <i class="fas fa-shield-alt"></i> Admin Access
-                </span>
-              </div>
-            </div>
-          </div>
-
           <!-- Stats Row -->
           <div
-            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6"
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
           >
-            <div class="stat-card s1 fade-in" style="--accent: #3b82f6">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
+            >
               <div
-                class="stat-icon"
-                style="background: #eff6ff; color: #2563eb"
+                class="w-14 h-14 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-2xl"
               >
                 <i class="fas fa-user-graduate"></i>
               </div>
               <div>
-                <p class="stat-label">Total Students</p>
-                <p class="stat-value" id="stat-students">0</p>
+                <p class="text-sm text-slate-500 font-medium">Total Students</p>
+                <p class="text-2xl font-bold text-slate-800" id="stat-students">
+                  0
+                </p>
               </div>
             </div>
-            <div class="stat-card s2 fade-in" style="--accent: #8b5cf6">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
+            >
               <div
-                class="stat-icon"
-                style="background: #f5f3ff; color: #7c3aed"
+                class="w-14 h-14 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center text-2xl"
               >
                 <i class="fas fa-chalkboard-teacher"></i>
               </div>
               <div>
-                <p class="stat-label">Total Mentors</p>
-                <p class="stat-value" id="stat-mentors">0</p>
+                <p class="text-sm text-slate-500 font-medium">Total Mentors</p>
+                <p class="text-2xl font-bold text-slate-800" id="stat-mentors">
+                  0
+                </p>
               </div>
             </div>
-            <div class="stat-card s3 fade-in" style="--accent: #f97316">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
+            >
               <div
-                class="stat-icon"
-                style="background: #fff7ed; color: #ea580c"
+                class="w-14 h-14 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center text-2xl"
               >
                 <i class="fas fa-building"></i>
               </div>
               <div>
-                <p class="stat-label">Companies Setup</p>
-                <p class="stat-value" id="stat-companies">0</p>
+                <p class="text-sm text-slate-500 font-medium">
+                  Companies Setup
+                </p>
+                <p
+                  class="text-2xl font-bold text-slate-800"
+                  id="stat-companies"
+                >
+                  0
+                </p>
               </div>
             </div>
-            <div class="stat-card s4 fade-in" style="--accent: #10b981">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
+            >
               <div
-                class="stat-icon"
-                style="background: #ecfdf5; color: #059669"
+                class="w-14 h-14 rounded-full bg-green-50 text-green-600 flex items-center justify-center text-2xl"
               >
                 <i class="fas fa-laptop-code"></i>
               </div>
               <div>
-                <p class="stat-label">Assessments Taken</p>
-                <p class="stat-value" id="stat-attempts">0</p>
+                <p class="text-sm text-slate-500 font-medium">
+                  Assessments Taken
+                </p>
+                <p class="text-2xl font-bold text-slate-800" id="stat-attempts">
+                  0
+                </p>
               </div>
             </div>
           </div>
 
           <!-- Charts Row -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
-            <div class="panel">
-              <div class="panel-header">
-                <span class="panel-title"
-                  >Platform Usage
-                  <span class="text-slate-400 font-normal text-sm"
-                    >(Last 7 Days)</span
-                  ></span
-                >
-                <span
-                  class="text-xs font-bold px-2.5 py-1 rounded-full"
-                  style="background: #eef2ff; color: #4f46e5"
-                  >Live</span
-                >
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+            >
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-800">
+                  Platform Usage (Last 7 Days)
+                </h3>
               </div>
-              <div class="p-5">
-                <canvas id="usageChart" height="200"></canvas>
-              </div>
+              <canvas id="usageChart" height="200"></canvas>
             </div>
-            <div class="panel">
-              <div class="panel-header">
-                <span class="panel-title">User Distribution</span>
-                <span
-                  class="text-xs font-bold px-2.5 py-1 rounded-full"
-                  style="background: #f5f3ff; color: #7c3aed"
-                  >Overview</span
-                >
-              </div>
-              <div class="p-5">
-                <canvas id="userDistChart" height="200"></canvas>
-              </div>
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+            >
+              <h3 class="text-lg font-bold text-slate-800 mb-4">
+                User Distribution
+              </h3>
+              <canvas id="userDistChart" height="200"></canvas>
             </div>
           </div>
         </div>
 
-        <!-- ── SECTION: USERS ── -->
+        <!-- SECTION: USERS -->
         <div
           id="sec-users"
           class="section-container hidden fade-in max-w-7xl mx-auto"
         >
-          <div class="panel">
-            <!-- Toolbar -->
-            <div class="panel-header flex-wrap gap-3">
-              <div class="flex items-center gap-2 flex-1 min-w-0">
-                <!-- Search -->
-                <div
-                  class="relative"
-                  style="min-width: 200px; flex: 1; max-width: 300px"
-                >
+          <div
+            class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+          >
+            <div
+              class="p-6 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4"
+            >
+              <div class="flex items-center gap-4 w-full sm:w-auto">
+                <div class="relative flex-1 sm:w-64">
                   <i
-                    class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"
+                    class="fas fa-search absolute left-3 top-3 text-slate-400"
                   ></i>
                   <input
-                    id="user-search-input"
                     type="text"
-                    placeholder="Search by name or email…"
-                    oninput="filterUsers()"
-                    class="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl outline-none transition focus:border-primary"
-                    style="font-family: inherit"
+                    placeholder="Search users..."
+                    class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
                   />
                 </div>
-
-                <!-- Filter button + dropdown -->
-                <div class="relative" id="filter-wrap">
-                  <button
-                    id="filter-btn"
-                    onclick="toggleFilterDrop()"
-                    class="flex items-center gap-2 px-3.5 py-2.5 text-sm font-semibold border border-slate-200 rounded-xl bg-white hover:border-primary transition-all"
-                    style="font-family: inherit; white-space: nowrap"
-                  >
-                    <i class="fas fa-sliders-h text-slate-400 text-xs"></i>
-                    <span id="filter-label">All Roles</span>
-                    <i
-                      class="fas fa-chevron-down text-slate-400 text-xs transition-transform"
-                      id="filter-chevron"
-                    ></i>
-                  </button>
-
-                  <div
-                    id="filter-dropdown"
-                    class="hidden absolute left-0 top-full mt-2 z-30 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden"
-                    style="min-width: 195px"
-                  >
-                    <div class="px-4 py-2.5 border-b border-slate-100">
-                      <span
-                        class="text-xs font-bold text-slate-400 uppercase tracking-wider"
-                        >Filter by Role</span
-                      >
-                    </div>
-                    <div class="py-1.5">
-                      <button
-                        onclick="setFilter('all')"
-                        id="rf-all"
-                        class="role-opt active"
-                      >
-                        <span
-                          class="opt-icon"
-                          style="background: #f1f5f9; color: #475569"
-                          ><i class="fas fa-users"></i
-                        ></span>
-                        All Roles
-                        <span
-                          id="cnt-all"
-                          class="ml-auto text-xs font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500"
-                        ></span>
-                      </button>
-                      <button
-                        onclick="setFilter('student')"
-                        id="rf-student"
-                        class="role-opt"
-                      >
-                        <span
-                          class="opt-icon"
-                          style="background: #dbeafe; color: #1d4ed8"
-                          ><i class="fas fa-user-graduate"></i
-                        ></span>
-                        Students
-                        <span
-                          id="cnt-student"
-                          class="ml-auto text-xs font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-500"
-                        ></span>
-                      </button>
-                      <button
-                        onclick="setFilter('mentor')"
-                        id="rf-mentor"
-                        class="role-opt"
-                      >
-                        <span
-                          class="opt-icon"
-                          style="background: #ede9fe; color: #6d28d9"
-                          ><i class="fas fa-chalkboard-teacher"></i
-                        ></span>
-                        Mentors
-                        <span
-                          id="cnt-mentor"
-                          class="ml-auto text-xs font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-500"
-                        ></span>
-                      </button>
-                      <button
-                        onclick="setFilter('admin')"
-                        id="rf-admin"
-                        class="role-opt"
-                      >
-                        <span
-                          class="opt-icon"
-                          style="background: #fee2e2; color: #b91c1c"
-                          ><i class="fas fa-shield-alt"></i
-                        ></span>
-                        Admins
-                        <span
-                          id="cnt-admin"
-                          class="ml-auto text-xs font-bold px-2 py-0.5 rounded-full bg-red-50 text-red-500"
-                        ></span>
-                      </button>
-                    </div>
-                    <div
-                      class="px-4 py-2.5 border-t border-slate-100 flex justify-between items-center"
-                    >
-                      <span class="text-xs text-slate-400">Active:</span>
-                      <span
-                        id="active-chip"
-                        class="text-xs font-bold px-2.5 py-1 rounded-full text-white"
-                        style="background: #4f46e5"
-                        >All</span
-                      >
-                    </div>
-                  </div>
-                </div>
-                <!-- /filter -->
-
-                <span
-                  id="result-count"
-                  class="text-xs text-slate-400 font-medium hidden sm:block"
-                ></span>
+                <select
+                  class="border border-slate-300 rounded-lg py-2 px-4 focus:ring-2 focus:ring-primary outline-none"
+                >
+                  <option value="all">All Roles</option>
+                  <option value="student">Students</option>
+                  <option value="mentor">Mentors</option>
+                </select>
               </div>
-
-              <!-- Add user button -->
               <button
                 onclick="openModal('user-modal')"
-                class="btn-primary shrink-0"
+                class="px-5 py-2 bg-primary text-white rounded-lg hover:bg-primaryHover transition flex items-center gap-2 font-medium shrink-0"
               >
                 <i class="fas fa-plus"></i> Add User
               </button>
             </div>
-
-            <!-- Table -->
             <div class="overflow-x-auto">
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr
-                    class="text-xs uppercase tracking-wider"
-                    style="background: #f8fafc; color: #94a3b8"
+                    class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider"
                   >
-                    <th class="px-6 py-3.5 font-semibold">User Details</th>
-                    <th class="px-6 py-3.5 font-semibold">Role</th>
-                    <th class="px-6 py-3.5 font-semibold">Joined Date</th>
-                    <th class="px-6 py-3.5 font-semibold text-right">
-                      Actions
-                    </th>
+                    <th class="px-6 py-4 font-semibold">User Details</th>
+                    <th class="px-6 py-4 font-semibold">Role</th>
+                    <th class="px-6 py-4 font-semibold">Joined Date</th>
+                    <th class="px-6 py-4 font-semibold text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody
@@ -918,173 +369,182 @@
           </div>
         </div>
 
-        <!-- ── SECTION: COMPANIES ── -->
+        <!-- SECTION: COMPANIES -->
         <div
           id="sec-companies"
           class="section-container hidden fade-in max-w-7xl mx-auto"
         >
-          <div class="mb-5 flex justify-between items-end">
+          <div class="mb-6 flex justify-between items-end">
             <div>
-              <h2 class="section-heading">Company Configuration</h2>
-              <p class="section-sub">
-                Manage target companies and their interview profiles.
+              <h2 class="text-2xl font-bold text-slate-800">
+                Company Configuration
+              </h2>
+              <p class="text-slate-500 mt-1">
+                Manage target companies and their profiles.
               </p>
             </div>
-            <button onclick="openModal('company-modal')" class="btn-primary">
+            <button
+              onclick="openModal('company-modal')"
+              class="px-5 py-2 bg-primary text-white rounded-lg hover:bg-primaryHover transition flex items-center gap-2 font-medium"
+            >
               <i class="fas fa-plus"></i> Add Company
             </button>
           </div>
+
           <div
-            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             id="admin-company-grid"
           ></div>
         </div>
 
-        <!-- ── SECTION: QUESTIONS ── -->
+        <!-- SECTION: QUESTIONS -->
         <div
           id="sec-questions"
           class="section-container hidden fade-in max-w-7xl mx-auto"
         >
-          <div class="panel">
-            <div class="panel-header" style="background: #f8fafc">
-              <div class="flex items-center gap-3 flex-wrap">
-                <label class="text-sm font-bold text-slate-600"
+          <div
+            class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+          >
+            <div
+              class="p-6 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50"
+            >
+              <div class="flex items-center gap-3 w-full sm:w-auto">
+                <label class="font-semibold text-slate-700"
                   >Target Company:</label
                 >
                 <select
                   id="q-company-filter"
                   onchange="renderQuestions()"
-                  class="border border-slate-200 rounded-xl py-2 px-4 outline-none text-sm font-semibold"
-                  style="min-width: 200px; font-family: inherit"
+                  class="border border-slate-300 rounded-lg py-2 px-4 focus:ring-2 focus:ring-primary outline-none bg-white min-w-[200px]"
                 >
                   <!-- Populated by JS -->
                 </select>
               </div>
               <button
                 onclick="openModal('question-modal')"
-                class="btn-primary shrink-0"
+                class="px-5 py-2 bg-primary text-white rounded-lg hover:bg-primaryHover transition flex items-center gap-2 font-medium shrink-0 shadow-sm"
               >
                 <i class="fas fa-plus"></i> Add Question
               </button>
             </div>
             <div class="p-6">
-              <div class="space-y-3" id="questions-list"></div>
+              <div class="space-y-4" id="questions-list">
+                <!-- Rendered by JS -->
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- ── SECTION: MENTORS ── -->
+        <!-- SECTION: MENTORS -->
         <div
           id="sec-mentors"
           class="section-container hidden fade-in max-w-6xl mx-auto"
         >
           <!-- Assignment Form -->
-          <div class="panel mb-5">
-            <div class="panel-header">
-              <span class="panel-title">Create New Mentor Assignment</span>
-            </div>
-            <div class="p-6">
-              <form
-                class="flex flex-col md:flex-row gap-4 items-end"
-                onsubmit="
-                  event.preventDefault();
-                  assignMentor();
-                "
+          <div
+            class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8"
+          >
+            <h3 class="text-lg font-bold text-slate-800 mb-4">
+              Create New Mentor Assignment
+            </h3>
+            <form
+              class="flex flex-col md:flex-row gap-4 items-end"
+              onsubmit="
+                event.preventDefault();
+                assignMentor();
+              "
+            >
+              <div class="flex-1 w-full">
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Select Mentor</label
+                >
+                <select
+                  id="assign-mentor-select"
+                  class="w-full border border-slate-300 rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-primary outline-none"
+                  required
+                >
+                  <!-- Rendered by JS -->
+                </select>
+              </div>
+              <div
+                class="flex items-center justify-center w-full md:w-10 text-slate-400 pb-3 hidden md:flex"
               >
-                <div class="flex-1 w-full">
-                  <label
-                    class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5"
-                    >Select Mentor</label
-                  >
-                  <select
-                    id="assign-mentor-select"
-                    class="w-full border border-slate-200 rounded-xl py-2.5 px-4 text-sm font-semibold outline-none focus:border-primary transition"
-                    style="font-family: inherit"
-                    required
-                  ></select>
-                </div>
-                <div
-                  class="flex items-center justify-center text-slate-300 pb-3 hidden md:flex"
+                <i class="fas fa-arrow-right"></i>
+              </div>
+              <div class="flex-1 w-full">
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Select Student</label
                 >
-                  <i class="fas fa-arrow-right"></i>
-                </div>
-                <div class="flex-1 w-full">
-                  <label
-                    class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5"
-                    >Select Student</label
-                  >
-                  <select
-                    id="assign-student-select"
-                    class="w-full border border-slate-200 rounded-xl py-2.5 px-4 text-sm font-semibold outline-none focus:border-primary transition"
-                    style="font-family: inherit"
-                    required
-                  ></select>
-                </div>
-                <button
-                  type="submit"
-                  class="btn-primary w-full md:w-auto"
-                  style="padding: 11px 24px"
+                <select
+                  id="assign-student-select"
+                  class="w-full border border-slate-300 rounded-lg py-2.5 px-4 focus:ring-2 focus:ring-primary outline-none"
+                  required
                 >
-                  Assign Pair
-                </button>
-              </form>
-            </div>
+                  <!-- Rendered by JS -->
+                </select>
+              </div>
+              <button
+                type="submit"
+                class="w-full md:w-auto px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primaryHover transition font-medium shadow-md"
+              >
+                Assign Pair
+              </button>
+            </form>
           </div>
 
           <!-- Assignment List -->
-          <div class="panel">
-            <div class="panel-header">
-              <span class="panel-title"
-                >Current Mentor-Student Assignments</span
-              >
+          <div
+            class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+          >
+            <div class="p-6 border-b border-slate-200">
+              <h3 class="text-lg font-bold text-slate-800">
+                Current Mentor-Student Assignments
+              </h3>
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr
-                    class="text-xs uppercase tracking-wider"
-                    style="background: #f8fafc; color: #94a3b8"
+                    class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider"
                   >
-                    <th class="px-6 py-3.5 font-semibold">Mentor</th>
-                    <th class="px-6 py-3.5 font-semibold">Assigned Student</th>
-                    <th class="px-6 py-3.5 font-semibold">Assignment Date</th>
-                    <th class="px-6 py-3.5 font-semibold text-right">
-                      Actions
-                    </th>
+                    <th class="px-6 py-4 font-semibold">Mentor</th>
+                    <th class="px-6 py-4 font-semibold">Assigned Student</th>
+                    <th class="px-6 py-4 font-semibold">Assignment Date</th>
+                    <th class="px-6 py-4 font-semibold text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody
                   id="assignments-table-body"
                   class="divide-y divide-slate-100 text-sm"
-                ></tbody>
+                >
+                  <!-- Rendered by JS -->
+                </tbody>
               </table>
             </div>
           </div>
         </div>
       </div>
-      <!-- /scrollable -->
     </main>
 
-    <!-- ══════════════════════════════════════════
-         MODALS
-    ══════════════════════════════════════════ -->
+    <!-- MODALS -->
 
     <!-- User Modal -->
     <div
       id="user-modal"
       class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop fade-in"
     >
-      <div class="bg-white w-full max-w-md overflow-hidden modal-card">
+      <div
+        class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
+      >
         <div
-          class="p-5 border-b border-slate-100 flex justify-between items-center"
-          style="background: #f8fafc"
+          class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50"
         >
-          <h3 class="font-bold text-slate-800">Add / Edit User</h3>
+          <h3 class="font-bold text-lg text-slate-800">Add/Edit User</h3>
           <button
             onclick="closeModal('user-modal')"
-            class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-200 text-slate-400 transition"
+            class="text-slate-400 hover:text-danger transition"
           >
-            <i class="fas fa-times"></i>
+            <i class="fas fa-times text-xl"></i>
           </button>
         </div>
         <form
@@ -1096,71 +556,67 @@
           "
         >
           <div>
-            <label
-              class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5"
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
               >Full Name</label
             >
             <input
               type="text"
               id="add-user-name"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary focus:border-primary outline-none"
               required
               placeholder="John Doe"
-              class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl outline-none focus:border-primary transition"
-              style="font-family: inherit"
             />
           </div>
           <div>
-            <label
-              class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5"
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
               >Email</label
             >
             <input
               type="email"
               id="add-user-email"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary focus:border-primary outline-none"
               required
               placeholder="john@example.com"
-              class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl outline-none focus:border-primary transition"
-              style="font-family: inherit"
             />
           </div>
           <div>
-            <label
-              class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5"
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
               >Temporary Password</label
             >
             <input
               type="password"
               id="add-user-password"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary focus:border-primary outline-none"
               required
               placeholder="••••••••"
-              class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl outline-none focus:border-primary transition"
-              style="font-family: inherit"
             />
           </div>
           <div>
-            <label
-              class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5"
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
               >Role</label
             >
             <select
               id="add-user-role"
-              class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl outline-none focus:border-primary transition"
-              style="font-family: inherit"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary focus:border-primary outline-none"
             >
               <option value="student">Student</option>
               <option value="mentor">Mentor</option>
               <option value="admin">Admin</option>
             </select>
           </div>
-          <div class="pt-2 flex justify-end gap-3">
+          <div class="pt-4 flex justify-end gap-3">
             <button
               type="button"
               onclick="closeModal('user-modal')"
-              class="px-4 py-2.5 text-sm font-semibold text-slate-500 hover:bg-slate-100 rounded-xl transition"
+              class="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition"
             >
               Cancel
             </button>
-            <button type="submit" id="submit-user-btn" class="btn-primary">
+            <button
+              type="submit"
+              id="submit-user-btn"
+              class="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primaryHover transition flex items-center gap-2"
+            >
               Save User
             </button>
           </div>
@@ -1173,17 +629,18 @@
       id="company-modal"
       class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop fade-in"
     >
-      <div class="bg-white w-full max-w-md overflow-hidden modal-card">
+      <div
+        class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
+      >
         <div
-          class="p-5 border-b border-slate-100 flex justify-between items-center"
-          style="background: #f8fafc"
+          class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50"
         >
-          <h3 class="font-bold text-slate-800">Add Company</h3>
+          <h3 class="font-bold text-lg text-slate-800">Add Company</h3>
           <button
             onclick="closeModal('company-modal')"
-            class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-200 text-slate-400 transition"
+            class="text-slate-400 hover:text-danger transition"
           >
-            <i class="fas fa-times"></i>
+            <i class="fas fa-times text-xl"></i>
           </button>
         </div>
         <form
@@ -1195,82 +652,76 @@
           "
         >
           <div>
-            <label
-              class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5"
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
               >Company Name</label
             >
             <input
               type="text"
               id="add-comp-name"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none"
               required
-              class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl outline-none focus:border-primary transition"
-              style="font-family: inherit"
             />
           </div>
           <div>
-            <label
-              class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5"
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
               >Icon Class (FontAwesome)</label
             >
             <input
               type="text"
               id="add-comp-icon"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none"
               placeholder="e.g. fab fa-google"
-              class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl outline-none focus:border-primary transition"
-              style="font-family: inherit"
             />
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label
-                class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5"
-                >Bg Color</label
+              <label class="block text-sm font-semibold text-slate-700 mb-1"
+                >Bg Color (Tailwind)</label
               >
               <input
                 type="text"
                 id="add-comp-bg"
-                value="bg-blue-50"
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none"
                 placeholder="bg-blue-50"
-                class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl outline-none focus:border-primary transition"
-                style="font-family: inherit"
+                value="bg-blue-50"
               />
             </div>
             <div>
-              <label
-                class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5"
-                >Text Color</label
+              <label class="block text-sm font-semibold text-slate-700 mb-1"
+                >Text Color (Tailwind)</label
               >
               <input
                 type="text"
                 id="add-comp-color"
-                value="text-blue-500"
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none"
                 placeholder="text-blue-500"
-                class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl outline-none focus:border-primary transition"
-                style="font-family: inherit"
+                value="text-blue-500"
               />
             </div>
           </div>
           <div>
-            <label
-              class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5"
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
               >Description</label
             >
             <textarea
               id="add-comp-desc"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none h-24"
               placeholder="Brief details about the company..."
-              class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl outline-none focus:border-primary transition h-24 resize-none"
-              style="font-family: inherit"
             ></textarea>
           </div>
-          <div class="pt-2 flex justify-end gap-3">
+          <div class="pt-4 flex justify-end gap-3">
             <button
               type="button"
               onclick="closeModal('company-modal')"
-              class="px-4 py-2.5 text-sm font-semibold text-slate-500 hover:bg-slate-100 rounded-xl transition"
+              class="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition"
             >
               Cancel
             </button>
-            <button type="submit" id="submit-company-btn" class="btn-primary">
+            <button
+              type="submit"
+              id="submit-company-btn"
+              class="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primaryHover transition flex items-center gap-2"
+            >
               Save Company
             </button>
           </div>
@@ -1284,19 +735,17 @@
       class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop fade-in"
     >
       <div
-        class="bg-white w-full max-w-lg overflow-hidden my-8 flex flex-col modal-card"
-        style="max-height: 90vh"
+        class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden my-8 max-h-screen flex flex-col"
       >
         <div
-          class="p-5 border-b border-slate-100 flex justify-between items-center shrink-0"
-          style="background: #f8fafc"
+          class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0"
         >
-          <h3 class="font-bold text-slate-800">Add Question to Bank</h3>
+          <h3 class="font-bold text-lg text-slate-800">Add Question to Bank</h3>
           <button
             onclick="closeModal('question-modal')"
-            class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-200 text-slate-400 transition"
+            class="text-slate-400 hover:text-danger transition"
           >
-            <i class="fas fa-times"></i>
+            <i class="fas fa-times text-xl"></i>
           </button>
         </div>
         <form
@@ -1307,78 +756,69 @@
           "
         >
           <div>
-            <label
-              class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5"
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
               >Company</label
             >
             <select
               id="modal-q-company"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none bg-slate-50"
               disabled
-              class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl outline-none"
-              style="background: #f8fafc; font-family: inherit"
-            ></select>
+            >
+              <!-- Auto selected based on active filter -->
+            </select>
           </div>
           <div>
-            <label
-              class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5"
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
               >Question Text</label
             >
             <textarea
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none h-20"
               required
-              class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl outline-none focus:border-primary transition h-20 resize-none"
-              style="font-family: inherit"
             ></textarea>
           </div>
           <div class="space-y-2">
-            <label
-              class="block text-xs font-bold text-slate-500 uppercase tracking-wider"
+            <label class="block text-sm font-semibold text-slate-700"
               >Options</label
             >
             <div class="flex items-center gap-2">
-              <span class="font-black text-slate-400 w-6 text-sm">A.</span>
+              <span class="font-bold text-slate-400 w-6">A.</span>
               <input
                 type="text"
+                class="w-full px-3 py-1.5 border border-slate-300 rounded focus:border-primary outline-none"
                 required
-                class="flex-1 px-3 py-2 text-sm border border-slate-200 rounded-xl outline-none focus:border-primary transition"
-                style="font-family: inherit"
               />
             </div>
             <div class="flex items-center gap-2">
-              <span class="font-black text-slate-400 w-6 text-sm">B.</span>
+              <span class="font-bold text-slate-400 w-6">B.</span>
               <input
                 type="text"
+                class="w-full px-3 py-1.5 border border-slate-300 rounded focus:border-primary outline-none"
                 required
-                class="flex-1 px-3 py-2 text-sm border border-slate-200 rounded-xl outline-none focus:border-primary transition"
-                style="font-family: inherit"
               />
             </div>
             <div class="flex items-center gap-2">
-              <span class="font-black text-slate-400 w-6 text-sm">C.</span>
+              <span class="font-bold text-slate-400 w-6">C.</span>
               <input
                 type="text"
+                class="w-full px-3 py-1.5 border border-slate-300 rounded focus:border-primary outline-none"
                 required
-                class="flex-1 px-3 py-2 text-sm border border-slate-200 rounded-xl outline-none focus:border-primary transition"
-                style="font-family: inherit"
               />
             </div>
             <div class="flex items-center gap-2">
-              <span class="font-black text-slate-400 w-6 text-sm">D.</span>
+              <span class="font-bold text-slate-400 w-6">D.</span>
               <input
                 type="text"
+                class="w-full px-3 py-1.5 border border-slate-300 rounded focus:border-primary outline-none"
                 required
-                class="flex-1 px-3 py-2 text-sm border border-slate-200 rounded-xl outline-none focus:border-primary transition"
-                style="font-family: inherit"
               />
             </div>
           </div>
           <div>
-            <label
-              class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5"
+            <label class="block text-sm font-semibold text-slate-700 mb-1"
               >Correct Answer</label
             >
             <select
-              class="w-full px-4 py-2.5 text-sm border border-slate-200 rounded-xl outline-none focus:border-primary transition"
-              style="font-family: inherit"
+              class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none"
             >
               <option value="0">Option A</option>
               <option value="1">Option B</option>
@@ -1386,23 +826,26 @@
               <option value="3">Option D</option>
             </select>
           </div>
-          <div class="pt-2 flex justify-end gap-3 shrink-0">
+          <div class="pt-4 flex justify-end gap-3 shrink-0">
             <button
               type="button"
               onclick="closeModal('question-modal')"
-              class="px-4 py-2.5 text-sm font-semibold text-slate-500 hover:bg-slate-100 rounded-xl transition"
+              class="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition"
             >
               Cancel
             </button>
-            <button type="submit" class="btn-primary">Add Question</button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primaryHover transition"
+            >
+              Add Question
+            </button>
           </div>
         </form>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════
-         APPLICATION LOGIC — UNTOUCHED FROM ORIGINAL
-    ══════════════════════════════════════════ -->
+    <!-- Application Logic -->
     <script>
       // --- SMART API BASE ---
       const API_BASE =
@@ -1423,6 +866,7 @@
 
       // --- 2. INITIALIZATION & DATA FETCHING ---
       window.onload = async () => {
+        // 1. Authenticate user
         const loggedInUser = JSON.parse(localStorage.getItem("ami_user"));
         if (!loggedInUser || loggedInUser.role !== "admin") {
           window.location.href = "index.html";
@@ -1430,20 +874,40 @@
         }
         state.currentUser = loggedInUser;
 
+        // 2. Set Up UI basics
         document.getElementById("header-user-name").innerText =
           loggedInUser.name;
-        const bn = document.getElementById("banner-name");
-        if (bn) bn.textContent = loggedInUser.name;
         const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(loggedInUser.name)}`;
         document.getElementById("header-avatar").src = avatarUrl;
 
+        // 3. Fetch Real Data from Database
         try {
           const [usersRes, companiesRes] = await Promise.all([
             fetch(`${API_BASE}/api/admin/users`),
             fetch(`${API_BASE}/api/companies`),
           ]);
-          if (usersRes.ok) state.users = await usersRes.json();
-          if (companiesRes.ok) state.companies = await companiesRes.json();
+
+          if (usersRes.ok) {
+            state.users = await usersRes.json();
+          }
+
+          if (companiesRes.ok) {
+            state.companies = await companiesRes.json();
+          }
+
+          // Fetch saved assignments from DB on every page load
+          const assignRes = await fetch(`${API_BASE}/api/admin/assignments`);
+          if (assignRes.ok) {
+            const rows = await assignRes.json();
+            state.assignments = rows.map((a) => ({
+              id: a.assignment_id,
+              mentorId: a.mentor_id,
+              mentorName: a.mentor_name,
+              studentId: a.student_id,
+              studentName: a.student_name,
+              date: new Date().toISOString().split("T")[0],
+            }));
+          }
         } catch (error) {
           console.error("Error fetching admin data:", error);
           showToast(
@@ -1452,29 +916,41 @@
           );
         }
 
+        // 4. Render UI Elements
         updateStats();
         initCharts();
         renderUsers();
         renderCompanies();
         populateSelects();
         renderAssignments();
+
+        // Default to analytics
         navigate("analytics");
       };
 
       function navigate(sectionId) {
+        // Update Navigation UI
         document.querySelectorAll("aside nav button").forEach((btn) => {
-          btn.classList.remove("active");
+          btn.classList.remove("bg-primary", "text-white");
+          btn.classList.add("text-slate-300");
         });
         const activeBtn = document.getElementById(`nav-${sectionId}`);
-        if (activeBtn) activeBtn.classList.add("active");
+        if (activeBtn) {
+          activeBtn.classList.add("bg-primary", "text-white");
+          activeBtn.classList.remove("text-slate-300");
+        }
 
+        // Hide all sections
         document.querySelectorAll(".section-container").forEach((sec) => {
           sec.classList.add("hidden");
           sec.classList.remove("block");
         });
+
+        // Show target section
         document.getElementById(`sec-${sectionId}`).classList.remove("hidden");
         document.getElementById(`sec-${sectionId}`).classList.add("block");
 
+        // Set Page Title
         const titles = {
           analytics: "Platform Analytics",
           users: "User Management",
@@ -1487,12 +963,15 @@
         document.getElementById("page-title").innerText =
           titles[sectionId] || sectionId;
 
-        if (sectionId === "questions") renderQuestions();
+        if (sectionId === "questions") {
+          renderQuestions();
+        }
       }
 
       // --- 3. DYNAMIC UI RENDER FUNCTIONS ---
 
       function updateStats() {
+        // Calculate dynamic stats from the fetched DB data
         state.stats.students = state.users.filter(
           (u) => u.role === "student",
         ).length;
@@ -1508,212 +987,97 @@
         document.getElementById("stat-companies").innerText =
           state.stats.companies.toLocaleString();
         document.getElementById("stat-attempts").innerText =
-          state.stats.attempts.toLocaleString();
+          state.stats.attempts.toLocaleString(); // Would be fetched dynamically
       }
 
-      // ── Search/filter state ──
-      let _roleFilter = "all";
-
-      function renderUsers(list) {
-        const users = list !== undefined ? list : state.users;
+      function renderUsers() {
         const tbody = document.getElementById("users-table-body");
-        const countEl = document.getElementById("result-count");
-        if (countEl)
-          countEl.textContent = `${users.length} result${users.length !== 1 ? "s" : ""}`;
-
         tbody.innerHTML = "";
-        if (users.length === 0) {
-          tbody.innerHTML = `
-            <tr><td colspan="4" class="text-center py-14">
-              <div style="display:flex;flex-direction:column;align-items:center;gap:8px;color:#94a3b8">
-                <i class="fas fa-search" style="font-size:26px;opacity:.4"></i>
-                <p class="font-bold text-slate-500 text-sm">No users match your search</p>
-                <button onclick="clearSearch()" style="margin-top:4px;padding:6px 16px;font-size:12px;font-weight:700;border:1.5px solid #4f46e5;color:#4f46e5;border-radius:8px;background:transparent;cursor:pointer;font-family:inherit">
-                  Clear filters
-                </button>
-              </div>
-            </td></tr>`;
+
+        if (state.users.length === 0) {
+          tbody.innerHTML =
+            '<tr><td colspan="4" class="text-center py-10 text-slate-500 italic">No users found in the system.</td></tr>';
           return;
         }
 
-        users.forEach((user) => {
-          const roleMap = {
-            admin: {
-              cls: "badge-admin",
-              icon: "fa-shield-alt",
-              label: "Admin",
-            },
-            mentor: {
-              cls: "badge-mentor",
-              icon: "fa-chalkboard-teacher",
-              label: "Mentor",
-            },
-            student: {
-              cls: "badge-student",
-              icon: "fa-user-graduate",
-              label: "Student",
-            },
-          };
-          const r = roleMap[user.role] || roleMap.student;
-          const badge = `<span class="badge ${r.cls}"><i class="fas ${r.icon}" style="font-size:10px"></i>${r.label}</span>`;
-          const joined = user.created_at
-            ? new Date(user.created_at).toLocaleDateString("en-IN", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })
-            : "—";
+        state.users.forEach((user) => {
+          let roleBadge = "";
+          if (user.role === "admin")
+            roleBadge =
+              '<span class="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-bold uppercase">Admin</span>';
+          else if (user.role === "mentor")
+            roleBadge =
+              '<span class="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-bold uppercase">Mentor</span>';
+          else
+            roleBadge =
+              '<span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-bold uppercase">Student</span>';
 
           tbody.innerHTML += `
-            <tr class="data-row">
-              <td class="px-6 py-3.5">
-                <div class="flex items-center gap-3">
-                  <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.name)}"
-                    class="w-9 h-9 rounded-full object-cover border-2 border-slate-100" style="flex-shrink:0" />
-                  <div>
-                    <p class="font-bold text-slate-800 text-sm">${user.name}</p>
-                    <p class="text-xs text-slate-400 mt-0.5">${user.email}</p>
-                  </div>
-                </div>
-              </td>
-              <td class="px-6 py-3.5">${badge}</td>
-              <td class="px-6 py-3.5 text-slate-500 text-sm">${joined}</td>
-              <td class="px-6 py-3.5 text-right">
-                <button class="text-slate-400 hover:text-primary p-1.5 rounded-lg hover:bg-indigo-50 transition mr-1" title="Edit"><i class="fas fa-edit text-sm"></i></button>
-                <button class="text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition" title="Delete" onclick="deleteItem('user')"><i class="fas fa-trash-alt text-sm"></i></button>
-              </td>
-            </tr>`;
+            <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.name)}" class="w-8 h-8 rounded-full bg-slate-200 object-cover">
+                        <div>
+                            <p class="font-bold text-slate-800">${user.name}</p>
+                            <p class="text-xs text-slate-500">${user.email}</p>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4">${roleBadge}</td>
+                <td class="px-6 py-4 text-slate-600 text-sm">${new Date(user.created_at).toLocaleDateString()}</td>
+                <td class="px-6 py-4 text-right">
+                    <button class="text-blue-600 hover:text-blue-800 p-1 mr-2" title="Edit Role"><i class="fas fa-edit"></i></button>
+                    <button class="text-red-500 hover:text-red-700 p-1" title="Delete User" onclick="deleteItem('user')"><i class="fas fa-trash-alt"></i></button>
+                </td>
+            </tr>
+          `;
         });
-      }
-
-      function filterUsers() {
-        const q = (document.getElementById("user-search-input")?.value || "")
-          .toLowerCase()
-          .trim();
-        const filtered = state.users.filter((u) => {
-          const matchRole = _roleFilter === "all" || u.role === _roleFilter;
-          const matchQ =
-            !q ||
-            u.name.toLowerCase().includes(q) ||
-            u.email.toLowerCase().includes(q);
-          return matchRole && matchQ;
-        });
-        renderUsers(filtered);
-      }
-
-      function setFilter(role) {
-        _roleFilter = role;
-        document
-          .querySelectorAll(".role-opt")
-          .forEach((b) => b.classList.remove("active"));
-        document.getElementById(`rf-${role}`)?.classList.add("active");
-        const labels = {
-          all: "All Roles",
-          student: "Students",
-          mentor: "Mentors",
-          admin: "Admins",
-        };
-        const chips = {
-          all: "All",
-          student: "Students",
-          mentor: "Mentors",
-          admin: "Admins",
-        };
-        const lbl = document.getElementById("filter-label");
-        if (lbl) lbl.textContent = labels[role];
-        const chip = document.getElementById("active-chip");
-        if (chip) chip.textContent = chips[role];
-        const btn = document.getElementById("filter-btn");
-        if (btn) btn.classList.toggle("is-active", role !== "all");
-        closeFilterDrop();
-        filterUsers();
-      }
-
-      function toggleFilterDrop() {
-        const dd = document.getElementById("filter-dropdown");
-        const ch = document.getElementById("filter-chevron");
-        if (!dd.classList.contains("hidden")) {
-          closeFilterDrop();
-          return;
-        }
-        // update counts
-        const set = (id, v) => {
-          const el = document.getElementById(id);
-          if (el) el.textContent = v;
-        };
-        set("cnt-all", state.users.length);
-        set(
-          "cnt-student",
-          state.users.filter((u) => u.role === "student").length,
-        );
-        set(
-          "cnt-mentor",
-          state.users.filter((u) => u.role === "mentor").length,
-        );
-        set("cnt-admin", state.users.filter((u) => u.role === "admin").length);
-        dd.classList.remove("hidden");
-        ch?.classList.add("rotate-180");
-        setTimeout(() => document.addEventListener("click", _outsideClose), 0);
-      }
-
-      function closeFilterDrop() {
-        document.getElementById("filter-dropdown")?.classList.add("hidden");
-        document
-          .getElementById("filter-chevron")
-          ?.classList.remove("rotate-180");
-        document.removeEventListener("click", _outsideClose);
-      }
-
-      function _outsideClose(e) {
-        if (!document.getElementById("filter-wrap")?.contains(e.target))
-          closeFilterDrop();
-      }
-
-      function clearSearch() {
-        const inp = document.getElementById("user-search-input");
-        if (inp) inp.value = "";
-        setFilter("all");
       }
 
       function renderCompanies() {
         const grid = document.getElementById("admin-company-grid");
         grid.innerHTML = "";
+
         if (state.companies.length === 0) {
           grid.innerHTML = `
-            <div class="col-span-full text-center p-14 text-slate-500 bg-white rounded-2xl border border-slate-200">
-              <i class="fas fa-building text-4xl text-slate-300 mb-3 block"></i>
-              <p class="font-bold">No companies configured yet.</p>
-              <p class="text-sm mt-1">Click "Add Company" to get started.</p>
-            </div>`;
+                <div class="col-span-full text-center p-12 text-slate-500 bg-white rounded-2xl border border-slate-200 shadow-sm">
+                    <i class="fas fa-building text-4xl text-slate-300 mb-3"></i>
+                    <p class="font-bold">No companies configured yet.</p>
+                    <p class="text-sm mt-1">Click the "Add Company" button above to get started.</p>
+                </div>`;
           return;
         }
+
         state.companies.forEach((company) => {
           grid.innerHTML += `
-            <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col hover:shadow-lg transition-shadow">
-              <div class="flex justify-between items-start mb-4">
-                <div class="w-12 h-12 rounded-xl ${company.bg_color} ${company.text_color} flex items-center justify-center text-xl">
-                  <i class="${company.icon_class}"></i>
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="w-12 h-12 rounded-lg ${company.bg_color} ${company.text_color} flex items-center justify-center text-xl">
+                        <i class="${company.icon_class}"></i>
+                    </div>
+                    <div class="flex gap-2 text-slate-400">
+                        <button class="hover:text-primary transition"><i class="fas fa-edit"></i></button>
+                        <button class="hover:text-danger transition" onclick="deleteItem('company')"><i class="fas fa-trash"></i></button>
+                    </div>
                 </div>
-                <div class="flex gap-2 text-slate-400">
-                  <button class="p-1.5 hover:text-primary hover:bg-indigo-50 rounded-lg transition"><i class="fas fa-edit text-sm"></i></button>
-                  <button class="p-1.5 hover:text-red-500 hover:bg-red-50 rounded-lg transition" onclick="deleteItem('company')"><i class="fas fa-trash text-sm"></i></button>
+                <h3 class="text-lg font-bold text-slate-800">${company.company_name}</h3>
+                <p class="text-slate-500 text-sm mb-4 flex-1 line-clamp-2">${company.description}</p>
+                <div class="pt-4 border-t border-slate-100 flex justify-between items-center">
+                    <span class="text-sm font-semibold text-slate-600">Dynamic Bank</span>
+                    <button onclick="jumpToQuestions('${company.company_id}')" class="text-sm text-primary font-bold hover:underline">Manage Bank</button>
                 </div>
-              </div>
-              <h3 class="text-base font-bold text-slate-800">${company.company_name}</h3>
-              <p class="text-slate-500 text-sm mt-1 mb-4 flex-1 line-clamp-2">${company.description}</p>
-              <div class="pt-4 border-t border-slate-100 flex justify-between items-center">
-                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Dynamic Bank</span>
-                <button onclick="jumpToQuestions('${company.company_id}')" class="text-sm font-bold text-primary hover:underline">Manage Bank</button>
-              </div>
-            </div>`;
+            </div>
+          `;
         });
       }
 
       function populateSelects() {
+        // Populate company filters
         const qCompanyFilter = document.getElementById("q-company-filter");
         const modalQCompany = document.getElementById("modal-q-company");
         qCompanyFilter.innerHTML = "";
         modalQCompany.innerHTML = "";
+
         if (state.companies.length === 0) {
           qCompanyFilter.innerHTML = `<option value="">No Companies Available</option>`;
           modalQCompany.innerHTML = `<option value="">No Companies Available</option>`;
@@ -1723,12 +1087,15 @@
             modalQCompany.innerHTML += `<option value="${c.company_id}">${c.company_name}</option>`;
           });
         }
+
+        // Populate Mentor/Student assignments
         const mentorSelect = document.getElementById("assign-mentor-select");
         const studentSelect = document.getElementById("assign-student-select");
         mentorSelect.innerHTML =
           '<option value="" disabled selected>Select Mentor...</option>';
         studentSelect.innerHTML =
           '<option value="" disabled selected>Select Student...</option>';
+
         state.users
           .filter((u) => u.role === "mentor")
           .forEach((m) => {
@@ -1746,80 +1113,115 @@
         const list = document.getElementById("questions-list");
         list.innerHTML =
           '<div class="text-center py-8 text-slate-400"><i class="fas fa-spinner fa-spin text-2xl"></i></div>';
+
         if (!companyId) {
           list.innerHTML =
             '<div class="text-center py-8 text-slate-500 italic">Please add a company first.</div>';
           return;
         }
+
+        // Sync modal dropdown with filter
         document.getElementById("modal-q-company").value = companyId;
+
         try {
+          // Fetch real questions for this company
           const res = await fetch(`${API_BASE}/api/questions/${companyId}`);
           let qList = [];
-          if (res.ok) qList = await res.json();
+          if (res.ok) {
+            qList = await res.json();
+          }
+
           list.innerHTML = "";
+
           if (qList.length === 0) {
             list.innerHTML =
-              '<div class="text-center py-8 text-slate-500 italic">No questions found. Click "Add Question" to build the bank.</div>';
+              '<div class="text-center py-8 text-slate-500 italic">No questions found for this company in the database. Click "Add Question" to build the bank.</div>';
             return;
           }
+
           qList.forEach((q, index) => {
+            // Map integer answer back to letter for admin display (0=A, 1=B, etc)
             const answerLetter = String.fromCharCode(
               65 + parseInt(q.correct_answer),
             );
+
             list.innerHTML += `
-              <div class="border border-slate-200 rounded-xl p-4 hover:bg-slate-50 transition">
-                <div class="flex justify-between items-start gap-4">
-                  <div>
-                    <span class="text-xs font-bold text-slate-400 mr-2">Q${index + 1}.</span>
-                    <span class="font-semibold text-slate-800 text-sm">${q.question_text}</span>
-                    <div class="mt-2 text-xs text-green-600 font-bold"><i class="fas fa-check-circle mr-1"></i>Correct: Option ${answerLetter}</div>
-                  </div>
-                  <button class="text-slate-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition shrink-0" onclick="deleteItem('question')"><i class="fas fa-trash text-sm"></i></button>
-                </div>
-              </div>`;
+                    <div class="border border-slate-200 rounded-lg p-4 hover:bg-slate-50 transition">
+                        <div class="flex justify-between items-start gap-4">
+                            <div>
+                                <span class="text-sm font-bold text-slate-400 mr-2">Q${index + 1}.</span>
+                                <span class="font-medium text-slate-800">${q.question_text}</span>
+                                <div class="mt-2 text-sm text-green-600 font-semibold"><i class="fas fa-check-circle mr-1"></i> Correct Answer: Option ${answerLetter}</div>
+                            </div>
+                            <div class="flex gap-2 text-slate-400 shrink-0">
+                                <button class="hover:text-danger transition" onclick="deleteItem('question')"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `;
           });
         } catch (e) {
+          console.error(e);
           list.innerHTML =
-            '<div class="text-center py-8 text-red-500 italic">Error loading questions.</div>';
+            '<div class="text-center py-8 text-red-500 italic">Error loading questions from database.</div>';
         }
       }
 
       function renderAssignments() {
         const tbody = document.getElementById("assignments-table-body");
         tbody.innerHTML = "";
+
         if (state.assignments.length === 0) {
           tbody.innerHTML =
-            '<tr><td colspan="4" class="text-center py-12 text-slate-400 italic text-sm">No active mentor assignments found.</td></tr>';
+            '<tr><td colspan="4" class="text-center py-10 text-slate-500 italic">No active mentor assignments found.</td></tr>';
           return;
         }
+
         state.assignments.forEach((assign) => {
           tbody.innerHTML += `
-            <tr class="data-row">
-              <td class="px-6 py-3.5">
-                <div class="flex items-center gap-2 font-bold text-purple-700">
-                  <i class="fas fa-chalkboard-teacher text-slate-300 text-sm"></i>${assign.mentorName}
-                </div>
-              </td>
-              <td class="px-6 py-3.5">
-                <div class="flex items-center gap-2 font-bold text-blue-700">
-                  <i class="fas fa-user-graduate text-slate-300 text-sm"></i>${assign.studentName}
-                </div>
-              </td>
-              <td class="px-6 py-3.5 text-slate-500 text-sm">${assign.date}</td>
-              <td class="px-6 py-3.5 text-right">
-                <button onclick="deleteItem('assignment')"
-                  class="text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg text-red-500 bg-red-50 hover:bg-red-500 hover:text-white transition">
-                  Revoke
-                </button>
-              </td>
-            </tr>`;
+            <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4 font-bold text-purple-700"><i class="fas fa-chalkboard-teacher mr-2 text-slate-400"></i>${assign.mentorName}</td>
+                <td class="px-6 py-4 font-bold text-blue-700"><i class="fas fa-user-graduate mr-2 text-slate-400"></i>${assign.studentName}</td>
+                <td class="px-6 py-4 text-slate-600 text-sm">${assign.date}</td>
+                <td class="px-6 py-4 text-right">
+                    <button class="text-red-500 hover:text-red-700 px-3 py-1 bg-red-50 rounded hover:bg-red-100 transition text-xs font-bold uppercase tracking-wider" onclick="revokeAssignment(${assign.id})">Revoke</button>
+                </td>
+            </tr>
+          `;
         });
       }
 
+      async function revokeAssignment(assignmentId) {
+        if (!confirm("Are you sure you want to revoke this assignment?"))
+          return;
+        try {
+          const res = await fetch(
+            `${API_BASE}/api/admin/assignments/${assignmentId}`,
+            {
+              method: "DELETE",
+            },
+          );
+          if (!res.ok) {
+            const data = await res.json();
+            showToast(data.error || "Failed to revoke assignment.", "error");
+            return;
+          }
+          state.assignments = state.assignments.filter(
+            (a) => a.id !== assignmentId,
+          );
+          renderAssignments();
+          showToast("Assignment revoked successfully.", "success");
+        } catch (err) {
+          showToast("Server error. Could not revoke assignment.", "error");
+        }
+      }
+
       // --- 4. MODALS & ACTIONS ---
+
       function openModal(id) {
         document.getElementById(id).classList.remove("hidden");
       }
+
       function closeModal(id) {
         document.getElementById(id).classList.add("hidden");
       }
@@ -1830,10 +1232,13 @@
         const passwordInput =
           document.getElementById("add-user-password").value;
         const roleInput = document.getElementById("add-user-role").value;
+
         const btn = document.getElementById("submit-user-btn");
         const origText = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
         try {
+          // POST to real database via the auth register route
           const response = await fetch(API_BASE + "/api/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -1844,14 +1249,19 @@
               role: roleInput,
             }),
           });
+
           const data = await response.json();
+
           if (response.ok) {
+            // Refresh the users list directly from DB to get the true ID and timestamp
             const usersRes = await fetch(`${API_BASE}/api/admin/users`);
             if (usersRes.ok) state.users = await usersRes.json();
+
             updateStats();
             renderUsers();
-            populateSelects();
+            populateSelects(); // Re-populate assignment dropdowns
             initCharts();
+
             showToast(
               "New user successfully added to the database!",
               "success",
@@ -1862,6 +1272,7 @@
             showToast(data.error || "Failed to add user", "error");
           }
         } catch (e) {
+          console.error(e);
           showToast("Server error. Could not add user.", "error");
         } finally {
           btn.innerHTML = origText;
@@ -1877,10 +1288,13 @@
           document.getElementById("add-comp-bg").value || "bg-blue-50";
         const colorInput =
           document.getElementById("add-comp-color").value || "text-blue-500";
+
         const btn = document.getElementById("submit-company-btn");
         const origText = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
         try {
+          // POST to real database
           const response = await fetch(API_BASE + "/api/companies", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -1892,13 +1306,18 @@
               text_color: colorInput,
             }),
           });
+
           const data = await response.json();
+
           if (response.ok) {
+            // Refresh companies list
             const compRes = await fetch(`${API_BASE}/api/companies`);
             if (compRes.ok) state.companies = await compRes.json();
+
             updateStats();
             renderCompanies();
             populateSelects();
+
             showToast("Company successfully added to database!", "success");
             closeModal("company-modal");
             document.getElementById("add-comp-form").reset();
@@ -1906,6 +1325,7 @@
             showToast(data.error || "Failed to add company", "error");
           }
         } catch (e) {
+          console.error(e);
           showToast("Server error. Could not add company.", "error");
         } finally {
           btn.innerHTML = origText;
@@ -1913,31 +1333,77 @@
       }
 
       function submitQuestion() {
+        // Mocked until backend question route is fully built
         showToast("Question added! (Backend POST route required)", "info");
         closeModal("question-modal");
       }
 
-      function assignMentor() {
+      async function assignMentor() {
         const mId = document.getElementById("assign-mentor-select").value;
         const sId = document.getElementById("assign-student-select").value;
-        if (!mId || !sId) return;
-        const mName = state.users.find((u) => u.id == mId).name;
-        const sName = state.users.find((u) => u.id == sId).name;
-        state.assignments.unshift({
-          id: "a" + Date.now(),
-          mentorId: mId,
-          mentorName: mName,
-          studentId: sId,
-          studentName: sName,
-          date: new Date().toISOString().split("T")[0],
-        });
-        renderAssignments();
-        showToast("Mentor locally assigned successfully!", "success");
-        document.getElementById("assign-mentor-select").value = "";
-        document.getElementById("assign-student-select").value = "";
+
+        if (!mId || !sId) {
+          showToast("Please select both a mentor and a student.", "error");
+          return;
+        }
+
+        // Optimistic UI — disable the button while saving
+        const submitBtn = document.querySelector(
+          "#sec-mentors form button[type='submit']",
+        );
+        const origLabel = submitBtn ? submitBtn.innerHTML : "";
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML =
+            '<i class="fas fa-spinner fa-spin mr-1"></i> Assigning...';
+        }
+
+        try {
+          const res = await fetch(`${API_BASE}/api/admin/assignments`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              mentor_id: Number(mId),
+              student_id: Number(sId),
+            }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            showToast(data.error || "Failed to assign mentor.", "error");
+            return;
+          }
+
+          // Server returns the full updated list — sync state directly
+          state.assignments = data.map((a) => ({
+            id: a.assignment_id,
+            mentorId: a.mentor_id,
+            mentorName: a.mentor_name,
+            studentId: a.student_id,
+            studentName: a.student_name,
+            date: new Date().toISOString().split("T")[0],
+          }));
+
+          renderAssignments();
+          showToast("Mentor assigned and saved to database!", "success");
+
+          // Reset selects
+          document.getElementById("assign-mentor-select").value = "";
+          document.getElementById("assign-student-select").value = "";
+        } catch (err) {
+          console.error(err);
+          showToast("Server error. Could not assign mentor.", "error");
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origLabel;
+          }
+        }
       }
 
       function deleteItem(type) {
+        // Mock delete confirmation
         if (
           confirm(
             `Are you sure you want to delete this ${type}? This action cannot be undone.`,
@@ -1957,22 +1423,28 @@
       }
 
       // --- 5. UTILITY & CHARTS ---
+
       function showToast(message, type = "info") {
         const container = document.getElementById("toast-container");
         const toast = document.createElement("div");
+
         const colors = {
           success: "bg-green-500",
           error: "bg-red-500",
           info: "bg-indigo-500",
         };
-        toast.className = `toast-item ${colors[type]} text-white`;
+
+        toast.className = `${colors[type]} text-white px-6 py-3 rounded shadow-lg fade-in flex items-center gap-3`;
         toast.innerHTML = `
-          <i class="fas ${type === "success" ? "fa-check-circle" : type === "error" ? "fa-exclamation-circle" : "fa-info-circle"}"></i>
-          <span>${message}</span>`;
+                <i class="fas ${type === "success" ? "fa-check-circle" : type === "error" ? "fa-exclamation-circle" : "fa-info-circle"}"></i>
+                <span class="font-medium text-sm">${message}</span>
+            `;
+
         container.appendChild(toast);
+
         setTimeout(() => {
           toast.style.opacity = "0";
-          toast.style.transform = "translateX(40px)";
+          toast.style.transform = "translateY(-10px)";
           toast.style.transition = "all 0.3s ease";
           setTimeout(() => toast.remove(), 300);
         }, 3000);
@@ -1994,6 +1466,7 @@
       let distChartInstance = null;
 
       function initCharts() {
+        // Usage Chart (Line)
         const ctxUsage = document.getElementById("usageChart").getContext("2d");
         if (usageChartInstance) usageChartInstance.destroy();
         usageChartInstance = new Chart(ctxUsage, {
@@ -2003,17 +1476,21 @@
             datasets: [
               {
                 label: "Assessments Taken",
-                data: [0, 0, 0, 0, 0, 0, state.stats.attempts || 0],
+                data: [0, 0, 0, 0, 0, 0, state.stats.attempts || 0], // Mostly flat until real dates mapped
                 borderColor: "#4f46e5",
-                backgroundColor: "rgba(79,70,229,0.08)",
+                backgroundColor: "rgba(79, 70, 229, 0.1)",
                 tension: 0.4,
                 fill: true,
               },
             ],
           },
-          options: { responsive: true, animation: false },
+          options: {
+            responsive: true,
+            animation: false,
+          },
         });
 
+        // User Distribution Chart (Bar/Histogram)
         const ctxDist = document
           .getElementById("userDistChart")
           .getContext("2d");
@@ -2032,20 +1509,27 @@
                 ],
                 backgroundColor: ["#3b82f6", "#8b5cf6", "#ef4444"],
                 borderWidth: 0,
-                borderRadius: 6,
               },
             ],
           },
           options: {
             responsive: true,
             animation: false,
-            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
-            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { stepSize: 1 },
+              },
+            },
+            plugins: {
+              legend: { display: false },
+            },
           },
         });
       }
-
-      // ── AI RESUME OCR ──────────────────────────────────────────────────────
+      // ==========================================
+      // ADMIN: AI RESUME OCR
+      // ==========================================
       async function loadAdminOCR() {
         const btn = document.getElementById("admin-ocr-btn");
         const results = document.getElementById("admin-ocr-results");
@@ -2054,15 +1538,18 @@
         btn.disabled = true;
         results.innerHTML =
           '<div class="p-12 text-center text-slate-400"><i class="fas fa-spinner fa-spin text-3xl mb-3 block"></i><p>Gemini AI is reading all student resumes. This may take a moment...</p></div>';
+
         try {
           const res = await fetch(`${API_BASE}/api/admin/resumes-ocr`);
           if (!res.ok) throw new Error("OCR request failed");
           const data = await res.json();
+
           if (data.length === 0) {
             results.innerHTML =
               '<div class="p-12 text-center text-slate-400"><i class="fas fa-inbox text-3xl mb-3 block"></i><p>No student resumes found in the system.</p></div>';
             return;
           }
+
           const rows = data
             .map(
               (d) => `
@@ -2080,7 +1567,7 @@
                 }
               </td>
               <td class="px-4 py-3 text-center">
-                <button onclick="adminViewResume(${d.resume_id}, '${(d.resume_name || "Resume").replace(/'/g, "\\'")}')"
+                <button onclick="adminViewResume(${d.resume_id}, '${(d.resume_name || "Resume").replace(/'/g, "\\\'")}')"
                   class="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg text-xs transition flex items-center gap-1 mx-auto">
                   <i class="fas fa-eye"></i> View
                 </button>
@@ -2088,13 +1575,15 @@
             </tr>`,
             )
             .join("");
+
           results.innerHTML = `
             <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
               <div>
                 <p class="text-sm font-bold text-slate-700">${data.length} resume${data.length !== 1 ? "s" : ""} analyzed</p>
-                <p class="text-xs text-slate-400 mt-0.5">Cached results shown — click Re-run to refresh</p>
+                <p class="text-xs text-slate-400 mt-0.5">Cached results shown — click Re-run to refresh with latest uploads</p>
               </div>
-              <button onclick="exportAdminOCRCSV()" class="px-3 py-2 bg-green-50 text-green-700 hover:bg-green-600 hover:text-white rounded-xl text-xs font-medium transition flex items-center gap-2">
+              <button onclick="exportAdminOCRCSV()" data-ocr='${JSON.stringify(data).replace(/'/g, "&#39;")}'
+                class="px-3 py-2 bg-green-50 text-green-700 hover:bg-green-600 hover:text-white rounded-xl text-xs font-medium transition flex items-center gap-2">
                 <i class="fas fa-download"></i> Export CSV
               </button>
             </div>
@@ -2114,6 +1603,8 @@
                 <tbody class="divide-y divide-slate-100 text-sm">${rows}</tbody>
               </table>
             </div>`;
+
+          // Store data for CSV export
           window._adminOcrData = data;
         } catch (err) {
           results.innerHTML = `<div class="p-12 text-center text-red-500"><i class="fas fa-exclamation-triangle text-3xl mb-3 block"></i><p>${err.message}</p></div>`;
@@ -2147,10 +1638,9 @@
               .join(","),
           )
           .join("\n");
+        const blob = new Blob([header + "\n" + rows], { type: "text/csv" });
         const a = document.createElement("a");
-        a.href = URL.createObjectURL(
-          new Blob([header + "\n" + rows], { type: "text/csv" }),
-        );
+        a.href = URL.createObjectURL(blob);
         a.download = "ami_bridge_resume_ocr.csv";
         a.click();
       }
@@ -2170,7 +1660,9 @@
         document.body.style.overflow = "";
       }
 
-      // ── BULK REGISTER ──────────────────────────────────────────────────────
+      // ==========================================
+      // ADMIN: BULK REGISTER VIA CSV
+      // ==========================================
       function adminHandleCSVDrop(e) {
         e.preventDefault();
         document
@@ -2178,6 +1670,7 @@
           .classList.remove("border-blue-400", "bg-blue-50");
         if (e.dataTransfer.files[0]) adminProcessCSV(e.dataTransfer.files[0]);
       }
+
       function adminHandleCSVUpload(e) {
         if (e.target.files[0]) adminProcessCSV(e.target.files[0]);
       }
@@ -2185,21 +1678,29 @@
       async function adminProcessCSV(file) {
         const div = document.getElementById("admin-bulk-result");
         div.innerHTML =
-          '<div class="flex items-center gap-2 text-slate-500 text-sm p-4"><i class="fas fa-spinner fa-spin"></i> Processing CSV...</div>';
+          '<div class="flex items-center gap-2 text-slate-500 text-sm p-4"><i class="fas fa-spinner fa-spin"></i> Processing CSV and registering students...</div>';
         div.classList.remove("hidden");
+
         const formData = new FormData();
         formData.append("csvFile", file);
         formData.append("requester_role", "admin");
+
         try {
           const res = await fetch(`${API_BASE}/api/admin/bulk-register`, {
             method: "POST",
             body: formData,
           });
           const data = await res.json();
+
           if (!res.ok) {
-            div.innerHTML = `<div class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm"><p class="font-bold mb-1"><i class="fas fa-exclamation-triangle mr-1"></i>Error</p><p>${data.error}</p>${data.hint ? `<p class="text-xs mt-1 text-red-500">${data.hint}</p>` : ""}</div>`;
+            div.innerHTML = `<div class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+              <p class="font-bold mb-1"><i class="fas fa-exclamation-triangle mr-1"></i> Error</p>
+              <p>${data.error}</p>
+              ${data.hint ? `<p class="text-xs mt-1 text-red-500">${data.hint}</p>` : ""}
+            </div>`;
             return;
           }
+
           const successList = data.details.success
             .map(
               (s) =>
@@ -2218,21 +1719,53 @@
                 `<li class="text-red-700 text-xs py-0.5">${s.email} — ${s.reason}</li>`,
             )
             .join("");
+
           div.innerHTML = `
             <div class="space-y-4">
               <div class="grid grid-cols-3 gap-4 text-center">
-                <div class="bg-green-50 border border-green-200 rounded-xl p-4"><p class="text-3xl font-black text-green-700">${data.created}</p><p class="text-xs text-green-600 font-medium mt-1">✅ Created</p></div>
-                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4"><p class="text-3xl font-black text-yellow-700">${data.skipped}</p><p class="text-xs text-yellow-600 font-medium mt-1">⚠️ Skipped</p></div>
-                <div class="bg-red-50 border border-red-200 rounded-xl p-4"><p class="text-3xl font-black text-red-700">${data.failed}</p><p class="text-xs text-red-600 font-medium mt-1">❌ Failed</p></div>
+                <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+                  <p class="text-3xl font-black text-green-700">${data.created}</p>
+                  <p class="text-xs text-green-600 font-medium mt-1">✅ Created</p>
+                </div>
+                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+                  <p class="text-3xl font-black text-yellow-700">${data.skipped}</p>
+                  <p class="text-xs text-yellow-600 font-medium mt-1">⚠️ Skipped</p>
+                </div>
+                <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+                  <p class="text-3xl font-black text-red-700">${data.failed}</p>
+                  <p class="text-xs text-red-600 font-medium mt-1">❌ Failed</p>
+                </div>
               </div>
-              ${successList ? `<div class="bg-green-50 border border-green-200 rounded-xl p-4"><p class="text-xs font-bold text-green-700 mb-2 uppercase tracking-wide">Created Students</p><ul class="max-h-40 overflow-y-auto">${successList}</ul></div>` : ""}
-              ${skipList ? `<div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3"><p class="text-xs font-bold text-yellow-700 mb-1">Skipped</p><ul>${skipList}</ul></div>` : ""}
-              ${failList ? `<div class="bg-red-50 border border-red-200 rounded-xl p-3"><p class="text-xs font-bold text-red-700 mb-1">Failed</p><ul>${failList}</ul></div>` : ""}
+              ${
+                successList
+                  ? `<div class="bg-green-50 border border-green-200 rounded-xl p-4">
+                <p class="text-xs font-bold text-green-700 mb-2 uppercase tracking-wide">Created Students</p>
+                <ul class="max-h-40 overflow-y-auto">${successList}</ul>
+              </div>`
+                  : ""
+              }
+              ${
+                skipList
+                  ? `<div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
+                <p class="text-xs font-bold text-yellow-700 mb-1">Skipped</p><ul>${skipList}</ul>
+              </div>`
+                  : ""
+              }
+              ${
+                failList
+                  ? `<div class="bg-red-50 border border-red-200 rounded-xl p-3">
+                <p class="text-xs font-bold text-red-700 mb-1">Failed</p><ul>${failList}</ul>
+              </div>`
+                  : ""
+              }
             </div>`;
+
           showToast(
             `${data.created} students registered successfully!`,
             "success",
           );
+
+          // Refresh user list
           const usersRes = await fetch(`${API_BASE}/api/admin/users`);
           if (usersRes.ok) {
             state.users = await usersRes.json();
@@ -2254,11 +1787,12 @@
         a.click();
       }
 
-      // ── INJECT OCR + BULK REGISTER SECTIONS (same as original) ────────────
+      // Inject OCR and Bulk Register sections into main on load
       window.addEventListener("load", () => {
         const main = document.querySelector("main > div");
         if (!main) return;
 
+        // --- OCR SECTION ---
         const ocrSection = document.createElement("div");
         ocrSection.id = "sec-ocr";
         ocrSection.className =
@@ -2266,15 +1800,15 @@
         ocrSection.innerHTML = `
           <div class="mb-6 flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h2 class="section-heading">AI Resume OCR — All Students</h2>
-              <p class="section-sub">Gemini AI extracts structured data from every student resume in the system.</p>
+              <h2 class="text-2xl font-bold text-slate-800">AI Resume OCR — All Students</h2>
+              <p class="text-slate-500 mt-1">Gemini AI extracts structured data from every student resume in the system.</p>
             </div>
             <button id="admin-ocr-btn" onclick="loadAdminOCR()"
-              class="btn-primary" style="background:linear-gradient(135deg,#7c3aed,#9333ea);box-shadow:0 4px 14px rgba(124,58,237,0.3)">
+              class="px-5 py-2.5 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition flex items-center gap-2 shadow-sm">
               <i class="fas fa-robot"></i> Run AI Extraction
             </button>
           </div>
-          <div id="admin-ocr-results" class="panel">
+          <div id="admin-ocr-results" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="p-12 text-center text-slate-400">
               <i class="fas fa-robot text-5xl mb-4 block text-slate-300"></i>
               <p class="font-semibold text-slate-500">Click "Run AI Extraction" to analyze all resumes</p>
@@ -2283,16 +1817,17 @@
           </div>`;
         main.appendChild(ocrSection);
 
+        // --- BULK REGISTER SECTION ---
         const bulkSection = document.createElement("div");
         bulkSection.id = "sec-bulkregister";
         bulkSection.className =
           "section-container hidden fade-in max-w-3xl mx-auto";
         bulkSection.innerHTML = `
-          <div class="mb-5">
-            <h2 class="section-heading">Bulk Register Students</h2>
-            <p class="section-sub">Upload a CSV to create multiple student accounts at once. Mentors can be auto-assigned.</p>
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-slate-800">Bulk Register Students</h2>
+            <p class="text-slate-500 mt-1">Upload a CSV to create multiple student accounts at once. Mentors can be auto-assigned.</p>
           </div>
-          <div class="panel p-8 space-y-6">
+          <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 space-y-6">
             <div class="bg-blue-50 border border-blue-200 rounded-xl p-5">
               <p class="font-bold text-blue-800 mb-2 flex items-center gap-2"><i class="fas fa-info-circle"></i> CSV Format</p>
               <p class="text-sm text-blue-700">Required columns: <code class="bg-blue-100 px-1.5 py-0.5 rounded font-mono text-xs">name, email, password</code></p>
@@ -2304,7 +1839,7 @@
             <div id="admin-csv-drop"
               class="border-2 border-dashed border-slate-300 rounded-xl p-12 text-center hover:border-blue-400 hover:bg-blue-50/50 transition-all cursor-pointer"
               onclick="document.getElementById('admin-csv-input').click()"
-              ondragover="event.preventDefault();this.classList.add('border-blue-400','bg-blue-50')"
+              ondragover="event.preventDefault(); this.classList.add('border-blue-400','bg-blue-50')"
               ondragleave="this.classList.remove('border-blue-400','bg-blue-50')"
               ondrop="adminHandleCSVDrop(event)">
               <i class="fas fa-file-csv text-5xl text-slate-300 mb-4 block"></i>
@@ -2317,6 +1852,7 @@
           </div>`;
         main.appendChild(bulkSection);
 
+        // --- PDF VIEWER MODAL ---
         const pdfModal = document.createElement("div");
         pdfModal.id = "admin-pdf-modal";
         pdfModal.className =

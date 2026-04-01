@@ -8,7 +8,7 @@ const R = require("../utils/response");
 const bcrypt = require("bcryptjs");
 const { parse } = require("csv-parse/sync");
 
-// ── Questions ────────────────────────────────────────────────────────────────
+// ── Questions ─────────────────────────────────────────────────────────────────
 const getQuestions = async (req, res, next) => {
   try {
     const questions = await companyService.getQuestions(req.params.companyId);
@@ -18,7 +18,7 @@ const getQuestions = async (req, res, next) => {
   }
 };
 
-// ── Attempts ─────────────────────────────────────────────────────────────────
+// ── Attempts ──────────────────────────────────────────────────────────────────
 const saveAttempt = async (req, res, next) => {
   try {
     const { student_id, company_id, total_score, max_score } = req.body;
@@ -43,7 +43,7 @@ const getAttempts = async (req, res, next) => {
   }
 };
 
-// ── Feedback ─────────────────────────────────────────────────────────────────
+// ── Feedback ──────────────────────────────────────────────────────────────────
 const getFeedback = async (req, res, next) => {
   try {
     const result = await InterviewModel.getFeedbackForStudent(req.params.id);
@@ -73,7 +73,7 @@ const saveFeedback = async (req, res, next) => {
   }
 };
 
-// ── Mentor ───────────────────────────────────────────────────────────────────
+// ── Mentor ────────────────────────────────────────────────────────────────────
 const getAssignedStudents = async (req, res, next) => {
   try {
     const result = await InterviewModel.getAssignedStudents(req.params.id);
@@ -83,7 +83,7 @@ const getAssignedStudents = async (req, res, next) => {
   }
 };
 
-// ── Admin ─────────────────────────────────────────────────────────────────────
+// ── Admin — users ─────────────────────────────────────────────────────────────
 const getAllUsers = async (req, res, next) => {
   try {
     const result = await UserModel.getAll();
@@ -93,6 +93,59 @@ const getAllUsers = async (req, res, next) => {
   }
 };
 
+// ── Admin — assignments (NEW) ─────────────────────────────────────────────────
+
+// GET /api/admin/assignments  →  return every assignment row with names
+const getAllAssignments = async (req, res, next) => {
+  try {
+    const result = await InterviewModel.getAllAssignments();
+    return R.ok(res, result.rows);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// POST /api/admin/assignments  {mentor_id, student_id}  →  save to DB
+const createAssignment = async (req, res, next) => {
+  try {
+    const { mentor_id, student_id } = req.body;
+    if (!mentor_id || !student_id)
+      return R.badRequest(res, "mentor_id and student_id are required");
+
+    // Prevent duplicates
+    const exists = await InterviewModel.checkAssignmentExists(
+      mentor_id,
+      student_id,
+    );
+    if (exists.rows.length > 0)
+      return R.badRequest(
+        res,
+        "This student is already assigned to that mentor",
+      );
+
+    await InterviewModel.assignStudentToMentor(mentor_id, student_id);
+
+    // Return the full updated list so the admin table re-renders immediately
+    const all = await InterviewModel.getAllAssignments();
+    return R.created(res, all.rows);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// DELETE /api/admin/assignments/:id  →  remove from DB
+const deleteAssignment = async (req, res, next) => {
+  try {
+    const result = await InterviewModel.deleteAssignment(req.params.id);
+    if (result.rows.length === 0)
+      return R.notFound(res, "Assignment not found");
+    return R.ok(res, { deleted: true, assignment_id: req.params.id });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ── Bulk Register ─────────────────────────────────────────────────────────────
 const bulkRegister = async (req, res, next) => {
   if (!req.file) return R.badRequest(res, "No CSV file uploaded");
 
@@ -180,56 +233,6 @@ const bulkRegister = async (req, res, next) => {
   }
 };
 
-// module.exports moved to bottom — see patched exports
-
-// ── Assignment CRUD (Admin) ───────────────────────────────────────────────────
-const createAssignment = async (req, res, next) => {
-  try {
-    const { mentor_id, student_id } = req.body;
-    if (!mentor_id || !student_id)
-      return R.badRequest(res, "mentor_id and student_id are required");
-
-    // Check already assigned
-    const exists = await InterviewModel.checkAssignmentExists(
-      mentor_id,
-      student_id,
-    );
-    if (exists.rows.length > 0)
-      return R.badRequest(
-        res,
-        "This student is already assigned to that mentor",
-      );
-
-    await InterviewModel.assignStudentToMentor(mentor_id, student_id);
-
-    // Return full assignment list so frontend stays in sync
-    const all = await InterviewModel.getAllAssignments();
-    return R.created(res, all.rows);
-  } catch (err) {
-    next(err);
-  }
-};
-
-const getAllAssignments = async (req, res, next) => {
-  try {
-    const result = await InterviewModel.getAllAssignments();
-    return R.ok(res, result.rows);
-  } catch (err) {
-    next(err);
-  }
-};
-
-const deleteAssignment = async (req, res, next) => {
-  try {
-    const result = await InterviewModel.deleteAssignment(req.params.id);
-    if (result.rows.length === 0)
-      return R.notFound(res, "Assignment not found");
-    return R.ok(res, { deleted: true });
-  } catch (err) {
-    next(err);
-  }
-};
-
 module.exports = {
   getQuestions,
   saveAttempt,
@@ -238,8 +241,8 @@ module.exports = {
   saveFeedback,
   getAssignedStudents,
   getAllUsers,
-  bulkRegister,
-  createAssignment,
   getAllAssignments,
+  createAssignment,
   deleteAssignment,
+  bulkRegister,
 };
