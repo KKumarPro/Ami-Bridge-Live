@@ -12,6 +12,9 @@ const CompanyModel = {
        VALUES ($1, $2, $3, $4, $5) RETURNING *`,
       [company_name, description, icon_class, bg_color, text_color]
     ),
+
+  delete: (company_id) =>
+    pool.query("DELETE FROM companies WHERE company_id = $1 RETURNING company_id", [company_id]),
 };
 
 module.exports = CompanyModel;

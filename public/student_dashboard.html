@@ -32,297 +32,34 @@
         },
       };
     </script>
-
-    <!-- Google Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
     <style>
-      * {
-        font-family: "Inter", sans-serif;
-      }
+      /* Custom Scrollbar */
       ::-webkit-scrollbar {
-        width: 6px;
+        width: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: transparent;
+        background: #f1f5f9;
       }
       ::-webkit-scrollbar-thumb {
-        background: #93c5fd;
-        border-radius: 8px;
+        background: #cbd5e1;
+        border-radius: 4px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #60a5fa;
+        background: #94a3b8;
       }
-      aside {
-        background: linear-gradient(
-          175deg,
-          #0f172a 0%,
-          #0c2a6e 100%
-        ) !important;
-      }
-      header {
-        background: rgba(255, 255, 255, 0.97) !important;
-        backdrop-filter: blur(20px) !important;
-        border-bottom: 1px solid rgba(226, 232, 240, 0.5) !important;
-        box-shadow: 0 2px 20px rgba(37, 99, 235, 0.07) !important;
-        height: 68px !important;
-      }
-      .welcome-banner {
-        background: linear-gradient(
-          135deg,
-          #1d4ed8 0%,
-          #2563eb 50%,
-          #0ea5e9 100%
-        );
-        border-radius: 20px;
-        padding: 28px 32px;
-        color: white;
-        position: relative;
-        overflow: hidden;
-        margin-bottom: 28px;
-        box-shadow: 0 8px 32px rgba(37, 99, 235, 0.3);
-      }
-      .welcome-banner::before {
-        content: "";
-        position: absolute;
-        top: -60%;
-        right: -5%;
-        width: 380px;
-        height: 380px;
-        background: radial-gradient(
-          circle,
-          rgba(255, 255, 255, 0.13) 0%,
-          transparent 70%
-        );
-        border-radius: 50%;
-      }
-      .stat-card {
-        background: white;
-        border-radius: 18px;
-        border: 1px solid rgba(226, 232, 240, 0.8);
-        padding: 24px;
-        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-      }
-      .stat-card::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: linear-gradient(90deg, #2563eb, #0ea5e9);
-        transform: scaleX(0);
-        transition: transform 0.4s ease;
-        transform-origin: left;
-      }
-      .stat-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 16px 40px rgba(37, 99, 235, 0.15);
-      }
-      .stat-card:hover::before {
-        transform: scaleX(1);
-      }
-      .stat-card:hover .stat-icon {
-        transform: scale(1.12) rotate(-8deg);
-      }
-      .stat-icon {
-        width: 56px;
-        height: 56px;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 22px;
-        flex-shrink: 0;
-        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-      .panel-card {
-        background: white;
-        border-radius: 20px;
-        border: 1px solid rgba(226, 232, 240, 0.8);
-        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
-        transition: box-shadow 0.3s ease;
-        overflow: hidden;
-      }
-      .panel-card:hover {
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-      }
-      .company-card {
-        background: white;
-        border-radius: 18px;
-        border: 1px solid rgba(226, 232, 240, 0.8);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-        cursor: pointer;
-      }
-      .company-card::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: linear-gradient(90deg, #2563eb, #0ea5e9);
-        transform: scaleX(0);
-        transition: transform 0.3s ease;
-      }
-      .company-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 18px 45px rgba(37, 99, 235, 0.13);
-      }
-      .company-card:hover::after {
-        transform: scaleX(1);
-      }
-      aside nav button {
-        border-radius: 10px !important;
-        transition: all 0.2s ease !important;
-      }
+
       .fade-in {
-        animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+        animation: fadeIn 0.3s ease-in-out;
       }
-      @keyframes fadeInUp {
+      @keyframes fadeIn {
         from {
           opacity: 0;
-          transform: translateY(18px);
+          transform: translateY(10px);
         }
         to {
           opacity: 1;
           transform: translateY(0);
         }
-      }
-      .stagger-1 {
-        animation-delay: 0.05s;
-      }
-      .stagger-2 {
-        animation-delay: 0.1s;
-      }
-      .stagger-3 {
-        animation-delay: 0.15s;
-      }
-      .bounce-in {
-        animation: bounceIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-      }
-      @keyframes bounceIn {
-        from {
-          opacity: 0;
-          transform: scale(0.85);
-        }
-        to {
-          opacity: 1;
-          transform: scale(1);
-        }
-      }
-      .pulse-dot {
-        position: relative;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #10b981;
-        display: inline-block;
-      }
-      .pulse-dot::after {
-        content: "";
-        position: absolute;
-        inset: -3px;
-        border-radius: 50%;
-        border: 2px solid #10b981;
-        animation: pulseAnim 1.8s infinite;
-      }
-      @keyframes pulseAnim {
-        0% {
-          transform: scale(1);
-          opacity: 1;
-        }
-        100% {
-          transform: scale(2.2);
-          opacity: 0;
-        }
-      }
-      .modal-backdrop {
-        background: rgba(15, 23, 42, 0.75);
-        backdrop-filter: blur(10px);
-      }
-      .main-bg {
-        background: linear-gradient(180deg, #eff6ff 0%, #f0f9ff10 100%);
-      }
-      input:focus,
-      select:focus,
-      textarea:focus {
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
-      }
-      .avatar-ring {
-        box-shadow:
-          0 0 0 3px #2563eb,
-          0 0 0 5px rgba(255, 255, 255, 0.9);
-      }
-      .section-title {
-        font-size: 24px;
-        font-weight: 800;
-        color: #1e293b;
-        letter-spacing: -0.5px;
-      }
-      .section-subtitle {
-        color: #64748b;
-        font-size: 14px;
-        margin-top: 4px;
-      }
-      .notif-dot {
-        position: absolute;
-        top: -2px;
-        right: -2px;
-        width: 9px;
-        height: 9px;
-        background: #ef4444;
-        border-radius: 50%;
-        border: 2px solid white;
-      }
-      .progress-track {
-        height: 8px;
-        background: #e2e8f0;
-        border-radius: 6px;
-        overflow: hidden;
-      }
-      .progress-fill {
-        height: 100%;
-        border-radius: 6px;
-        background: linear-gradient(90deg, #2563eb, #0ea5e9);
-        transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-      .quiz-option {
-        padding: 14px 18px;
-        border-radius: 12px;
-        border: 2px solid #e2e8f0;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      .quiz-option:hover {
-        border-color: #2563eb;
-        background: #eff6ff;
-      }
-      .quiz-option.selected {
-        border-color: #2563eb;
-        background: #eff6ff;
-        color: #1d4ed8;
-      }
-      .quiz-option.correct {
-        border-color: #16a34a;
-        background: #dcfce7;
-        color: #15803d;
-      }
-      .quiz-option.wrong {
-        border-color: #dc2626;
-        background: #fee2e2;
-        color: #b91c1c;
       }
     </style>
   </head>
@@ -339,27 +76,13 @@
     <aside
       class="w-64 bg-dark text-white flex flex-col transition-all duration-300 shadow-xl z-20 hidden md:flex"
     >
-      <div
-        class="p-6 border-b border-slate-700/50 flex items-center gap-3"
-        style="background: rgba(255, 255, 255, 0.04)"
-      >
+      <div class="p-6 border-b border-slate-700 flex items-center gap-3">
         <div
-          class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-lg"
-          style="
-            background: linear-gradient(135deg, #2563eb, #0ea5e9);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.5);
-          "
+          class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-xl"
         >
           A
         </div>
-        <div>
-          <h2 class="text-xl font-bold tracking-wide">Ami-Bridge</h2>
-          <span
-            class="text-xs font-semibold uppercase tracking-wider"
-            style="color: #93c5fd"
-            >Student Portal</span
-          >
-        </div>
+        <h2 class="text-xl font-bold tracking-wide">Ami-Bridge</h2>
       </div>
 
       <nav class="flex-1 py-6 px-3 space-y-2 overflow-y-auto">
@@ -434,11 +157,13 @@
           Performance Analytics
         </h1>
         <div class="flex items-center gap-4">
-          <div class="relative cursor-pointer group">
+          <div class="relative">
             <i
-              class="fas fa-bell text-slate-400 text-xl group-hover:text-primary transition-colors"
+              class="fas fa-bell text-slate-400 text-xl cursor-pointer hover:text-primary"
             ></i>
-            <span class="notif-dot"></span>
+            <span
+              class="absolute -top-1 -right-1 bg-red-500 w-3 h-3 rounded-full border-2 border-white"
+            ></span>
           </div>
           <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
             <div class="text-right hidden sm:block">
@@ -447,7 +172,9 @@
               </p>
               <p class="text-xs text-slate-500">Student</p>
             </div>
-            <div class="w-10 h-10 rounded-full overflow-hidden avatar-ring">
+            <div
+              class="w-10 h-10 rounded-full bg-slate-200 border-2 border-primary flex items-center justify-center overflow-hidden"
+            >
               <img
                 id="header-avatar"
                 src=""
@@ -460,120 +187,19 @@
       </header>
 
       <!-- Scrollable Content -->
-      <div class="flex-1 overflow-y-auto p-8 main-bg">
+      <div class="flex-1 overflow-y-auto p-8 bg-slate-50">
         <!-- SECTION: ANALYTICS -->
         <div
           id="sec-analytics"
           class="section-container block fade-in max-w-6xl mx-auto"
         >
-          <!-- Welcome Banner -->
-          <div class="welcome-banner">
-            <div style="position: relative; z-index: 1">
-              <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  gap: 12px;
-                  margin-bottom: 8px;
-                "
-              >
-                <div
-                  style="
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 50%;
-                    background: rgba(255, 255, 255, 0.2);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 22px;
-                  "
-                >
-                  <i class="fas fa-user-graduate"></i>
-                </div>
-                <div>
-                  <p
-                    style="
-                      font-size: 13px;
-                      opacity: 0.8;
-                      font-weight: 500;
-                      letter-spacing: 0.5px;
-                    "
-                  >
-                    WELCOME BACK
-                  </p>
-                  <h2
-                    style="
-                      font-size: 22px;
-                      font-weight: 800;
-                      letter-spacing: -0.5px;
-                    "
-                    id="welcome-name"
-                  >
-                    Student
-                  </h2>
-                </div>
-              </div>
-              <p style="font-size: 14px; opacity: 0.85; max-width: 480px">
-                Practice mock interviews, upload your resume, and track your
-                progress — all in one place.
-              </p>
-              <div
-                style="
-                  display: flex;
-                  gap: 16px;
-                  margin-top: 16px;
-                  flex-wrap: wrap;
-                "
-              >
-                <div
-                  style="
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                    font-size: 13px;
-                    background: rgba(255, 255, 255, 0.15);
-                    padding: 6px 14px;
-                    border-radius: 20px;
-                  "
-                >
-                  <span class="pulse-dot"></span>
-                  <span>Ready to Practice</span>
-                </div>
-                <div
-                  style="
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                    font-size: 13px;
-                    background: rgba(255, 255, 255, 0.15);
-                    padding: 6px 14px;
-                    border-radius: 20px;
-                  "
-                >
-                  <i class="fas fa-rocket"></i>
-                  <span>Keep it up!</span>
-                </div>
-              </div>
-            </div>
-            <img
-              src="https://illustrations.popsy.co/blue/studying.svg"
-              alt=""
-              style="
-                position: absolute;
-                right: 28px;
-                bottom: 0;
-                height: 155px;
-                opacity: 0.55;
-                z-index: 0;
-                pointer-events: none;
-              "
-            />
-          </div>
-
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div class="stat-card stagger-1">
-              <div class="stat-icon bg-blue-50 text-blue-600">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
+            >
+              <div
+                class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl"
+              >
                 <i class="fas fa-tasks"></i>
               </div>
               <div>
@@ -586,7 +212,9 @@
                 </p>
               </div>
             </div>
-            <div class="stat-card">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
+            >
               <div
                 class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xl"
               >
@@ -604,7 +232,9 @@
                 </p>
               </div>
             </div>
-            <div class="stat-card">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex items-center gap-4"
+            >
               <div
                 class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xl"
               >
@@ -623,13 +253,17 @@
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="panel-card p-6">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+            >
               <h3 class="text-lg font-bold text-slate-800 mb-4">
                 Performance Trend
               </h3>
               <canvas id="trendChart" height="200"></canvas>
             </div>
-            <div class="panel-card p-6">
+            <div
+              class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+            >
               <h3 class="text-lg font-bold text-slate-800 mb-4">
                 Attempts by Company
               </h3>
@@ -670,7 +304,7 @@
           <!-- Active Test View -->
           <div
             id="active-test-view"
-            class="hidden panel-card p-8 max-w-3xl mx-auto"
+            class="hidden bg-white rounded-xl shadow-sm border border-slate-200 p-8 max-w-3xl mx-auto"
           >
             <div class="flex justify-between items-center mb-8 border-b pb-4">
               <div>
@@ -732,7 +366,7 @@
           <!-- Test Result View -->
           <div
             id="test-result-view"
-            class="hidden panel-card p-10 max-w-2xl mx-auto text-center"
+            class="hidden text-center bg-white rounded-xl shadow-sm border border-slate-200 p-10 max-w-2xl mx-auto"
           >
             <div
               class="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl"
@@ -793,7 +427,9 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Left column: Upload + AI score -->
             <div class="md:col-span-1 space-y-4">
-              <div class="panel-card p-6">
+              <div
+                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+              >
                 <h3 class="text-lg font-bold text-slate-800 mb-4">
                   Upload Resume
                 </h3>
@@ -906,7 +542,9 @@
             <!-- Right column: Resume list + inline PDF viewer -->
             <div class="md:col-span-2 space-y-4">
               <!-- Resume list card -->
-              <div class="panel-card p-6">
+              <div
+                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+              >
                 <div class="flex items-center justify-between mb-4">
                   <h3 class="text-lg font-bold text-slate-800">My Resumes</h3>
                   <span
@@ -924,7 +562,10 @@
               </div>
 
               <!-- Inline PDF Viewer (shown when a resume is clicked) -->
-              <div id="inline-pdf-viewer" class="hidden panel-card">
+              <div
+                id="inline-pdf-viewer"
+                class="hidden bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+              >
                 <div
                   class="flex items-center justify-between px-5 py-3 border-b border-slate-200 bg-slate-50"
                 >
@@ -964,7 +605,10 @@
               </div>
 
               <!-- AI Feedback Panel (shown after AI Check) -->
-              <div id="ai-feedback-panel" class="hidden panel-card p-6">
+              <div
+                id="ai-feedback-panel"
+                class="hidden bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+              >
                 <div class="flex items-center justify-between mb-4">
                   <h3
                     class="text-lg font-bold text-slate-800 flex items-center gap-2"
@@ -993,7 +637,9 @@
           id="sec-history"
           class="section-container hidden fade-in max-w-5xl mx-auto"
         >
-          <div class="panel-card">
+          <div
+            class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+          >
             <div
               class="p-6 border-b border-slate-200 flex justify-between items-center"
             >
@@ -1051,11 +697,12 @@
           id="sec-profile"
           class="section-container hidden fade-in max-w-4xl mx-auto"
         >
+          <!-- Profile card -->
           <div
-            class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
+            class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-6"
           >
             <div
-              class="h-40 bg-gradient-to-r from-blue-500 to-indigo-600 relative overflow-hidden"
+              class="h-36 bg-gradient-to-r from-blue-500 to-indigo-600 relative overflow-hidden"
             ></div>
             <div class="px-8 pb-8">
               <div
@@ -1065,7 +712,7 @@
                   class="flex flex-col sm:flex-row items-start sm:items-end gap-4 sm:gap-6"
                 >
                   <div
-                    class="w-28 h-28 rounded-full border-4 border-white bg-slate-100 overflow-hidden shadow-md shrink-0 relative z-10"
+                    class="w-24 h-24 rounded-full border-4 border-white bg-slate-100 overflow-hidden shadow-md shrink-0 relative z-10"
                   >
                     <img
                       id="profile-avatar"
@@ -1081,99 +728,172 @@
                     >
                       Loading...
                     </h2>
-                    <p class="text-slate-500 font-medium">Student Candidate</p>
+                    <p class="text-slate-500 text-sm font-medium">
+                      Student Candidate
+                    </p>
                   </div>
                 </div>
                 <button
                   onclick="saveProfile()"
-                  class="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primaryHover transition-all flex items-center gap-2 text-sm font-semibold shadow-md"
+                  id="save-profile-btn"
+                  class="px-5 py-2.5 bg-primary text-white rounded-lg hover:bg-primaryHover transition-all flex items-center gap-2 text-sm font-semibold shadow-md"
                 >
-                  <i class="fas fa-save"></i> Save Profile
+                  <i class="fas fa-save"></i> Save Name
                 </button>
               </div>
 
-              <div class="mb-6 pt-2 border-t border-slate-100">
-                <h3 class="text-lg font-bold text-slate-800">
+              <div class="mb-5 pt-2 border-t border-slate-100">
+                <h3 class="text-base font-bold text-slate-800">
                   Personal Details
                 </h3>
+                <p class="text-xs text-slate-400 mt-0.5">
+                  Your display name can be updated. Email cannot be changed.
+                </p>
               </div>
 
               <form
                 id="profile-form"
-                class="grid grid-cols-1 md:grid-cols-2 gap-6"
+                class="grid grid-cols-1 md:grid-cols-2 gap-5"
                 onsubmit="
                   event.preventDefault();
                   saveProfile();
                 "
               >
                 <div>
-                  <label class="block text-sm font-semibold text-slate-700 mb-2"
+                  <label
+                    class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5"
                     >Full Name</label
                   >
                   <div class="relative">
-                    <div
-                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                    >
-                      <i class="fas fa-user text-slate-400"></i>
-                    </div>
+                    <i
+                      class="fas fa-user absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none"
+                    ></i>
                     <input
                       type="text"
                       id="prof-name"
-                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg outline-none text-slate-700"
+                      class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl outline-none text-slate-700 text-sm focus:border-primary transition"
                     />
                   </div>
                 </div>
                 <div>
-                  <label class="block text-sm font-semibold text-slate-700 mb-2"
+                  <label
+                    class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5"
                     >Email Address</label
                   >
                   <div class="relative">
-                    <div
-                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                    >
-                      <i class="fas fa-envelope text-slate-400"></i>
-                    </div>
+                    <i
+                      class="fas fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none"
+                    ></i>
                     <input
                       type="email"
                       id="prof-email"
-                      class="w-full pl-10 pr-4 py-2.5 bg-slate-100 border border-slate-200 rounded-lg text-slate-500 cursor-not-allowed outline-none"
                       disabled
+                      class="w-full pl-9 pr-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-slate-400 cursor-not-allowed outline-none text-sm"
+                    />
+                  </div>
+                  <p class="text-xs text-slate-400 mt-1">
+                    <i class="fas fa-lock mr-1"></i>Email cannot be changed
+                  </p>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Change Password card -->
+          <div
+            class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
+          >
+            <div
+              class="px-8 py-5 border-b border-slate-100 flex items-center gap-3"
+            >
+              <div
+                class="w-9 h-9 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center text-sm"
+              >
+                <i class="fas fa-lock"></i>
+              </div>
+              <div>
+                <h3 class="text-base font-bold text-slate-800">
+                  Change Password
+                </h3>
+                <p class="text-xs text-slate-400">
+                  Use a strong password with letters, numbers and symbols
+                </p>
+              </div>
+            </div>
+            <div class="px-8 py-6">
+              <form
+                id="change-password-form"
+                class="grid grid-cols-1 md:grid-cols-3 gap-5 items-end"
+                onsubmit="
+                  event.preventDefault();
+                  changePassword();
+                "
+              >
+                <div>
+                  <label
+                    class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5"
+                    >Current Password</label
+                  >
+                  <div class="relative">
+                    <i
+                      class="fas fa-key absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none"
+                    ></i>
+                    <input
+                      type="password"
+                      id="curr-pass"
+                      placeholder="••••••••"
+                      required
+                      class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl outline-none text-sm focus:border-primary transition"
                     />
                   </div>
                 </div>
                 <div>
-                  <label class="block text-sm font-semibold text-slate-700 mb-2"
-                    >Course / Degree</label
+                  <label
+                    class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5"
+                    >New Password</label
                   >
                   <div class="relative">
-                    <div
-                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                    >
-                      <i class="fas fa-graduation-cap text-slate-400"></i>
-                    </div>
+                    <i
+                      class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none"
+                    ></i>
                     <input
-                      type="text"
-                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg outline-none text-slate-700"
-                      placeholder="e.g. B.Tech Computer Science"
+                      type="password"
+                      id="new-pass"
+                      placeholder="Min 6 characters"
+                      required
+                      minlength="6"
+                      class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl outline-none text-sm focus:border-primary transition"
                     />
                   </div>
                 </div>
                 <div>
-                  <label class="block text-sm font-semibold text-slate-700 mb-2"
-                    >College / University</label
+                  <label
+                    class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5"
+                    >Confirm New Password</label
                   >
                   <div class="relative">
-                    <div
-                      class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                    >
-                      <i class="fas fa-university text-slate-400"></i>
-                    </div>
+                    <i
+                      class="fas fa-check-circle absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm pointer-events-none"
+                    ></i>
                     <input
-                      type="text"
-                      class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-lg outline-none text-slate-700"
-                      placeholder="e.g. NIT"
+                      type="password"
+                      id="confirm-pass"
+                      placeholder="Repeat new password"
+                      required
+                      class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl outline-none text-sm focus:border-primary transition"
                     />
                   </div>
+                </div>
+                <div
+                  class="md:col-span-3 flex justify-end pt-2 border-t border-slate-100 mt-1"
+                >
+                  <button
+                    type="submit"
+                    id="change-pass-btn"
+                    class="px-5 py-2.5 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition flex items-center gap-2 text-sm font-semibold shadow-sm"
+                  >
+                    <i class="fas fa-shield-alt"></i> Update Password
+                  </button>
                 </div>
               </form>
             </div>
@@ -1190,6 +910,12 @@
         window.location.hostname === "localhost"
           ? "http://localhost:5000"
           : "";
+
+      const authHeaders = (extra = {}) => ({
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + (localStorage.getItem("ami_token") || ""),
+        ...extra,
+      });
 
       // --- 1. GLOBAL DYNAMIC STATE ---
       const state = {
@@ -1251,8 +977,6 @@
         // 2. Set Up UI basics
         document.getElementById("header-user-name").innerText =
           loggedInUser.name;
-        const wn = document.getElementById("welcome-name");
-        if (wn) wn.textContent = loggedInUser.name;
         document.getElementById("profile-name-display").innerText =
           loggedInUser.name;
         document.getElementById("prof-name").value = loggedInUser.name;
@@ -1266,10 +990,16 @@
         try {
           const [companiesRes, historyRes, resumesRes, feedbackRes] =
             await Promise.all([
-              fetch(`${API_BASE}/api/companies`),
-              fetch(`${API_BASE}/api/student/${loggedInUser.id}/attempts`),
-              fetch(`${API_BASE}/api/student/${loggedInUser.id}/resumes`),
-              fetch(`${API_BASE}/api/student/${loggedInUser.id}/feedback`),
+              fetch(`${API_BASE}/api/companies`, { headers: authHeaders() }),
+              fetch(`${API_BASE}/api/student/${loggedInUser.id}/attempts`, {
+                headers: authHeaders(),
+              }),
+              fetch(`${API_BASE}/api/student/${loggedInUser.id}/resumes`, {
+                headers: authHeaders(),
+              }),
+              fetch(`${API_BASE}/api/student/${loggedInUser.id}/feedback`, {
+                headers: authHeaders(),
+              }),
             ]);
 
           if (companiesRes.ok) state.companies = await companiesRes.json();
@@ -1349,7 +1079,7 @@
 
         state.companies.forEach((company) => {
           grid.innerHTML += `
-            <div class="company-card p-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow group">
                 <div class="w-14 h-14 rounded-lg ${company.bg_color} ${company.text_color} flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
                     <i class="${company.icon_class}"></i>
                 </div>
@@ -1475,7 +1205,7 @@
 
         state.feedback.forEach((fb) => {
           list.innerHTML += `
-            <div class="panel-card p-6 flex gap-4">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex gap-4">
                 <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-xl text-slate-500 shrink-0">
                     <i class="fas fa-user-tie"></i>
                 </div>
@@ -1528,23 +1258,42 @@
 
         // Try to fetch real questions, fallback to mock if none exist in DB yet
         try {
-          const res = await fetch(`${API_BASE}/api/questions/${companyId}`);
+          const res = await fetch(`${API_BASE}/api/questions/${companyId}`, {
+            headers: authHeaders(),
+          });
           const realQuestions = await res.json();
 
           if (realQuestions.length > 0) {
             // Format real DB questions to match our UI state format
-            state.activeTest.questions = realQuestions.map((rq) => ({
-              q: rq.question_text,
-              options: [rq.option_a, rq.option_b, rq.option_c, rq.option_d],
-              correct: parseInt(rq.correct_answer),
-            }));
+            state.activeTest.questions = realQuestions.map((rq) => {
+              // options stored as JSON array in DB; support both formats for compatibility
+              let opts = rq.options;
+              if (typeof opts === "string") {
+                try {
+                  opts = JSON.parse(opts);
+                } catch (e) {}
+              }
+              if (!Array.isArray(opts))
+                opts = [rq.option_a, rq.option_b, rq.option_c, rq.option_d];
+              return {
+                q: rq.question_text,
+                options: opts,
+                correct: parseInt(rq.correct_answer),
+              };
+            });
           } else {
-            state.activeTest.questions = generateQuestions(
-              company.company_name,
+            // No questions in DB yet — show a clear message instead of mock questions
+            state.activeTest.isActive = false;
+            showToast(
+              "No questions available for this company yet. Ask your admin to add them.",
+              "info",
             );
+            return;
           }
         } catch (e) {
-          state.activeTest.questions = generateQuestions(company.company_name);
+          state.activeTest.isActive = false;
+          showToast("Could not load questions. Please try again.", "error");
+          return;
         }
 
         // UI Transitions
@@ -1641,15 +1390,16 @@
 
           await fetch(`${API_BASE}/api/attempts`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: authHeaders(),
             body: JSON.stringify(payload),
           });
 
           // 2. Fetch updated history from Database
           const histRes = await fetch(
             `${API_BASE}/api/student/${state.currentUser.id}/attempts`,
+            { headers: authHeaders() },
           );
-          state.history = await histRes.json();
+          if (histRes.ok) state.history = await histRes.json();
 
           // 3. Update UI Views
           document.getElementById("active-test-view").classList.add("hidden");
@@ -1691,8 +1441,81 @@
 
       // --- 5. UTILITY & ACTIONS ---
 
-      function saveProfile() {
-        showToast("Profile updated successfully!", "success");
+      async function saveProfile() {
+        const name = document.getElementById("prof-name")?.value?.trim();
+        if (!name) {
+          showToast("Name cannot be empty.", "error");
+          return;
+        }
+        const btn = document.getElementById("save-profile-btn");
+        const orig = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Saving...';
+        try {
+          const res = await fetch(`${API_BASE}/api/auth/me/name`, {
+            method: "PATCH",
+            headers: authHeaders(),
+            body: JSON.stringify({ name }),
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            showToast(data.error || "Failed to update name.", "error");
+            return;
+          }
+          // Update localStorage and UI
+          const user = JSON.parse(localStorage.getItem("ami_user") || "{}");
+          user.name = name;
+          localStorage.setItem("ami_user", JSON.stringify(user));
+          document.getElementById("header-user-name").innerText = name;
+          document.getElementById("profile-name-display").innerText = name;
+          showToast("Name updated successfully!", "success");
+        } catch (err) {
+          showToast("Server error. Could not update name.", "error");
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = orig;
+        }
+      }
+
+      async function changePassword() {
+        const curr = document.getElementById("curr-pass").value;
+        const newPass = document.getElementById("new-pass").value;
+        const confirm = document.getElementById("confirm-pass").value;
+        if (newPass !== confirm) {
+          showToast("New passwords do not match.", "error");
+          return;
+        }
+        if (newPass.length < 6) {
+          showToast("Password must be at least 6 characters.", "error");
+          return;
+        }
+        const btn = document.getElementById("change-pass-btn");
+        const orig = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML =
+          '<i class="fas fa-spinner fa-spin mr-1"></i> Updating...';
+        try {
+          const res = await fetch(`${API_BASE}/api/auth/me/password`, {
+            method: "PATCH",
+            headers: authHeaders(),
+            body: JSON.stringify({
+              current_password: curr,
+              new_password: newPass,
+            }),
+          });
+          const data = await res.json();
+          if (!res.ok) {
+            showToast(data.error || "Failed to change password.", "error");
+            return;
+          }
+          showToast("Password changed successfully!", "success");
+          document.getElementById("change-password-form").reset();
+        } catch (err) {
+          showToast("Server error. Could not change password.", "error");
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = orig;
+        }
       }
 
       function handleDrop(event) {
@@ -1865,7 +1688,8 @@
 
       // Legacy modal functions — kept for backward compatibility
       function viewResume(resumeId, name) {
-        const url = `${API_BASE}/api/resume/${resumeId}/view`;
+        const token = localStorage.getItem("ami_token") || "";
+        const url = `${API_BASE}/api/resume/${resumeId}/view?token=${token}`;
         openInlinePdf(url, name);
       }
 
@@ -1964,7 +1788,10 @@
       async function deleteResume(id) {
         if (!confirm("Delete this resume?")) return;
         try {
-          await fetch(`${API_BASE}/api/resume/${id}`, { method: "DELETE" });
+          await fetch(`${API_BASE}/api/resume/${id}`, {
+            method: "DELETE",
+            headers: authHeaders(),
+          });
           state.resumes = state.resumes.filter((r) => r.resume_id !== id);
           renderResumes();
           showToast("Resume deleted.", "info");
@@ -1984,8 +1811,7 @@
           info: "bg-blue-500",
         };
 
-        toast.className = `${colors[type]} text-white px-5 py-3.5 rounded-2xl fade-in flex items-center gap-3`;
-        toast.style.minWidth = "280px";
+        toast.className = `${colors[type]} text-white px-6 py-3 rounded shadow-lg fade-in flex items-center gap-3`;
         toast.innerHTML = `
             <i class="fas ${type === "success" ? "fa-check-circle" : type === "error" ? "fa-exclamation-circle" : "fa-info-circle"}"></i>
             <span class="font-medium text-sm">${message}</span>
@@ -2003,6 +1829,7 @@
       function logout() {
         showToast("Logging out...", "info");
         localStorage.removeItem("ami_user");
+        localStorage.removeItem("ami_token");
         setTimeout(() => {
           document.body.innerHTML =
             '<div class="h-screen w-full flex items-center justify-center bg-slate-50"><h1 class="text-2xl font-bold text-slate-500">Redirecting to Login...</h1></div>';

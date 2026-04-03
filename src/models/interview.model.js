@@ -3,16 +3,33 @@
 const { pool } = require("../config/db");
 
 const InterviewModel = {
-  getQuestionsByCompany: (companyId) =>
-    pool.query("SELECT * FROM interview_questions WHERE company_id = $1", [
-      companyId,
-    ]),
 
+  // ── Questions ──────────────────────────────────────────────────────────────
+  getQuestionsByCompany: (companyId) =>
+    pool.query(
+      "SELECT * FROM interview_questions WHERE company_id = $1 ORDER BY question_id ASC",
+      [companyId]
+    ),
+
+  saveQuestion: (company_id, question_text, options, correct_answer) =>
+    pool.query(
+      `INSERT INTO interview_questions (company_id, question_text, options, correct_answer)
+       VALUES ($1, $2, $3, $4) RETURNING *`,
+      [company_id, question_text, JSON.stringify(options), correct_answer]
+    ),
+
+  deleteQuestion: (question_id) =>
+    pool.query(
+      "DELETE FROM interview_questions WHERE question_id = $1 RETURNING question_id",
+      [question_id]
+    ),
+
+  // ── Attempts ───────────────────────────────────────────────────────────────
   saveAttempt: (student_id, company_id, total_score, max_score) =>
     pool.query(
       `INSERT INTO student_attempts (student_id, company_id, total_score, max_score)
        VALUES ($1, $2, $3, $4) RETURNING *`,
-      [student_id, company_id, total_score, max_score],
+      [student_id, company_id, total_score, max_score]
     ),
 
   getAttemptsByStudent: (studentId) =>
@@ -22,9 +39,10 @@ const InterviewModel = {
        JOIN companies c ON sa.company_id = c.company_id
        WHERE sa.student_id = $1
        ORDER BY sa.attempt_date DESC`,
-      [studentId],
+      [studentId]
     ),
 
+  // ── Feedback ───────────────────────────────────────────────────────────────
   getFeedbackForStudent: (studentId) =>
     pool.query(
       `SELECT f.*, u.name AS mentor_name
@@ -32,18 +50,17 @@ const InterviewModel = {
        JOIN users u ON f.mentor_id = u.id
        WHERE f.student_id = $1
        ORDER BY f.feedback_date DESC`,
-      [studentId],
+      [studentId]
     ),
 
   saveFeedback: (mentor_id, student_id, feedback_type, feedback_text) =>
     pool.query(
       `INSERT INTO mentor_feedback (mentor_id, student_id, feedback_type, feedback_text)
        VALUES ($1, $2, $3, $4) RETURNING *`,
-      [mentor_id, student_id, feedback_type, feedback_text],
+      [mentor_id, student_id, feedback_type, feedback_text]
     ),
 
-  // ── Assignments ──────────────────────────────────────────────────────────────
-
+  // ── Assignments ────────────────────────────────────────────────────────────
   getAssignedStudents: (mentorId) =>
     pool.query(
       `SELECT ma.assignment_id, u.id AS student_id, u.name, u.email
@@ -51,10 +68,9 @@ const InterviewModel = {
        JOIN users u ON ma.student_id = u.id
        WHERE ma.mentor_id = $1
        ORDER BY ma.assignment_id DESC`,
-      [mentorId],
+      [mentorId]
     ),
 
-  // NEW — fetch all assignments with names joined (for admin table)
   getAllAssignments: () =>
     pool.query(
       `SELECT ma.assignment_id,
@@ -63,7 +79,7 @@ const InterviewModel = {
        FROM mentor_assignments ma
        JOIN users um ON ma.mentor_id  = um.id
        JOIN users us ON ma.student_id = us.id
-       ORDER BY ma.assignment_id DESC`,
+       ORDER BY ma.assignment_id DESC`
     ),
 
   assignStudentToMentor: (mentorId, studentId) =>
@@ -71,21 +87,21 @@ const InterviewModel = {
       `INSERT INTO mentor_assignments (mentor_id, student_id)
        VALUES ($1, $2)
        RETURNING assignment_id`,
-      [mentorId, studentId],
+      [mentorId, studentId]
     ),
 
   checkAssignmentExists: (mentorId, studentId) =>
     pool.query(
       "SELECT 1 FROM mentor_assignments WHERE mentor_id = $1 AND student_id = $2",
-      [mentorId, studentId],
+      [mentorId, studentId]
     ),
 
-  // NEW — remove one assignment row by PK
   deleteAssignment: (assignmentId) =>
     pool.query(
       "DELETE FROM mentor_assignments WHERE assignment_id = $1 RETURNING assignment_id",
-      [assignmentId],
+      [assignmentId]
     ),
+
 };
 
 module.exports = InterviewModel;

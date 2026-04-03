@@ -8,6 +8,22 @@
   ],
   "routes": [
     {
+      "src": "/api/(.*)",
+      "dest": "server.js"
+    },
+    {
+      "src": "/",
+      "dest": "/public/index.html"
+    },
+    {
+      "src": "/(admin_dashboard\\.html|mentor_dashboard\\.html|student_dashboard\\.html|index\\.html)",
+      "dest": "/public/$1"
+    },
+    {
+      "src": "/(.*\\.(css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf))",
+      "dest": "/public/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "server.js"
     }

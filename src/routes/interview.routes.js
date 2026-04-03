@@ -1,28 +1,35 @@
 "use strict";
 
 const router = require("express").Router();
-const ctrl = require("../controllers/interview.controller");
+const ctrl   = require("../controllers/interview.controller");
+const { authenticate, requireRole } = require("../middlewares/auth.middleware");
 
-// Questions
-router.get("/questions/:companyId", ctrl.getQuestions);
+// ── Questions (admin writes, anyone authenticated reads) ──────────────────────
+router.get(   "/questions/:companyId",    authenticate, ctrl.getQuestions);
+router.post(  "/questions",              authenticate, requireRole("admin"), ctrl.createQuestion);
+router.delete("/questions/:id",          authenticate, requireRole("admin"), ctrl.deleteQuestion);
 
-// Student attempts
-router.post("/attempts", ctrl.saveAttempt);
-router.get("/student/:id/attempts", ctrl.getAttempts);
+// ── Student attempts (student writes own, mentor/admin read) ──────────────────
+router.post("/attempts",                 authenticate, ctrl.saveAttempt);
+router.get( "/student/:id/attempts",    authenticate, ctrl.getAttempts);
 
-// Feedback
-router.get("/student/:id/feedback", ctrl.getFeedback);
-router.post("/feedback", ctrl.saveFeedback);
+// ── Feedback ──────────────────────────────────────────────────────────────────
+router.get( "/student/:id/feedback",    authenticate, ctrl.getFeedback);
+router.post("/feedback",                authenticate, requireRole("mentor", "admin"), ctrl.saveFeedback);
 
-// Mentor — read assigned students
-router.get("/mentor/:id/students", ctrl.getAssignedStudents);
+// ── Mentor ────────────────────────────────────────────────────────────────────
+router.get( "/mentor/:id/students",     authenticate, requireRole("mentor", "admin"), ctrl.getAssignedStudents);
 
-// Admin — users
-router.get("/admin/users", ctrl.getAllUsers);
+// ── Admin — users ─────────────────────────────────────────────────────────────
+router.get(   "/admin/users",           authenticate, requireRole("admin"), ctrl.getAllUsers);
+router.delete("/admin/users/:id",       authenticate, requireRole("admin"), ctrl.deleteUser);
 
-// Admin — assignments (was completely missing — root cause of the bug)
-router.get("/admin/assignments", ctrl.getAllAssignments);
-router.post("/admin/assignments", ctrl.createAssignment);
-router.delete("/admin/assignments/:id", ctrl.deleteAssignment);
+// ── Admin — companies ─────────────────────────────────────────────────────────
+router.delete("/admin/companies/:id",   authenticate, requireRole("admin"), ctrl.deleteCompany);
+
+// ── Admin — assignments ───────────────────────────────────────────────────────
+router.get(   "/admin/assignments",     authenticate, requireRole("admin"), ctrl.getAllAssignments);
+router.post(  "/admin/assignments",     authenticate, requireRole("admin"), ctrl.createAssignment);
+router.delete("/admin/assignments/:id", authenticate, requireRole("admin"), ctrl.deleteAssignment);
 
 module.exports = router;
