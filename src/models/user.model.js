@@ -17,15 +17,6 @@ const UserModel = {
 
   getAll: () =>
     pool.query("SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC"),
-
-  delete: (id) =>
-    pool.query("DELETE FROM users WHERE id = $1 RETURNING id", [id]),
-
-  updatePassword: (id, hashedPassword) =>
-    pool.query("UPDATE users SET password = $1 WHERE id = $2 RETURNING id", [hashedPassword, id]),
-
-  updateName: (id, name) =>
-    pool.query("UPDATE users SET name = $1 WHERE id = $2 RETURNING id, name", [name, id]),
 };
 
 module.exports = UserModel;

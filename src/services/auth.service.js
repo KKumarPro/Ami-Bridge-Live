@@ -1,18 +1,7 @@
 "use strict";
 
 const bcrypt    = require("bcryptjs");
-const jwt       = require("jsonwebtoken");
 const UserModel = require("../models/user.model");
-const env       = require("../config/env");
-
-const EXPIRES_IN = "7d";
-
-const signToken = (user) =>
-  jwt.sign(
-    { id: user.id, name: user.name, email: user.email, role: user.role },
-    env.JWT_SECRET,
-    { expiresIn: EXPIRES_IN }
-  );
 
 const register = async (name, email, password, role) => {
   const existing = await UserModel.findByEmail(email);
@@ -24,8 +13,7 @@ const register = async (name, email, password, role) => {
   const salt   = await bcrypt.genSalt(10);
   const hashed = await bcrypt.hash(password, salt);
   const result = await UserModel.create(name, email, hashed, role);
-  const user   = result.rows[0];
-  return { ...user, token: signToken(user) };
+  return result.rows[0];
 };
 
 const login = async (email, password) => {
@@ -42,8 +30,7 @@ const login = async (email, password) => {
     err.status = 400;
     throw err;
   }
-  const payload = { id: user.id, name: user.name, email: user.email, role: user.role };
-  return { ...payload, token: signToken(payload) };
+  return { id: user.id, name: user.name, email: user.email, role: user.role };
 };
 
 module.exports = { register, login };

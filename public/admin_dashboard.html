@@ -363,6 +363,12 @@
                   id="users-table-body"
                   class="divide-y divide-slate-100 text-sm"
                 >
+                  <!-- Rendered by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
 
         <!-- SECTION: COMPANIES -->
         <div
@@ -767,7 +773,6 @@
               >Question Text</label
             >
             <textarea
-              id="q-text"
               class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none h-20"
               required
             ></textarea>
@@ -779,7 +784,6 @@
             <div class="flex items-center gap-2">
               <span class="font-bold text-slate-400 w-6">A.</span>
               <input
-                id="q-opt-a"
                 type="text"
                 class="w-full px-3 py-1.5 border border-slate-300 rounded focus:border-primary outline-none"
                 required
@@ -788,7 +792,6 @@
             <div class="flex items-center gap-2">
               <span class="font-bold text-slate-400 w-6">B.</span>
               <input
-                id="q-opt-b"
                 type="text"
                 class="w-full px-3 py-1.5 border border-slate-300 rounded focus:border-primary outline-none"
                 required
@@ -797,7 +800,6 @@
             <div class="flex items-center gap-2">
               <span class="font-bold text-slate-400 w-6">C.</span>
               <input
-                id="q-opt-c"
                 type="text"
                 class="w-full px-3 py-1.5 border border-slate-300 rounded focus:border-primary outline-none"
                 required
@@ -806,7 +808,6 @@
             <div class="flex items-center gap-2">
               <span class="font-bold text-slate-400 w-6">D.</span>
               <input
-                id="q-opt-d"
                 type="text"
                 class="w-full px-3 py-1.5 border border-slate-300 rounded focus:border-primary outline-none"
                 required
@@ -818,7 +819,6 @@
               >Correct Answer</label
             >
             <select
-              id="q-correct"
               class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none"
             >
               <option value="0">Option A</option>
@@ -855,13 +855,6 @@
           ? "http://localhost:5000"
           : "";
 
-      // Returns Authorization header using stored JWT
-      const authHeaders = (extra = {}) => ({
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + (localStorage.getItem("ami_token") || ""),
-        ...extra,
-      });
-
       // --- 1. ADMIN DYNAMIC STATE ---
       const state = {
         currentUser: null,
@@ -891,8 +884,8 @@
         // 3. Fetch Real Data from Database
         try {
           const [usersRes, companiesRes] = await Promise.all([
-            fetch(`${API_BASE}/api/admin/users`, { headers: authHeaders() }),
-            fetch(`${API_BASE}/api/companies`, { headers: authHeaders() }),
+            fetch(`${API_BASE}/api/admin/users`),
+            fetch(`${API_BASE}/api/companies`),
           ]);
 
           if (usersRes.ok) {
@@ -904,9 +897,7 @@
           }
 
           // Fetch saved assignments from DB on every page load
-          const assignRes = await fetch(`${API_BASE}/api/admin/assignments`, {
-            headers: authHeaders(),
-          });
+          const assignRes = await fetch(`${API_BASE}/api/admin/assignments`);
           if (assignRes.ok) {
             const rows = await assignRes.json();
             state.assignments = rows.map((a) => ({
@@ -1037,7 +1028,7 @@
                 <td class="px-6 py-4 text-slate-600 text-sm">${new Date(user.created_at).toLocaleDateString()}</td>
                 <td class="px-6 py-4 text-right">
                     <button class="text-blue-600 hover:text-blue-800 p-1 mr-2" title="Edit Role"><i class="fas fa-edit"></i></button>
-                    <button class="text-red-500 hover:text-red-700 p-1" title="Delete User" onclick="deleteItem('user', ${user.id})"><i class="fas fa-trash-alt"></i></button>
+                    <button class="text-red-500 hover:text-red-700 p-1" title="Delete User" onclick="deleteItem('user')"><i class="fas fa-trash-alt"></i></button>
                 </td>
             </tr>
           `;
@@ -1067,7 +1058,7 @@
                     </div>
                     <div class="flex gap-2 text-slate-400">
                         <button class="hover:text-primary transition"><i class="fas fa-edit"></i></button>
-                        <button class="hover:text-danger transition" onclick="deleteItem('company', '${company.company_id}')"><i class="fas fa-trash"></i></button>
+                        <button class="hover:text-danger transition" onclick="deleteItem('company')"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
                 <h3 class="text-lg font-bold text-slate-800">${company.company_name}</h3>
@@ -1135,9 +1126,7 @@
 
         try {
           // Fetch real questions for this company
-          const res = await fetch(`${API_BASE}/api/questions/${companyId}`, {
-            headers: authHeaders(),
-          });
+          const res = await fetch(`${API_BASE}/api/questions/${companyId}`);
           let qList = [];
           if (res.ok) {
             qList = await res.json();
@@ -1166,7 +1155,7 @@
                                 <div class="mt-2 text-sm text-green-600 font-semibold"><i class="fas fa-check-circle mr-1"></i> Correct Answer: Option ${answerLetter}</div>
                             </div>
                             <div class="flex gap-2 text-slate-400 shrink-0">
-                                <button class="hover:text-danger transition" onclick="deleteItem('question', ${q.question_id})"><i class="fas fa-trash"></i></button>
+                                <button class="hover:text-danger transition" onclick="deleteItem('question')"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>
                     </div>
@@ -1211,7 +1200,6 @@
             `${API_BASE}/api/admin/assignments/${assignmentId}`,
             {
               method: "DELETE",
-              headers: authHeaders(),
             },
           );
           if (!res.ok) {
@@ -1254,7 +1242,7 @@
           // POST to real database via the auth register route
           const response = await fetch(API_BASE + "/api/auth/register", {
             method: "POST",
-            headers: authHeaders(),
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               name: nameInput,
               email: emailInput,
@@ -1267,14 +1255,12 @@
 
           if (response.ok) {
             // Refresh the users list directly from DB to get the true ID and timestamp
-            const usersRes = await fetch(`${API_BASE}/api/admin/users`, {
-              headers: authHeaders(),
-            });
+            const usersRes = await fetch(`${API_BASE}/api/admin/users`);
             if (usersRes.ok) state.users = await usersRes.json();
 
             updateStats();
             renderUsers();
-            populateSelects();
+            populateSelects(); // Re-populate assignment dropdowns
             initCharts();
 
             showToast(
@@ -1284,15 +1270,13 @@
             closeModal("user-modal");
             document.getElementById("add-user-form").reset();
           } else {
-            // Show the exact server error message (e.g. "User already exists")
-            showToast(data.error || "Failed to add user.", "error");
+            showToast(data.error || "Failed to add user", "error");
           }
         } catch (e) {
           console.error(e);
-          showToast("Network error. Is the server running?", "error");
+          showToast("Server error. Could not add user.", "error");
         } finally {
           btn.innerHTML = origText;
-          btn.disabled = false;
         }
       }
 
@@ -1314,7 +1298,7 @@
           // POST to real database
           const response = await fetch(API_BASE + "/api/companies", {
             method: "POST",
-            headers: authHeaders(),
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               company_name: nameInput,
               description: descInput,
@@ -1328,9 +1312,7 @@
 
           if (response.ok) {
             // Refresh companies list
-            const compRes = await fetch(`${API_BASE}/api/companies`, {
-              headers: authHeaders(),
-            });
+            const compRes = await fetch(`${API_BASE}/api/companies`);
             if (compRes.ok) state.companies = await compRes.json();
 
             updateStats();
@@ -1351,62 +1333,10 @@
         }
       }
 
-      async function submitQuestion() {
-        const companyId = document.getElementById("modal-q-company").value;
-        const questionText = document.getElementById("q-text")?.value?.trim();
-        const optA = document.getElementById("q-opt-a")?.value?.trim();
-        const optB = document.getElementById("q-opt-b")?.value?.trim();
-        const optC = document.getElementById("q-opt-c")?.value?.trim();
-        const optD = document.getElementById("q-opt-d")?.value?.trim();
-        const correctAnswer = parseInt(
-          document.getElementById("q-correct")?.value ?? "0",
-        );
-
-        if (!companyId || !questionText || !optA || !optB || !optC || !optD) {
-          showToast("Please fill all question fields.", "error");
-          return;
-        }
-
-        const submitBtn = form.querySelector("button[type='submit']");
-        const orig = submitBtn.innerHTML;
-        submitBtn.disabled = true;
-        submitBtn.innerHTML =
-          '<i class="fas fa-spinner fa-spin mr-1"></i> Saving...';
-
-        try {
-          const res = await fetch(`${API_BASE}/api/questions`, {
-            method: "POST",
-            headers: authHeaders(),
-            body: JSON.stringify({
-              company_id: companyId,
-              question_text: questionText,
-              options: [optA, optB, optC, optD],
-              correct_answer: correctAnswer,
-            }),
-          });
-          const data = await res.json();
-          if (!res.ok) {
-            showToast(data.error || "Failed to add question.", "error");
-            return;
-          }
-          showToast("Question added to the database!", "success");
-          closeModal("question-modal");
-          // Reset fields by id (more reliable than form.reset())
-          ["q-text", "q-opt-a", "q-opt-b", "q-opt-c", "q-opt-d"].forEach(
-            (id) => {
-              const el = document.getElementById(id);
-              if (el) el.value = "";
-            },
-          );
-          const qc = document.getElementById("q-correct");
-          if (qc) qc.value = "0";
-          renderQuestions();
-        } catch (err) {
-          showToast("Server error. Could not add question.", "error");
-        } finally {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = orig;
-        }
+      function submitQuestion() {
+        // Mocked until backend question route is fully built
+        showToast("Question added! (Backend POST route required)", "info");
+        closeModal("question-modal");
       }
 
       async function assignMentor() {
@@ -1432,7 +1362,7 @@
         try {
           const res = await fetch(`${API_BASE}/api/admin/assignments`, {
             method: "POST",
-            headers: authHeaders(),
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               mentor_id: Number(mId),
               student_id: Number(sId),
@@ -1473,57 +1403,17 @@
         }
       }
 
-      async function deleteItem(type, id) {
+      function deleteItem(type) {
+        // Mock delete confirmation
         if (
-          !confirm(
-            `Are you sure you want to delete this ${type}? This cannot be undone.`,
+          confirm(
+            `Are you sure you want to delete this ${type}? This action cannot be undone.`,
           )
-        )
-          return;
-        const endpoints = {
-          user: `/api/admin/users/${id}`,
-          company: `/api/admin/companies/${id}`,
-          question: `/api/questions/${id}`,
-        };
-        const endpoint = endpoints[type];
-        if (!endpoint) return;
-        try {
-          const res = await fetch(`${API_BASE}${endpoint}`, {
-            method: "DELETE",
-            headers: authHeaders(),
-          });
-          if (!res.ok) {
-            const d = await res.json();
-            showToast(d.error || `Failed to delete ${type}.`, "error");
-            return;
-          }
+        ) {
           showToast(
-            `${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully.`,
-            "success",
+            `${type.charAt(0).toUpperCase() + type.slice(1)} deleted. (Needs DB route)`,
+            "info",
           );
-          // Refresh relevant state
-          if (type === "user") {
-            const u = await fetch(`${API_BASE}/api/admin/users`, {
-              headers: authHeaders(),
-            });
-            if (u.ok) state.users = await u.json();
-            updateStats();
-            renderUsers();
-            populateSelects();
-            initCharts();
-          } else if (type === "company") {
-            const c = await fetch(`${API_BASE}/api/companies`, {
-              headers: authHeaders(),
-            });
-            if (c.ok) state.companies = await c.json();
-            updateStats();
-            renderCompanies();
-            populateSelects();
-          } else if (type === "question") {
-            renderQuestions();
-          }
-        } catch (err) {
-          showToast(`Server error. Could not delete ${type}.`, "error");
         }
       }
 
@@ -1564,7 +1454,6 @@
       function logout() {
         showToast("Ending admin session...", "info");
         localStorage.removeItem("ami_user");
-        localStorage.removeItem("ami_token");
         setTimeout(() => {
           document.body.innerHTML =
             '<div class="h-screen w-full flex items-center justify-center bg-slate-50"><h1 class="text-2xl font-bold text-slate-500">Redirecting to Login...</h1></div>';
@@ -1652,9 +1541,7 @@
           '<div class="p-12 text-center text-slate-400"><i class="fas fa-spinner fa-spin text-3xl mb-3 block"></i><p>Gemini AI is reading all student resumes. This may take a moment...</p></div>';
 
         try {
-          const res = await fetch(`${API_BASE}/api/admin/resumes-ocr`, {
-            headers: authHeaders(),
-          });
+          const res = await fetch(`${API_BASE}/api/admin/resumes-ocr`);
           if (!res.ok) throw new Error("OCR request failed");
           const data = await res.json();
 
@@ -1762,9 +1649,8 @@
       function adminViewResume(resumeId, name) {
         document.getElementById("admin-pdf-title").textContent =
           name || "Resume";
-        const _tok = localStorage.getItem("ami_token") || "";
         document.getElementById("admin-pdf-iframe").src =
-          `${API_BASE}/api/resume/${resumeId}/view?token=${_tok}`;
+          `${API_BASE}/api/resume/${resumeId}/view`;
         document.getElementById("admin-pdf-modal").classList.remove("hidden");
         document.body.style.overflow = "hidden";
       }
@@ -1803,10 +1689,6 @@
         try {
           const res = await fetch(`${API_BASE}/api/admin/bulk-register`, {
             method: "POST",
-            headers: {
-              Authorization:
-                "Bearer " + (localStorage.getItem("ami_token") || ""),
-            },
             body: formData,
           });
           const data = await res.json();
@@ -1884,16 +1766,12 @@
             "success",
           );
 
-          // Refresh user list and assignment dropdowns so new students appear immediately
-          const usersRes = await fetch(`${API_BASE}/api/admin/users`, {
-            headers: authHeaders(),
-          });
+          // Refresh user list
+          const usersRes = await fetch(`${API_BASE}/api/admin/users`);
           if (usersRes.ok) {
             state.users = await usersRes.json();
             updateStats();
             renderUsers();
-            populateSelects();
-            initCharts();
           }
         } catch (err) {
           div.innerHTML = `<div class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">Error: ${err.message}</div>`;

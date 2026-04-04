@@ -13,8 +13,7 @@
       href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Instrument+Sans:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="icon" href="logo.png" type="image/png" />
-    
+    <link rel="icon" href="logo.png" type="image/logo.png" />
     <script>
       tailwind.config = {
         theme: {
@@ -41,47 +40,61 @@
     </script>
     <style>
       :root {
-        --primary: #4f46e5;
-        --primary-light: #6366f1;
-        --primary-dark: #3730a3;
-        --accent: #0ea5e9;
-        --success: #10b981;
-        --coral: #f43f5e;
-        --ink: #ffffff;
+        --acid: #c8f23a;
+        --violet: #7b5ea7;
+        --coral: #ff6b6b;
+        --sky: #4ecdc4;
+        --ink: #0a0a0f;
       }
       html {
         scroll-behavior: smooth;
       }
       body {
         font-family: "Instrument Sans", sans-serif;
-        background: #ffffff;
-        color: #1e293b;
+        background: var(--ink);
+        color: #e8e8f0;
         overflow-x: hidden;
       }
 
-      /* Gradient mesh hero — clean light */
+      /* Noise grain overlay */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 9999;
+        opacity: 0.35;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+      }
+
+      /* Gradient mesh hero */
       .mesh-bg {
         background:
           radial-gradient(
-            ellipse 70% 60% at 10% 0%,
-            rgba(79, 70, 229, 0.08) 0%,
+            ellipse 70% 60% at 15% 10%,
+            rgba(123, 94, 167, 0.35) 0%,
             transparent 60%
           ),
           radial-gradient(
-            ellipse 50% 50% at 90% 80%,
-            rgba(14, 165, 233, 0.07) 0%,
+            ellipse 50% 50% at 85% 80%,
+            rgba(200, 242, 58, 0.1) 0%,
             transparent 60%
           ),
-          #f8faff;
+          radial-gradient(
+            ellipse 40% 40% at 60% 30%,
+            rgba(78, 205, 196, 0.1) 0%,
+            transparent 60%
+          ),
+          #0a0a0f;
       }
 
       /* Animated gradient text */
       .gradient-text {
         background: linear-gradient(
           135deg,
-          #4f46e5 0%,
-          #6366f1 40%,
-          #0ea5e9 100%
+          var(--acid) 0%,
+          var(--sky) 50%,
+          var(--violet) 100%
         );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -183,10 +196,9 @@
 
       /* Nav */
       .nav-blur {
-        background: rgba(255, 255, 255, 0.95);
+        background: rgba(10, 10, 15, 0.75);
         backdrop-filter: blur(20px);
-        border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-        box-shadow: 0 1px 16px rgba(0, 0, 0, 0.06);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       }
 
       /* Pill */
@@ -196,9 +208,9 @@
         gap: 0.5rem;
         padding: 0.35rem 1rem;
         border-radius: 9999px;
-        background: rgba(79, 70, 229, 0.08);
-        border: 1px solid rgba(79, 70, 229, 0.2);
-        color: #4f46e5;
+        background: rgba(200, 242, 58, 0.1);
+        border: 1px solid rgba(200, 242, 58, 0.25);
+        color: var(--acid);
         font-size: 0.75rem;
         font-weight: 700;
         letter-spacing: 0.08em;
@@ -213,21 +225,21 @@
         gap: 0.6rem;
         padding: 0.9rem 2.2rem;
         border-radius: 9999px;
-        background: linear-gradient(135deg, #4f46e5, #6366f1);
-        color: #ffffff;
+        background: var(--acid);
+        color: var(--ink);
         font-family: "Syne", sans-serif;
-        font-weight: 700;
+        font-weight: 800;
         font-size: 1rem;
         transition:
           transform 0.2s,
           box-shadow 0.2s;
-        box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
+        box-shadow: 0 0 40px rgba(200, 242, 58, 0.25);
         cursor: pointer;
         border: none;
       }
       .btn-acid:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 32px rgba(79, 70, 229, 0.4);
+        box-shadow: 0 0 60px rgba(200, 242, 58, 0.45);
       }
       .btn-ghost {
         display: inline-flex;
@@ -235,8 +247,8 @@
         gap: 0.6rem;
         padding: 0.9rem 2.2rem;
         border-radius: 9999px;
-        border: 1.5px solid rgba(79, 70, 229, 0.3);
-        color: #4f46e5;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: rgba(255, 255, 255, 0.8);
         font-family: "Syne", sans-serif;
         font-weight: 600;
         font-size: 1rem;
@@ -245,27 +257,26 @@
         background: transparent;
       }
       .btn-ghost:hover {
-        border-color: #4f46e5;
-        background: rgba(79, 70, 229, 0.05);
+        border-color: rgba(255, 255, 255, 0.4);
+        color: #fff;
         transform: translateY(-2px);
       }
 
       /* Feature card */
       .fc {
-        background: #ffffff;
-        border: 1px solid rgba(226, 232, 240, 0.8);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
         border-radius: 1.5rem;
         padding: 2rem;
-        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
         transition:
           transform 0.3s,
           border-color 0.3s,
           box-shadow 0.3s;
       }
       .fc:hover {
-        transform: translateY(-6px);
-        border-color: rgba(79, 70, 229, 0.2);
-        box-shadow: 0 20px 48px rgba(79, 70, 229, 0.1);
+        transform: translateY(-8px);
+        border-color: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
       }
 
       /* Role card */
@@ -274,12 +285,9 @@
         padding: 2.5rem;
         transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         position: relative;
-        border: 1px solid rgba(226, 232, 240, 0.8);
-        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
       }
       .rc:hover {
         transform: translateY(-6px);
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
       }
 
       /* Stat */
@@ -288,25 +296,23 @@
         font-size: 3.5rem;
         font-weight: 800;
         line-height: 1;
-        color: #1e293b;
       }
 
       /* Testimonial */
       .tc {
-        background: #ffffff;
-        border: 1px solid rgba(226, 232, 240, 0.8);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 1.25rem;
         padding: 1.75rem;
-        box-shadow: 0 2px 14px rgba(0, 0, 0, 0.05);
       }
 
       /* Floating UI card */
       .uic {
-        background: #ffffff;
+        background: rgba(16, 16, 26, 0.9);
         backdrop-filter: blur(20px);
-        border: 1px solid rgba(226, 232, 240, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 1.25rem;
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
       }
 
       /* Timeline dot */
@@ -314,8 +320,8 @@
         width: 12px;
         height: 12px;
         border-radius: 9999px;
-        background: #4f46e5;
-        box-shadow: 0 0 12px rgba(79, 70, 229, 0.4);
+        background: var(--acid);
+        box-shadow: 0 0 12px rgba(200, 242, 58, 0.6);
         flex-shrink: 0;
         margin-top: 4px;
       }
@@ -338,51 +344,40 @@
         position: relative;
         transform: translateX(0);
       }
-      .fade-in {
-        animation: fadeInUp 0.25s ease-out;
-      }
-      @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translateY(8px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
       .auth-input {
         width: 100%;
         padding: 0.85rem 1.1rem;
-        background: #f8fafc;
-        border: 1.5px solid #e2e8f0;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 0.75rem;
-        color: #1e293b;
+        color: #fff;
         font-size: 0.95rem;
         outline: none;
         transition:
           border-color 0.2s,
-          background 0.2s,
-          box-shadow 0.2s;
+          background 0.2s;
       }
       .auth-input:focus {
-        border-color: #4f46e5;
-        background: #fff;
-        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+        border-color: var(--acid);
+        background: rgba(200, 242, 58, 0.05);
       }
       .auth-input::placeholder {
-        color: #94a3b8;
+        color: rgba(255, 255, 255, 0.3);
       }
       .auth-input option {
-        background: #ffffff;
-        color: #1e293b;
+        background: #1a1a24;
       }
 
-      /* Divider lines */
+      /* Glow lines */
       .gl {
         height: 1px;
-        background: linear-gradient(90deg, transparent, #cbd5e1, transparent);
-        opacity: 0.8;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--acid),
+          transparent
+        );
+        opacity: 0.3;
       }
 
       /* Company pill */
@@ -391,20 +386,54 @@
         align-items: center;
         gap: 0.6rem;
         padding: 0.6rem 1.25rem;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 9999px;
         white-space: nowrap;
         font-size: 0.85rem;
         font-weight: 600;
-        color: #475569;
+        color: rgba(255, 255, 255, 0.65);
+      }
+
+      /* Cursor */
+      #cdot {
+        width: 8px;
+        height: 8px;
+        background: var(--acid);
+        border-radius: 9999px;
+        position: fixed;
+        pointer-events: none;
+        z-index: 10000;
+        mix-blend-mode: difference;
+        transform: translate(-50%, -50%);
+      }
+      #cring {
+        width: 38px;
+        height: 38px;
+        border: 1.5px solid rgba(200, 242, 58, 0.5);
+        border-radius: 9999px;
+        position: fixed;
+        pointer-events: none;
+        z-index: 10000;
+        mix-blend-mode: difference;
+        transform: translate(-50%, -50%);
+        transition:
+          width 0.2s,
+          height 0.2s,
+          border-color 0.2s;
+      }
+      @media (max-width: 768px) {
+        #cdot,
+        #cring {
+          display: none;
+        }
       }
 
       /* Grid pattern */
       .grid-bg {
         background-image:
-          linear-gradient(rgba(79, 70, 229, 0.04) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(79, 70, 229, 0.04) 1px, transparent 1px);
+          linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
         background-size: 60px 60px;
       }
     </style>
@@ -415,6 +444,10 @@
       id="toast-container"
       class="fixed top-5 right-5 z-[9999] flex flex-col gap-2 pointer-events-none"
     ></div>
+
+    <!-- Cursor -->
+    <div id="cdot"></div>
+    <div id="cring"></div>
 
     <!-- NAV -->
     <nav class="fixed w-full z-50 nav-blur" id="navbar">
@@ -439,37 +472,37 @@
               font-family: Syne, sans-serif;
               font-weight: 700;
               font-size: 1.25rem;
-              color: #1e293b;
+              color: #fff;
             "
-            >Ami<span style="color: #4f46e5">Bridge</span></span
+            >Ami<span style="color: var(--acid)">Bridge</span></span
           >
         </div>
         <div class="hidden md:flex items-center gap-8">
           <a
             href="#features"
-            class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors"
+            class="text-sm font-medium text-white opacity-60 hover:opacity-100 transition-opacity"
             >Features</a
           >
           <a
             href="#roles"
-            class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors"
+            class="text-sm font-medium text-white opacity-60 hover:opacity-100 transition-opacity"
             >For You</a
           >
           <a
             href="#stats"
-            class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors"
+            class="text-sm font-medium text-white opacity-60 hover:opacity-100 transition-opacity"
             >Impact</a
           >
           <a
             href="#how"
-            class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors"
+            class="text-sm font-medium text-white opacity-60 hover:opacity-100 transition-opacity"
             >How it Works</a
           >
         </div>
         <div class="flex items-center gap-3">
           <button
             onclick="openAuth('login')"
-            class="hidden md:block text-sm font-semibold text-slate-600 hover:text-indigo-600 px-4 py-2 transition-colors"
+            class="hidden md:block text-sm font-semibold text-white opacity-60 hover:opacity-100 px-4 py-2 transition-opacity"
           >
             Sign in
           </button>
@@ -507,8 +540,7 @@
           <div>
             <div class="pill mb-8 reveal">
               <span
-                class="w-1.5 h-1.5 rounded-full animate-pulse inline-block"
-                style="background: #4f46e5"
+                class="w-1.5 h-1.5 rounded-full bg-acid animate-pulse inline-block"
               ></span>
               AI-Powered Placement Prep
             </div>
@@ -519,7 +551,7 @@
                 font-weight: 900;
                 font-size: clamp(3rem, 7vw, 4.5rem);
                 line-height: 0.95;
-                color: #0f172a;
+                color: #fff;
                 letter-spacing: -0.02em;
               "
             >
@@ -529,7 +561,7 @@
             </h1>
             <p
               class="reveal d2 mb-10 text-lg leading-relaxed max-w-md"
-              style="color: #475569"
+              style="color: rgba(255, 255, 255, 0.55)"
             >
               Practice real interview questions, get AI-powered resume feedback,
               and track your growth — built specifically for Indian engineering
@@ -573,8 +605,8 @@
                   class="w-10 h-10 rounded-full border-2 border-ink flex items-center justify-center text-xs font-bold"
                   style="
                     margin-left: -0.75rem;
-                    background: #e8eef8;
-                    color: #4f46e5;
+                    background: #1a1a24;
+                    color: var(--acid);
                   "
                 >
                   +2k
@@ -582,15 +614,15 @@
               </div>
               <div>
                 <div class="flex gap-0.5 mb-1">
-                  <i class="fas fa-star text-xs" style="color: #4f46e5"></i>
-                  <i class="fas fa-star text-xs" style="color: #4f46e5"></i>
-                  <i class="fas fa-star text-xs" style="color: #4f46e5"></i>
-                  <i class="fas fa-star text-xs" style="color: #4f46e5"></i>
-                  <i class="fas fa-star text-xs" style="color: #4f46e5"></i>
+                  <i class="fas fa-star text-xs" style="color: var(--acid)"></i>
+                  <i class="fas fa-star text-xs" style="color: var(--acid)"></i>
+                  <i class="fas fa-star text-xs" style="color: var(--acid)"></i>
+                  <i class="fas fa-star text-xs" style="color: var(--acid)"></i>
+                  <i class="fas fa-star text-xs" style="color: var(--acid)"></i>
                 </div>
-                <p class="text-sm" style="color: #64748b">
+                <p class="text-sm" style="color: rgba(255, 255, 255, 0.45)">
                   Trusted by
-                  <strong style="color: #1e293b">2,000+</strong> students &amp;
+                  <strong style="color: #fff">2,000+</strong> students &amp;
                   mentors
                 </p>
               </div>
@@ -621,28 +653,24 @@
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    color: #0ea5e9;
+                    color: var(--sky);
                   "
                 >
                   <i class="fas fa-building text-sm"></i>
                 </div>
                 <div style="flex: 1">
-                  <p
-                    style="
-                      color: #1e293b;
-                      font-weight: 600;
-                      font-size: 0.875rem;
-                    "
-                  >
+                  <p style="color: #fff; font-weight: 600; font-size: 0.875rem">
                     Google Assessment
                   </p>
-                  <p style="color: #94a3b8; font-size: 0.75rem">
+                  <p
+                    style="color: rgba(255, 255, 255, 0.35); font-size: 0.75rem"
+                  >
                     Completed · 2 min ago
                   </p>
                 </div>
                 <span
                   style="
-                    color: #4f46e5;
+                    color: var(--acid);
                     font-weight: 700;
                     font-size: 0.875rem;
                     font-family: Syne, sans-serif;
@@ -653,7 +681,7 @@
               <div
                 style="
                   width: 100%;
-                  background: rgba(79, 70, 229, 0.05);
+                  background: rgba(255, 255, 255, 0.05);
                   border-radius: 9999px;
                   height: 6px;
                 "
@@ -661,13 +689,19 @@
                 <div
                   style="
                     width: 90%;
-                    background: #4f46e5;
+                    background: var(--acid);
                     height: 6px;
                     border-radius: 9999px;
                   "
                 ></div>
               </div>
-              <p style="font-size: 0.7rem; color: #94a3b8; margin-top: 0.5rem">
+              <p
+                style="
+                  font-size: 0.7rem;
+                  color: rgba(255, 255, 255, 0.25);
+                  margin-top: 0.5rem;
+                "
+              >
                 5 / 5 correct answers
               </p>
             </div>
@@ -685,10 +719,13 @@
                   margin-bottom: 0.75rem;
                 "
               >
-                <i class="fas fa-robot text-sm" style="color: #6366f1"></i>
+                <i
+                  class="fas fa-robot text-sm"
+                  style="color: var(--violet)"
+                ></i>
                 <p
                   style="
-                    color: #64748b;
+                    color: rgba(255, 255, 255, 0.5);
                     font-size: 0.7rem;
                     font-weight: 700;
                     text-transform: uppercase;
@@ -711,14 +748,14 @@
                     font-family: Syne, sans-serif;
                     font-size: 3rem;
                     font-weight: 900;
-                    color: #0f172a;
+                    color: #fff;
                     line-height: 1;
                   "
                   >84</span
                 >
                 <span
                   style="
-                    color: #4f46e5;
+                    color: var(--acid);
                     font-weight: 700;
                     font-size: 0.875rem;
                     margin-bottom: 0.25rem;
@@ -738,7 +775,7 @@
                   style="
                     flex: 1;
                     border-radius: 3px;
-                    background: #e2e8f0;
+                    background: rgba(255, 255, 255, 0.08);
                     height: 40%;
                   "
                 ></div>
@@ -746,7 +783,7 @@
                   style="
                     flex: 1;
                     border-radius: 3px;
-                    background: #e2e8f0;
+                    background: rgba(255, 255, 255, 0.08);
                     height: 60%;
                   "
                 ></div>
@@ -754,7 +791,7 @@
                   style="
                     flex: 1;
                     border-radius: 3px;
-                    background: rgba(99, 102, 241, 0.4);
+                    background: rgba(123, 94, 167, 0.5);
                     height: 75%;
                   "
                 ></div>
@@ -762,7 +799,7 @@
                   style="
                     flex: 1;
                     border-radius: 3px;
-                    background: #4f46e5;
+                    background: var(--acid);
                     height: 100%;
                   "
                 ></div>
@@ -770,7 +807,7 @@
                   style="
                     flex: 1;
                     border-radius: 3px;
-                    background: rgba(79, 70, 229, 0.6);
+                    background: rgba(200, 242, 58, 0.5);
                     height: 85%;
                   "
                 ></div>
@@ -778,13 +815,19 @@
                   style="
                     flex: 1;
                     border-radius: 3px;
-                    background: #e2e8f0;
+                    background: rgba(255, 255, 255, 0.08);
                     height: 50%;
                   "
                 ></div>
               </div>
-              <p style="font-size: 0.7rem; color: #cbd5e1; margin-top: 0.5rem">
-                ATS: <span style="color: #0ea5e9">78/100</span>
+              <p
+                style="
+                  font-size: 0.7rem;
+                  color: rgba(255, 255, 255, 0.25);
+                  margin-top: 0.5rem;
+                "
+              >
+                ATS: <span style="color: var(--sky)">78/100</span>
               </p>
             </div>
 
@@ -807,21 +850,23 @@
                   alt=""
                 />
                 <div>
-                  <p
-                    style="
-                      color: #1e293b;
-                      font-size: 0.875rem;
-                      font-weight: 600;
-                    "
-                  >
+                  <p style="color: #fff; font-size: 0.875rem; font-weight: 600">
                     Sanjay Verma
                   </p>
-                  <p style="color: #94a3b8; font-size: 0.75rem">
+                  <p
+                    style="color: rgba(255, 255, 255, 0.35); font-size: 0.75rem"
+                  >
                     SDE III · Amazon
                   </p>
                 </div>
               </div>
-              <p style="color: #475569; font-size: 0.8rem; line-height: 1.6">
+              <p
+                style="
+                  color: rgba(255, 255, 255, 0.6);
+                  font-size: 0.8rem;
+                  line-height: 1.6;
+                "
+              >
                 "Your DSA approach is solid. Focus on system design and clean up
                 the resume formatting — you're almost ready."
               </p>
@@ -829,8 +874,8 @@
                 <span
                   style="
                     padding: 0.2rem 0.6rem;
-                    background: rgba(79, 70, 229, 0.08);
-                    color: #4f46e5;
+                    background: rgba(200, 242, 58, 0.1);
+                    color: var(--acid);
                     border-radius: 0.5rem;
                     font-size: 0.7rem;
                     font-weight: 700;
@@ -840,8 +885,8 @@
                 <span
                   style="
                     padding: 0.2rem 0.6rem;
-                    background: rgba(14, 165, 233, 0.08);
-                    color: #0ea5e9;
+                    background: rgba(78, 205, 196, 0.1);
+                    color: var(--sky);
                     border-radius: 0.5rem;
                     font-size: 0.7rem;
                     font-weight: 700;
@@ -868,12 +913,12 @@
                   width: 8px;
                   height: 8px;
                   border-radius: 9999px;
-                  background: #4f46e5;
+                  background: var(--acid);
                   animation: pulse 2s infinite;
                   display: inline-block;
                 "
               ></span>
-              <span style="font-size: 0.8rem; color: #475569"
+              <span style="font-size: 0.8rem; color: rgba(255, 255, 255, 0.6)"
                 >Live mock in progress</span
               >
             </div>
@@ -887,12 +932,12 @@
                 width: 3rem;
                 height: 3rem;
                 border-radius: 1rem;
-                background: rgba(244, 63, 94, 0.08);
-                border: 1px solid rgba(244, 63, 94, 0.15);
+                background: rgba(255, 107, 107, 0.15);
+                border: 1px solid rgba(255, 107, 107, 0.2);
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                color: #f43f5e;
+                color: var(--coral);
                 font-size: 1.1rem;
                 animation: blobF 6s ease-in-out infinite;
               "
@@ -907,12 +952,12 @@
                 width: 2.5rem;
                 height: 2.5rem;
                 border-radius: 0.75rem;
-                background: rgba(14, 165, 233, 0.08);
-                border: 1px solid rgba(14, 165, 233, 0.15);
+                background: rgba(78, 205, 196, 0.15);
+                border: 1px solid rgba(78, 205, 196, 0.2);
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                color: #0ea5e9;
+                color: var(--sky);
                 animation: blobF 8s ease-in-out infinite 2s;
               "
             >
@@ -927,18 +972,16 @@
     <div
       style="
         padding: 2.5rem 0;
-        border-top: 1px solid #e2e8f0;
-        border-bottom: 1px solid #e2e8f0;
-        background: #f8fafc;
-        border-top: 1px solid #e2e8f0;
-        border-bottom: 1px solid #e2e8f0;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        background: #111118;
         overflow: hidden;
       "
     >
       <p
         style="
           text-align: center;
-          color: #94a3b8;
+          color: rgba(255, 255, 255, 0.2);
           font-size: 0.7rem;
           font-weight: 700;
           text-transform: uppercase;
@@ -960,7 +1003,7 @@
             <i class="fas fa-building" style="color: #0078d4"></i> Microsoft
           </div>
           <div class="cpill">
-            <i class="fab fa-apple" style="color: #475569"></i>
+            <i class="fab fa-apple" style="color: rgba(255, 255, 255, 0.6)"></i>
             Apple
           </div>
           <div class="cpill">
@@ -997,7 +1040,7 @@
             <i class="fas fa-building" style="color: #0078d4"></i> Microsoft
           </div>
           <div class="cpill">
-            <i class="fab fa-apple" style="color: #475569"></i>
+            <i class="fab fa-apple" style="color: rgba(255, 255, 255, 0.6)"></i>
             Apple
           </div>
           <div class="cpill">
@@ -1038,16 +1081,17 @@
               font-family: Syne, sans-serif;
               font-weight: 900;
               font-size: clamp(2.5rem, 5vw, 3.5rem);
-              color: #0f172a;
+              color: #fff;
               line-height: 1.1;
               margin-bottom: 1rem;
             "
           >
-            Everything you need.<br /><span style="color: #94a3b8"
+            Everything you need.<br /><span
+              style="color: rgba(255, 255, 255, 0.3)"
               >Nothing you don't.</span
             >
           </h2>
-          <p style="color: #64748b; font-size: 1.1rem">
+          <p style="color: rgba(255, 255, 255, 0.45); font-size: 1.1rem">
             Built for engineering placement prep in India — not a generic LMS.
           </p>
         </div>
@@ -1073,7 +1117,7 @@
             >
               <i
                 class="fas fa-building-columns"
-                style="color: #0ea5e9; font-size: 1.2rem"
+                style="color: var(--sky); font-size: 1.2rem"
               ></i>
             </div>
             <h3
@@ -1081,13 +1125,19 @@
                 font-family: Syne, sans-serif;
                 font-weight: 700;
                 font-size: 1.2rem;
-                color: #1e293b;
+                color: #fff;
                 margin-bottom: 0.75rem;
               "
             >
               Company-Specific Banks
             </h3>
-            <p style="color: #475569; font-size: 0.9rem; line-height: 1.7">
+            <p
+              style="
+                color: rgba(255, 255, 255, 0.45);
+                font-size: 0.9rem;
+                line-height: 1.7;
+              "
+            >
               Curated question sets for Google, Amazon, TCS, Infosys and more —
               updated by mentors.
             </p>
@@ -1095,11 +1145,11 @@
               style="
                 margin-top: 1.5rem;
                 padding-top: 1.5rem;
-                border-top: 1px solid #f1f5f9;
+                border-top: 1px solid rgba(255, 255, 255, 0.06);
                 display: flex;
                 align-items: center;
                 gap: 0.5rem;
-                color: #4f46e5;
+                color: var(--acid);
                 font-size: 0.875rem;
                 font-weight: 600;
               "
@@ -1122,7 +1172,7 @@
             >
               <i
                 class="fas fa-robot"
-                style="color: #6366f1; font-size: 1.2rem"
+                style="color: var(--violet); font-size: 1.2rem"
               ></i>
             </div>
             <h3
@@ -1130,13 +1180,19 @@
                 font-family: Syne, sans-serif;
                 font-weight: 700;
                 font-size: 1.2rem;
-                color: #1e293b;
+                color: #fff;
                 margin-bottom: 0.75rem;
               "
             >
               Gemini AI Resume Check
             </h3>
-            <p style="color: #475569; font-size: 0.9rem; line-height: 1.7">
+            <p
+              style="
+                color: rgba(255, 255, 255, 0.45);
+                font-size: 0.9rem;
+                line-height: 1.7;
+              "
+            >
               Upload any PDF — scanned or text. Gemini Vision returns ATS score,
               strengths, gaps, and section-level feedback.
             </p>
@@ -1144,11 +1200,11 @@
               style="
                 margin-top: 1.5rem;
                 padding-top: 1.5rem;
-                border-top: 1px solid #f1f5f9;
+                border-top: 1px solid rgba(255, 255, 255, 0.06);
                 display: flex;
                 align-items: center;
                 gap: 0.5rem;
-                color: #4f46e5;
+                color: var(--acid);
                 font-size: 0.875rem;
                 font-weight: 600;
               "
@@ -1171,7 +1227,7 @@
             >
               <i
                 class="fas fa-chart-line"
-                style="color: #4f46e5; font-size: 1.2rem"
+                style="color: var(--acid); font-size: 1.2rem"
               ></i>
             </div>
             <h3
@@ -1179,13 +1235,19 @@
                 font-family: Syne, sans-serif;
                 font-weight: 700;
                 font-size: 1.2rem;
-                color: #1e293b;
+                color: #fff;
                 margin-bottom: 0.75rem;
               "
             >
               Performance Analytics
             </h3>
-            <p style="color: #475569; font-size: 0.9rem; line-height: 1.7">
+            <p
+              style="
+                color: rgba(255, 255, 255, 0.45);
+                font-size: 0.9rem;
+                line-height: 1.7;
+              "
+            >
               Score history, accuracy trends, and company-wise breakdowns so you
               always know what to focus on.
             </p>
@@ -1193,11 +1255,11 @@
               style="
                 margin-top: 1.5rem;
                 padding-top: 1.5rem;
-                border-top: 1px solid #f1f5f9;
+                border-top: 1px solid rgba(255, 255, 255, 0.06);
                 display: flex;
                 align-items: center;
                 gap: 0.5rem;
-                color: #4f46e5;
+                color: var(--acid);
                 font-size: 0.875rem;
                 font-weight: 600;
               "
@@ -1220,7 +1282,7 @@
             >
               <i
                 class="fas fa-eye"
-                style="color: #f43f5e; font-size: 1.2rem"
+                style="color: var(--coral); font-size: 1.2rem"
               ></i>
             </div>
             <h3
@@ -1228,13 +1290,19 @@
                 font-family: Syne, sans-serif;
                 font-weight: 700;
                 font-size: 1.2rem;
-                color: #1e293b;
+                color: #fff;
                 margin-bottom: 0.75rem;
               "
             >
               Inline PDF Viewer
             </h3>
-            <p style="color: #475569; font-size: 0.9rem; line-height: 1.7">
+            <p
+              style="
+                color: rgba(255, 255, 255, 0.45);
+                font-size: 0.9rem;
+                line-height: 1.7;
+              "
+            >
               Resumes open directly in the browser. Mentors and admins view all
               student resumes instantly — no downloads.
             </p>
@@ -1242,11 +1310,11 @@
               style="
                 margin-top: 1.5rem;
                 padding-top: 1.5rem;
-                border-top: 1px solid #f1f5f9;
+                border-top: 1px solid rgba(255, 255, 255, 0.06);
                 display: flex;
                 align-items: center;
                 gap: 0.5rem;
-                color: #4f46e5;
+                color: var(--acid);
                 font-size: 0.875rem;
                 font-weight: 600;
               "
@@ -1269,7 +1337,7 @@
             >
               <i
                 class="fas fa-file-csv"
-                style="color: #0ea5e9; font-size: 1.2rem"
+                style="color: var(--sky); font-size: 1.2rem"
               ></i>
             </div>
             <h3
@@ -1277,13 +1345,19 @@
                 font-family: Syne, sans-serif;
                 font-weight: 700;
                 font-size: 1.2rem;
-                color: #1e293b;
+                color: #fff;
                 margin-bottom: 0.75rem;
               "
             >
               CSV Bulk Registration
             </h3>
-            <p style="color: #475569; font-size: 0.9rem; line-height: 1.7">
+            <p
+              style="
+                color: rgba(255, 255, 255, 0.45);
+                font-size: 0.9rem;
+                line-height: 1.7;
+              "
+            >
               Onboard entire batches at once via CSV — auto-assigns students to
               mentors. Admin &amp; mentor only.
             </p>
@@ -1291,11 +1365,11 @@
               style="
                 margin-top: 1.5rem;
                 padding-top: 1.5rem;
-                border-top: 1px solid #f1f5f9;
+                border-top: 1px solid rgba(255, 255, 255, 0.06);
                 display: flex;
                 align-items: center;
                 gap: 0.5rem;
-                color: #4f46e5;
+                color: var(--acid);
                 font-size: 0.875rem;
                 font-weight: 600;
               "
@@ -1326,13 +1400,19 @@
                 font-family: Syne, sans-serif;
                 font-weight: 700;
                 font-size: 1.2rem;
-                color: #1e293b;
+                color: #fff;
                 margin-bottom: 0.75rem;
               "
             >
               AI Mentor Draft
             </h3>
-            <p style="color: #475569; font-size: 0.9rem; line-height: 1.7">
+            <p
+              style="
+                color: rgba(255, 255, 255, 0.45);
+                font-size: 0.9rem;
+                line-height: 1.7;
+              "
+            >
               Mentors pick a focus area and Gemini drafts professional feedback
               based on the student's actual resume.
             </p>
@@ -1340,11 +1420,11 @@
               style="
                 margin-top: 1.5rem;
                 padding-top: 1.5rem;
-                border-top: 1px solid #f1f5f9;
+                border-top: 1px solid rgba(255, 255, 255, 0.06);
                 display: flex;
                 align-items: center;
                 gap: 0.5rem;
-                color: #4f46e5;
+                color: var(--acid);
                 font-size: 0.875rem;
                 font-weight: 600;
               "
@@ -1393,36 +1473,54 @@
           <div class="reveal d1" style="text-align: center">
             <div
               class="sn"
-              style="color: #0f172a; margin-bottom: 0.25rem"
+              style="color: #fff; margin-bottom: 0.25rem"
               data-target="2000"
             >
               0
             </div>
-            <div style="font-size: 0.875rem; color: #94a3b8; font-weight: 500">
+            <div
+              style="
+                font-size: 0.875rem;
+                color: rgba(255, 255, 255, 0.35);
+                font-weight: 500;
+              "
+            >
               Students &amp; Mentors
             </div>
           </div>
           <div class="reveal d2" style="text-align: center">
             <div
               class="sn"
-              style="color: #4f46e5; margin-bottom: 0.25rem"
+              style="color: var(--acid); margin-bottom: 0.25rem"
               data-target="50"
             >
               0
             </div>
-            <div style="font-size: 0.875rem; color: #94a3b8; font-weight: 500">
+            <div
+              style="
+                font-size: 0.875rem;
+                color: rgba(255, 255, 255, 0.35);
+                font-weight: 500;
+              "
+            >
               Companies Covered
             </div>
           </div>
           <div class="reveal d3" style="text-align: center">
             <div
               class="sn"
-              style="color: #0ea5e9; margin-bottom: 0.25rem"
+              style="color: var(--sky); margin-bottom: 0.25rem"
               data-target="500"
             >
               0
             </div>
-            <div style="font-size: 0.875rem; color: #94a3b8; font-weight: 500">
+            <div
+              style="
+                font-size: 0.875rem;
+                color: rgba(255, 255, 255, 0.35);
+                font-weight: 500;
+              "
+            >
               AI Resumes Analyzed
             </div>
           </div>
@@ -1434,7 +1532,13 @@
             >
               0
             </div>
-            <div style="font-size: 0.875rem; color: #94a3b8; font-weight: 500">
+            <div
+              style="
+                font-size: 0.875rem;
+                color: rgba(255, 255, 255, 0.35);
+                font-weight: 500;
+              "
+            >
               % Placement Rate
             </div>
           </div>
@@ -1457,7 +1561,7 @@
               font-family: Syne, sans-serif;
               font-weight: 900;
               font-size: clamp(2.5rem, 5vw, 3.5rem);
-              color: #0f172a;
+              color: #fff;
             "
           >
             How it works
@@ -1481,13 +1585,13 @@
                   width: 3rem;
                   height: 3rem;
                   border-radius: 1rem;
-                  background: #4f46e5;
+                  background: var(--acid);
                   display: flex;
                   align-items: center;
                   justify-content: center;
                   font-family: Syne, sans-serif;
                   font-weight: 900;
-                  color: #0f172a;
+                  color: var(--ink);
                   font-size: 1.2rem;
                   flex-shrink: 0;
                 "
@@ -1509,13 +1613,19 @@
                   font-family: Syne, sans-serif;
                   font-weight: 700;
                   font-size: 1.5rem;
-                  color: #0f172a;
+                  color: #fff;
                   margin-bottom: 0.75rem;
                 "
               >
                 Sign up as Student, Mentor, or Admin
               </h3>
-              <p style="color: #64748b; line-height: 1.7; max-width: 36rem">
+              <p
+                style="
+                  color: rgba(255, 255, 255, 0.45);
+                  line-height: 1.7;
+                  max-width: 36rem;
+                "
+              >
                 Create your account in seconds. The platform shows the right
                 dashboard automatically — practice tools for students, review
                 tools for mentors, management tools for admins.
@@ -1540,13 +1650,13 @@
                   width: 3rem;
                   height: 3rem;
                   border-radius: 1rem;
-                  background: #0ea5e9;
+                  background: var(--sky);
                   display: flex;
                   align-items: center;
                   justify-content: center;
                   font-family: Syne, sans-serif;
                   font-weight: 900;
-                  color: #0f172a;
+                  color: var(--ink);
                   font-size: 1.2rem;
                   flex-shrink: 0;
                 "
@@ -1568,13 +1678,19 @@
                   font-family: Syne, sans-serif;
                   font-weight: 700;
                   font-size: 1.5rem;
-                  color: #0f172a;
+                  color: #fff;
                   margin-bottom: 0.75rem;
                 "
               >
                 Upload resume — get instant AI feedback
               </h3>
-              <p style="color: #64748b; line-height: 1.7; max-width: 36rem">
+              <p
+                style="
+                  color: rgba(255, 255, 255, 0.45);
+                  line-height: 1.7;
+                  max-width: 36rem;
+                "
+              >
                 Drag and drop your PDF. Gemini Vision reads it visually (works
                 on scanned PDFs too) and returns an overall score, ATS rating,
                 section feedback, and missing keywords in seconds.
@@ -1599,13 +1715,13 @@
                   width: 3rem;
                   height: 3rem;
                   border-radius: 1rem;
-                  background: #6366f1;
+                  background: var(--violet);
                   display: flex;
                   align-items: center;
                   justify-content: center;
                   font-family: Syne, sans-serif;
                   font-weight: 900;
-                  color: #0f172a;
+                  color: #fff;
                   font-size: 1.2rem;
                   flex-shrink: 0;
                 "
@@ -1627,13 +1743,19 @@
                   font-family: Syne, sans-serif;
                   font-weight: 700;
                   font-size: 1.5rem;
-                  color: #0f172a;
+                  color: #fff;
                   margin-bottom: 0.75rem;
                 "
               >
                 Practice company-specific questions
               </h3>
-              <p style="color: #64748b; line-height: 1.7; max-width: 36rem">
+              <p
+                style="
+                  color: rgba(255, 255, 255, 0.45);
+                  line-height: 1.7;
+                  max-width: 36rem;
+                "
+              >
                 Pick a company, take the assessment, see your score instantly.
                 History is tracked with visual charts so you can spot weak areas
                 and measure improvement.
@@ -1650,13 +1772,13 @@
                 width: 3rem;
                 height: 3rem;
                 border-radius: 1rem;
-                background: #f43f5e;
+                background: var(--coral);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 font-family: Syne, sans-serif;
                 font-weight: 900;
-                color: #0f172a;
+                color: #fff;
                 font-size: 1.2rem;
                 flex-shrink: 0;
               "
@@ -1669,13 +1791,19 @@
                   font-family: Syne, sans-serif;
                   font-weight: 700;
                   font-size: 1.5rem;
-                  color: #0f172a;
+                  color: #fff;
                   margin-bottom: 0.75rem;
                 "
               >
                 Get mentor feedback &amp; land the job
               </h3>
-              <p style="color: #64748b; line-height: 1.7; max-width: 36rem">
+              <p
+                style="
+                  color: rgba(255, 255, 255, 0.45);
+                  line-height: 1.7;
+                  max-width: 36rem;
+                "
+              >
                 Your assigned mentor reviews your resume, provides targeted
                 feedback (AI-drafted in one click), and you iterate. The admin
                 tracks placements and manages the whole ecosystem.
@@ -1687,7 +1815,7 @@
     </section>
 
     <!-- ROLES -->
-    <section id="roles" style="padding: 7rem 0; background: #f1f5f9">
+    <section id="roles" style="padding: 7rem 0; background: #111118">
       <div class="max-w-7xl mx-auto px-6 lg:px-10">
         <div class="text-center reveal" style="margin-bottom: 5rem">
           <div
@@ -1701,11 +1829,11 @@
               font-family: Syne, sans-serif;
               font-weight: 900;
               font-size: clamp(2.5rem, 5vw, 3.5rem);
-              color: #0f172a;
+              color: #fff;
               margin-bottom: 1rem;
             "
           >
-            One platform.<br /><span style="color: #cbd5e1"
+            One platform.<br /><span style="color: rgba(255, 255, 255, 0.25)"
               >Three experiences.</span
             >
           </h2>
@@ -1738,7 +1866,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                color: #0ea5e9;
+                color: var(--sky);
                 font-size: 1.5rem;
                 margin-bottom: 1.5rem;
               "
@@ -1750,13 +1878,19 @@
                 font-family: Syne, sans-serif;
                 font-weight: 700;
                 font-size: 1.5rem;
-                color: #0f172a;
+                color: #fff;
                 margin-bottom: 0.5rem;
               "
             >
               Students
             </h3>
-            <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 2rem">
+            <p
+              style="
+                color: rgba(255, 255, 255, 0.35);
+                font-size: 0.85rem;
+                margin-bottom: 2rem;
+              "
+            >
               Final-year engineering students preparing for campus placements.
             </p>
             <ul
@@ -1771,12 +1905,13 @@
                 <div
                   class="tdot"
                   style="
-                    background: #0ea5e9;
+                    background: var(--sky);
                     box-shadow: 0 0 12px rgba(78, 205, 196, 0.5);
                     margin-top: 4px;
                   "
                 ></div>
-                <span style="color: #475569; font-size: 0.875rem"
+                <span
+                  style="color: rgba(255, 255, 255, 0.65); font-size: 0.875rem"
                   >Practice 500+ company-specific questions</span
                 >
               </li>
@@ -1784,12 +1919,13 @@
                 <div
                   class="tdot"
                   style="
-                    background: #0ea5e9;
+                    background: var(--sky);
                     box-shadow: 0 0 12px rgba(78, 205, 196, 0.5);
                     margin-top: 4px;
                   "
                 ></div>
-                <span style="color: #475569; font-size: 0.875rem"
+                <span
+                  style="color: rgba(255, 255, 255, 0.65); font-size: 0.875rem"
                   >Upload resume, get AI score + mentor feedback</span
                 >
               </li>
@@ -1797,12 +1933,13 @@
                 <div
                   class="tdot"
                   style="
-                    background: #0ea5e9;
+                    background: var(--sky);
                     box-shadow: 0 0 12px rgba(78, 205, 196, 0.5);
                     margin-top: 4px;
                   "
                 ></div>
-                <span style="color: #475569; font-size: 0.875rem"
+                <span
+                  style="color: rgba(255, 255, 255, 0.65); font-size: 0.875rem"
                   >Track scores and accuracy over time</span
                 >
               </li>
@@ -1810,12 +1947,13 @@
                 <div
                   class="tdot"
                   style="
-                    background: #0ea5e9;
+                    background: var(--sky);
                     box-shadow: 0 0 12px rgba(78, 205, 196, 0.5);
                     margin-top: 4px;
                   "
                 ></div>
-                <span style="color: #475569; font-size: 0.875rem"
+                <span
+                  style="color: rgba(255, 255, 255, 0.65); font-size: 0.875rem"
                   >View resume inline — no downloads needed</span
                 >
               </li>
@@ -1827,7 +1965,7 @@
                 padding: 0.75rem;
                 border-radius: 0.75rem;
                 border: 1px solid rgba(78, 205, 196, 0.3);
-                color: #0ea5e9;
+                color: var(--sky);
                 font-weight: 600;
                 font-size: 0.875rem;
                 background: transparent;
@@ -1880,13 +2018,19 @@
                 font-family: Syne, sans-serif;
                 font-weight: 700;
                 font-size: 1.5rem;
-                color: #0f172a;
+                color: #fff;
                 margin-bottom: 0.5rem;
               "
             >
               Mentors
             </h3>
-            <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 2rem">
+            <p
+              style="
+                color: rgba(255, 255, 255, 0.35);
+                font-size: 0.85rem;
+                margin-bottom: 2rem;
+              "
+            >
               Industry professionals who want to guide the next generation.
             </p>
             <ul
@@ -1899,25 +2043,29 @@
             >
               <li style="display: flex; align-items: flex-start; gap: 0.75rem">
                 <div class="tdot" style="margin-top: 4px"></div>
-                <span style="color: #475569; font-size: 0.875rem"
+                <span
+                  style="color: rgba(255, 255, 255, 0.65); font-size: 0.875rem"
                   >View &amp; review assigned students' resumes</span
                 >
               </li>
               <li style="display: flex; align-items: flex-start; gap: 0.75rem">
                 <div class="tdot" style="margin-top: 4px"></div>
-                <span style="color: #475569; font-size: 0.875rem"
+                <span
+                  style="color: rgba(255, 255, 255, 0.65); font-size: 0.875rem"
                   >Use AI to draft feedback in one click</span
                 >
               </li>
               <li style="display: flex; align-items: flex-start; gap: 0.75rem">
                 <div class="tdot" style="margin-top: 4px"></div>
-                <span style="color: #475569; font-size: 0.875rem"
+                <span
+                  style="color: rgba(255, 255, 255, 0.65); font-size: 0.875rem"
                   >Monitor student performance charts</span
                 >
               </li>
               <li style="display: flex; align-items: flex-start; gap: 0.75rem">
                 <div class="tdot" style="margin-top: 4px"></div>
-                <span style="color: #475569; font-size: 0.875rem"
+                <span
+                  style="color: rgba(255, 255, 255, 0.65); font-size: 0.875rem"
                   >Bulk register students via CSV</span
                 >
               </li>
@@ -1952,7 +2100,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                color: #f43f5e;
+                color: var(--coral);
                 font-size: 1.5rem;
                 margin-bottom: 1.5rem;
               "
@@ -1964,13 +2112,19 @@
                 font-family: Syne, sans-serif;
                 font-weight: 700;
                 font-size: 1.5rem;
-                color: #0f172a;
+                color: #fff;
                 margin-bottom: 0.5rem;
               "
             >
               Admins
             </h3>
-            <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 2rem">
+            <p
+              style="
+                color: rgba(255, 255, 255, 0.35);
+                font-size: 0.85rem;
+                margin-bottom: 2rem;
+              "
+            >
               Placement cells and coordinators managing the full ecosystem.
             </p>
             <ul
@@ -1985,12 +2139,13 @@
                 <div
                   class="tdot"
                   style="
-                    background: #f43f5e;
+                    background: var(--coral);
                     box-shadow: 0 0 12px rgba(255, 107, 107, 0.4);
                     margin-top: 4px;
                   "
                 ></div>
-                <span style="color: #475569; font-size: 0.875rem"
+                <span
+                  style="color: rgba(255, 255, 255, 0.65); font-size: 0.875rem"
                   >Manage all users, roles, assignments</span
                 >
               </li>
@@ -1998,12 +2153,13 @@
                 <div
                   class="tdot"
                   style="
-                    background: #f43f5e;
+                    background: var(--coral);
                     box-shadow: 0 0 12px rgba(255, 107, 107, 0.4);
                     margin-top: 4px;
                   "
                 ></div>
-                <span style="color: #475569; font-size: 0.875rem"
+                <span
+                  style="color: rgba(255, 255, 255, 0.65); font-size: 0.875rem"
                   >Curate question banks for all companies</span
                 >
               </li>
@@ -2011,12 +2167,13 @@
                 <div
                   class="tdot"
                   style="
-                    background: #f43f5e;
+                    background: var(--coral);
                     box-shadow: 0 0 12px rgba(255, 107, 107, 0.4);
                     margin-top: 4px;
                   "
                 ></div>
-                <span style="color: #475569; font-size: 0.875rem"
+                <span
+                  style="color: rgba(255, 255, 255, 0.65); font-size: 0.875rem"
                   >Run AI OCR on all student resumes</span
                 >
               </li>
@@ -2024,12 +2181,13 @@
                 <div
                   class="tdot"
                   style="
-                    background: #f43f5e;
+                    background: var(--coral);
                     box-shadow: 0 0 12px rgba(255, 107, 107, 0.4);
                     margin-top: 4px;
                   "
                 ></div>
-                <span style="color: #475569; font-size: 0.875rem"
+                <span
+                  style="color: rgba(255, 255, 255, 0.65); font-size: 0.875rem"
                   >View platform-wide analytics &amp; charts</span
                 >
               </li>
@@ -2041,7 +2199,7 @@
                 padding: 0.75rem;
                 border-radius: 0.75rem;
                 border: 1px solid rgba(255, 107, 107, 0.3);
-                color: #f43f5e;
+                color: var(--coral);
                 font-weight: 600;
                 font-size: 0.875rem;
                 background: transparent;
@@ -2073,7 +2231,7 @@
               font-family: Syne, sans-serif;
               font-weight: 900;
               font-size: clamp(2.5rem, 5vw, 3.5rem);
-              color: #0f172a;
+              color: #fff;
             "
           >
             What they're saying
@@ -2088,15 +2246,15 @@
         >
           <div class="tc reveal d1">
             <div style="display: flex; gap: 3px; margin-bottom: 1rem">
-              <i class="fas fa-star text-xs" style="color: #4f46e5"></i
-              ><i class="fas fa-star text-xs" style="color: #4f46e5"></i
-              ><i class="fas fa-star text-xs" style="color: #4f46e5"></i
-              ><i class="fas fa-star text-xs" style="color: #4f46e5"></i
-              ><i class="fas fa-star text-xs" style="color: #4f46e5"></i>
+              <i class="fas fa-star text-xs" style="color: var(--acid)"></i
+              ><i class="fas fa-star text-xs" style="color: var(--acid)"></i
+              ><i class="fas fa-star text-xs" style="color: var(--acid)"></i
+              ><i class="fas fa-star text-xs" style="color: var(--acid)"></i
+              ><i class="fas fa-star text-xs" style="color: var(--acid)"></i>
             </div>
             <p
               style="
-                color: #475569;
+                color: rgba(255, 255, 255, 0.6);
                 font-size: 0.875rem;
                 line-height: 1.7;
                 margin-bottom: 1.25rem;
@@ -2113,12 +2271,10 @@
                 alt=""
               />
               <div>
-                <p
-                  style="color: #0f172a; font-size: 0.875rem; font-weight: 600"
-                >
+                <p style="color: #fff; font-size: 0.875rem; font-weight: 600">
                   Priya Sharma
                 </p>
-                <p style="color: #94a3b8; font-size: 0.75rem">
+                <p style="color: rgba(255, 255, 255, 0.3); font-size: 0.75rem">
                   B.Tech CSE, NIT Patna
                 </p>
               </div>
@@ -2126,15 +2282,15 @@
           </div>
           <div class="tc reveal d2">
             <div style="display: flex; gap: 3px; margin-bottom: 1rem">
-              <i class="fas fa-star text-xs" style="color: #4f46e5"></i
-              ><i class="fas fa-star text-xs" style="color: #4f46e5"></i
-              ><i class="fas fa-star text-xs" style="color: #4f46e5"></i
-              ><i class="fas fa-star text-xs" style="color: #4f46e5"></i
-              ><i class="fas fa-star text-xs" style="color: #4f46e5"></i>
+              <i class="fas fa-star text-xs" style="color: var(--acid)"></i
+              ><i class="fas fa-star text-xs" style="color: var(--acid)"></i
+              ><i class="fas fa-star text-xs" style="color: var(--acid)"></i
+              ><i class="fas fa-star text-xs" style="color: var(--acid)"></i
+              ><i class="fas fa-star text-xs" style="color: var(--acid)"></i>
             </div>
             <p
               style="
-                color: #475569;
+                color: rgba(255, 255, 255, 0.6);
                 font-size: 0.875rem;
                 line-height: 1.7;
                 margin-bottom: 1.25rem;
@@ -2151,12 +2307,10 @@
                 alt=""
               />
               <div>
-                <p
-                  style="color: #0f172a; font-size: 0.875rem; font-weight: 600"
-                >
+                <p style="color: #fff; font-size: 0.875rem; font-weight: 600">
                   Ravi Kumar
                 </p>
-                <p style="color: #94a3b8; font-size: 0.75rem">
+                <p style="color: rgba(255, 255, 255, 0.3); font-size: 0.75rem">
                   SDE II · Infosys
                 </p>
               </div>
@@ -2164,15 +2318,15 @@
           </div>
           <div class="tc reveal d3">
             <div style="display: flex; gap: 3px; margin-bottom: 1rem">
-              <i class="fas fa-star text-xs" style="color: #4f46e5"></i
-              ><i class="fas fa-star text-xs" style="color: #4f46e5"></i
-              ><i class="fas fa-star text-xs" style="color: #4f46e5"></i
-              ><i class="fas fa-star text-xs" style="color: #4f46e5"></i
-              ><i class="fas fa-star text-xs" style="color: #4f46e5"></i>
+              <i class="fas fa-star text-xs" style="color: var(--acid)"></i
+              ><i class="fas fa-star text-xs" style="color: var(--acid)"></i
+              ><i class="fas fa-star text-xs" style="color: var(--acid)"></i
+              ><i class="fas fa-star text-xs" style="color: var(--acid)"></i
+              ><i class="fas fa-star text-xs" style="color: var(--acid)"></i>
             </div>
             <p
               style="
-                color: #475569;
+                color: rgba(255, 255, 255, 0.6);
                 font-size: 0.875rem;
                 line-height: 1.7;
                 margin-bottom: 1.25rem;
@@ -2188,12 +2342,10 @@
                 alt=""
               />
               <div>
-                <p
-                  style="color: #0f172a; font-size: 0.875rem; font-weight: 600"
-                >
+                <p style="color: #fff; font-size: 0.875rem; font-weight: 600">
                   Dr. Anita Sinha
                 </p>
-                <p style="color: #94a3b8; font-size: 0.75rem">
+                <p style="color: rgba(255, 255, 255, 0.3); font-size: 0.75rem">
                   T&amp;P Officer, IIIT
                 </p>
               </div>
@@ -2228,7 +2380,7 @@
               width: 0.4rem;
               height: 0.4rem;
               border-radius: 9999px;
-              background: #4f46e5;
+              background: var(--acid);
               animation: pulse 2s infinite;
               display: inline-block;
             "
@@ -2240,7 +2392,7 @@
             font-family: Syne, sans-serif;
             font-weight: 900;
             font-size: clamp(2.5rem, 7vw, 4rem);
-            color: #0f172a;
+            color: #fff;
             line-height: 1.1;
             margin-bottom: 1.5rem;
           "
@@ -2249,7 +2401,13 @@
             >story starts here.</span
           >
         </h2>
-        <p style="color: #64748b; font-size: 1.1rem; margin-bottom: 2.5rem">
+        <p
+          style="
+            color: rgba(255, 255, 255, 0.45);
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+          "
+        >
           Join thousands of students and mentors building India's next
           generation of tech talent.
         </p>
@@ -2282,9 +2440,9 @@
     <!-- FOOTER -->
     <footer
       style="
-        border-top: 1px solid #e2e8f0;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
         padding: 4rem 0;
-        background: #f1f5f9;
+        background: #111118;
       "
     >
       <div class="max-w-7xl mx-auto px-6 lg:px-10">
@@ -2311,7 +2469,7 @@
                   width: 2.25rem;
                   height: 2.25rem;
                   border-radius: 0.75rem;
-                  background: #4f46e5;
+                  background: var(--acid);
                   display: flex;
                   align-items: center;
                   justify-content: center;
@@ -2321,7 +2479,7 @@
                   style="
                     font-family: Syne, sans-serif;
                     font-weight: 900;
-                    color: #0f172a;
+                    color: var(--ink);
                   "
                   >A</span
                 >
@@ -2331,14 +2489,14 @@
                   font-family: Syne, sans-serif;
                   font-weight: 700;
                   font-size: 1.2rem;
-                  color: #0f172a;
+                  color: #fff;
                 "
-                >Ami<span style="color: #4f46e5">Bridge</span></span
+                >Ami<span style="color: var(--acid)">Bridge</span></span
               >
             </div>
             <p
               style="
-                color: #94a3b8;
+                color: rgba(255, 255, 255, 0.3);
                 font-size: 0.875rem;
                 line-height: 1.7;
                 max-width: 18rem;
@@ -2354,11 +2512,11 @@
                   width: 2.25rem;
                   height: 2.25rem;
                   border-radius: 0.5rem;
-                  background: rgba(79, 70, 229, 0.05);
+                  background: rgba(255, 255, 255, 0.05);
                   display: flex;
                   align-items: center;
                   justify-content: center;
-                  color: #94a3b8;
+                  color: rgba(255, 255, 255, 0.35);
                   transition: all 0.2s;
                 "
                 onmouseover="
@@ -2377,11 +2535,11 @@
                   width: 2.25rem;
                   height: 2.25rem;
                   border-radius: 0.5rem;
-                  background: rgba(79, 70, 229, 0.05);
+                  background: rgba(255, 255, 255, 0.05);
                   display: flex;
                   align-items: center;
                   justify-content: center;
-                  color: #94a3b8;
+                  color: rgba(255, 255, 255, 0.35);
                   transition: all 0.2s;
                 "
                 onmouseover="
@@ -2400,11 +2558,11 @@
                   width: 2.25rem;
                   height: 2.25rem;
                   border-radius: 0.5rem;
-                  background: rgba(79, 70, 229, 0.05);
+                  background: rgba(255, 255, 255, 0.05);
                   display: flex;
                   align-items: center;
                   justify-content: center;
-                  color: #94a3b8;
+                  color: rgba(255, 255, 255, 0.35);
                   transition: all 0.2s;
                 "
                 onmouseover="
@@ -2422,7 +2580,7 @@
           <div>
             <h4
               style="
-                color: #0f172a;
+                color: #fff;
                 font-size: 0.875rem;
                 font-weight: 600;
                 margin-bottom: 1.25rem;
@@ -2435,7 +2593,7 @@
                 <a
                   href="#features"
                   style="
-                    color: #94a3b8;
+                    color: rgba(255, 255, 255, 0.35);
                     font-size: 0.875rem;
                     text-decoration: none;
                     transition: color 0.2s;
@@ -2449,7 +2607,7 @@
                 <a
                   href="#roles"
                   style="
-                    color: #94a3b8;
+                    color: rgba(255, 255, 255, 0.35);
                     font-size: 0.875rem;
                     text-decoration: none;
                     transition: color 0.2s;
@@ -2463,7 +2621,7 @@
                 <a
                   href="#roles"
                   style="
-                    color: #94a3b8;
+                    color: rgba(255, 255, 255, 0.35);
                     font-size: 0.875rem;
                     text-decoration: none;
                     transition: color 0.2s;
@@ -2478,7 +2636,7 @@
           <div>
             <h4
               style="
-                color: #0f172a;
+                color: #fff;
                 font-size: 0.875rem;
                 font-weight: 600;
                 margin-bottom: 1.25rem;
@@ -2491,7 +2649,7 @@
                 <a
                   href="#"
                   style="
-                    color: #94a3b8;
+                    color: rgba(255, 255, 255, 0.35);
                     font-size: 0.875rem;
                     text-decoration: none;
                     transition: color 0.2s;
@@ -2505,7 +2663,7 @@
                 <a
                   href="#"
                   style="
-                    color: #94a3b8;
+                    color: rgba(255, 255, 255, 0.35);
                     font-size: 0.875rem;
                     text-decoration: none;
                     transition: color 0.2s;
@@ -2519,7 +2677,7 @@
                 <a
                   href="#"
                   style="
-                    color: #94a3b8;
+                    color: rgba(255, 255, 255, 0.35);
                     font-size: 0.875rem;
                     text-decoration: none;
                     transition: color 0.2s;
@@ -2534,7 +2692,7 @@
         </div>
         <div
           style="
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
             padding-top: 2rem;
             display: flex;
             flex-direction: column;
@@ -2543,7 +2701,7 @@
             text-align: center;
           "
         >
-          <p style="color: #94a3b8; font-size: 0.8rem">
+          <p style="color: rgba(255, 255, 255, 0.2); font-size: 0.8rem">
             &copy; 2026 Ami-Bridge. All rights reserved.
           </p>
           <p style="color: rgba(255, 255, 255, 0.15); font-size: 0.7rem">
@@ -2590,14 +2748,19 @@
           transition: transform 0.4s;
           background: rgba(16, 16, 28, 0.97);
           backdrop-filter: blur(24px);
-          border: 1px solid #e2e8f0;
+          border: 1px solid rgba(255, 255, 255, 0.1);
           box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
         "
       >
         <div
           style="
             height: 3px;
-            background: linear-gradient(90deg, #6366f1, #4f46e5, #0ea5e9);
+            background: linear-gradient(
+              90deg,
+              var(--violet),
+              var(--acid),
+              var(--sky)
+            );
           "
         ></div>
         <button
@@ -2609,9 +2772,9 @@
             width: 2rem;
             height: 2rem;
             border-radius: 0.5rem;
-            background: rgba(79, 70, 229, 0.05);
+            background: rgba(255, 255, 255, 0.05);
             border: none;
-            color: #64748b;
+            color: rgba(255, 255, 255, 0.4);
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -2639,7 +2802,7 @@
                   width: 3rem;
                   height: 3rem;
                   border-radius: 0.875rem;
-                  background: #4f46e5;
+                  background: var(--acid);
                   display: flex;
                   align-items: center;
                   justify-content: center;
@@ -2650,7 +2813,7 @@
                   style="
                     font-family: Syne, sans-serif;
                     font-weight: 900;
-                    color: #0f172a;
+                    color: var(--ink);
                     font-size: 1.25rem;
                   "
                   >A</span
@@ -2661,13 +2824,13 @@
                   font-family: Syne, sans-serif;
                   font-weight: 800;
                   font-size: 1.5rem;
-                  color: #0f172a;
+                  color: #fff;
                   margin-bottom: 0.25rem;
                 "
               >
                 Welcome back
               </h2>
-              <p style="color: #94a3b8; font-size: 0.875rem">
+              <p style="color: rgba(255, 255, 255, 0.35); font-size: 0.875rem">
                 Sign in to your Ami-Bridge account
               </p>
             </div>
@@ -2681,7 +2844,7 @@
                     display: block;
                     font-size: 0.7rem;
                     font-weight: 700;
-                    color: #64748b;
+                    color: rgba(255, 255, 255, 0.4);
                     text-transform: uppercase;
                     letter-spacing: 0.1em;
                     margin-bottom: 0.5rem;
@@ -2702,7 +2865,7 @@
                     display: block;
                     font-size: 0.7rem;
                     font-weight: 700;
-                    color: #64748b;
+                    color: rgba(255, 255, 255, 0.4);
                     text-transform: uppercase;
                     letter-spacing: 0.1em;
                     margin-bottom: 0.5rem;
@@ -2722,7 +2885,7 @@
                   href="#"
                   style="
                     font-size: 0.8rem;
-                    color: #4f46e5;
+                    color: var(--acid);
                     text-decoration: none;
                     font-weight: 600;
                   "
@@ -2741,7 +2904,7 @@
               style="
                 text-align: center;
                 font-size: 0.875rem;
-                color: #94a3b8;
+                color: rgba(255, 255, 255, 0.35);
                 margin-top: 1.5rem;
               "
             >
@@ -2749,7 +2912,7 @@
               <button
                 onclick="toggleAuth('signup')"
                 style="
-                  color: #4f46e5;
+                  color: var(--acid);
                   font-weight: 700;
                   background: none;
                   border: none;
@@ -2769,13 +2932,13 @@
                   font-family: Syne, sans-serif;
                   font-weight: 800;
                   font-size: 1.5rem;
-                  color: #0f172a;
+                  color: #fff;
                   margin-bottom: 0.25rem;
                 "
               >
                 Create account
               </h2>
-              <p style="color: #94a3b8; font-size: 0.875rem">
+              <p style="color: rgba(255, 255, 255, 0.35); font-size: 0.875rem">
                 Join the Ami-Bridge ecosystem today
               </p>
             </div>
@@ -2789,7 +2952,7 @@
                     display: block;
                     font-size: 0.7rem;
                     font-weight: 700;
-                    color: #64748b;
+                    color: rgba(255, 255, 255, 0.4);
                     text-transform: uppercase;
                     letter-spacing: 0.1em;
                     margin-bottom: 0.5rem;
@@ -2810,7 +2973,7 @@
                     display: block;
                     font-size: 0.7rem;
                     font-weight: 700;
-                    color: #64748b;
+                    color: rgba(255, 255, 255, 0.4);
                     text-transform: uppercase;
                     letter-spacing: 0.1em;
                     margin-bottom: 0.5rem;
@@ -2831,7 +2994,7 @@
                     display: block;
                     font-size: 0.7rem;
                     font-weight: 700;
-                    color: #64748b;
+                    color: rgba(255, 255, 255, 0.4);
                     text-transform: uppercase;
                     letter-spacing: 0.1em;
                     margin-bottom: 0.5rem;
@@ -2852,7 +3015,7 @@
                     display: block;
                     font-size: 0.7rem;
                     font-weight: 700;
-                    color: #64748b;
+                    color: rgba(255, 255, 255, 0.4);
                     text-transform: uppercase;
                     letter-spacing: 0.1em;
                     margin-bottom: 0.5rem;
@@ -2882,7 +3045,7 @@
               style="
                 text-align: center;
                 font-size: 0.875rem;
-                color: #94a3b8;
+                color: rgba(255, 255, 255, 0.35);
                 margin-top: 1.5rem;
               "
             >
@@ -2890,7 +3053,7 @@
               <button
                 onclick="toggleAuth('login')"
                 style="
-                  color: #4f46e5;
+                  color: var(--acid);
                   font-weight: 700;
                   background: none;
                   border: none;
@@ -2938,6 +3101,39 @@
           setTimeout(() => toast.remove(), 300);
         }, 3000);
       }
+
+      // Custom cursor
+      const cdot = document.getElementById("cdot");
+      const cring = document.getElementById("cring");
+      let mx = 0,
+        my = 0,
+        rx = 0,
+        ry = 0;
+      document.addEventListener("mousemove", (e) => {
+        mx = e.clientX;
+        my = e.clientY;
+        cdot.style.left = mx + "px";
+        cdot.style.top = my + "px";
+      });
+      (function animC() {
+        rx += (mx - rx) * 0.12;
+        ry += (my - ry) * 0.12;
+        cring.style.left = rx + "px";
+        cring.style.top = ry + "px";
+        requestAnimationFrame(animC);
+      })();
+      document.querySelectorAll("button,a").forEach((el) => {
+        el.addEventListener("mouseenter", () => {
+          cring.style.width = "54px";
+          cring.style.height = "54px";
+          cring.style.borderColor = "rgba(200,242,58,.9)";
+        });
+        el.addEventListener("mouseleave", () => {
+          cring.style.width = "38px";
+          cring.style.height = "38px";
+          cring.style.borderColor = "rgba(200,242,58,.5)";
+        });
+      });
 
       // Navbar
       window.addEventListener("scroll", () => {
@@ -3066,7 +3262,6 @@
 
           if (res.ok) {
             localStorage.setItem("ami_user", JSON.stringify(data));
-            if (data.token) localStorage.setItem("ami_token", data.token);
             showToast("Login successful! Redirecting...", "success");
             setTimeout(() => {
               location.href =
@@ -3126,7 +3321,6 @@
 
           if (res.ok) {
             localStorage.setItem("ami_user", JSON.stringify(data));
-            if (data.token) localStorage.setItem("ami_token", data.token);
             showToast("Account created! Redirecting...", "success");
             setTimeout(() => {
               location.href =
