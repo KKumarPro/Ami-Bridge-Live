@@ -321,24 +321,68 @@
             <div
               class="p-6 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4"
             >
-              <div class="flex items-center gap-4 w-full sm:w-auto">
+              <div class="flex items-center gap-3 w-full sm:w-auto">
                 <div class="relative flex-1 sm:w-64">
                   <i
                     class="fas fa-search absolute left-3 top-3 text-slate-400"
                   ></i>
                   <input
                     type="text"
+                    id="q-user-search"
                     placeholder="Search users..."
+                    oninput="renderUsers()"
                     class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
                   />
                 </div>
-                <select
-                  class="border border-slate-300 rounded-lg py-2 px-4 focus:ring-2 focus:ring-primary outline-none"
-                >
-                  <option value="all">All Roles</option>
-                  <option value="student">Students</option>
-                  <option value="mentor">Mentors</option>
-                </select>
+                <!-- Filter Button + Dropdown -->
+                <div class="relative" id="filter-dropdown-wrapper">
+                  <button
+                    onclick="toggleFilterDropdown()"
+                    id="filter-btn"
+                    class="flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg bg-white hover:bg-slate-50 focus:ring-2 focus:ring-primary outline-none text-slate-700 font-medium transition"
+                  >
+                    <i class="fas fa-filter text-slate-400"></i>
+                    <span id="filter-btn-label">All Roles</span>
+                    <i class="fas fa-chevron-down text-slate-400 text-xs"></i>
+                  </button>
+                  <div
+                    id="filter-dropdown"
+                    class="hidden absolute right-0 mt-2 w-44 bg-white border border-slate-200 rounded-xl shadow-lg z-50 overflow-hidden"
+                  >
+                    <button
+                      onclick="setRoleFilter('all')"
+                      id="filter-opt-all"
+                      class="w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 flex items-center gap-2 font-medium text-primary bg-primary/5"
+                    >
+                      <i class="fas fa-users w-4 text-primary"></i> All Roles
+                    </button>
+                    <button
+                      onclick="setRoleFilter('student')"
+                      id="filter-opt-student"
+                      class="w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 flex items-center gap-2 text-slate-700"
+                    >
+                      <i class="fas fa-user-graduate w-4 text-blue-500"></i>
+                      Students
+                    </button>
+                    <button
+                      onclick="setRoleFilter('mentor')"
+                      id="filter-opt-mentor"
+                      class="w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 flex items-center gap-2 text-slate-700"
+                    >
+                      <i
+                        class="fas fa-chalkboard-teacher w-4 text-purple-500"
+                      ></i>
+                      Mentors
+                    </button>
+                    <button
+                      onclick="setRoleFilter('admin')"
+                      id="filter-opt-admin"
+                      class="w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 flex items-center gap-2 text-slate-700"
+                    >
+                      <i class="fas fa-shield-alt w-4 text-red-500"></i> Admins
+                    </button>
+                  </div>
+                </div>
               </div>
               <button
                 onclick="openModal('user-modal')"
@@ -969,6 +1013,47 @@
         }
       }
 
+      // --- FILTER DROPDOWN HELPERS ---
+      window._activeRoleFilter = "all";
+
+      function toggleFilterDropdown() {
+        const dd = document.getElementById("filter-dropdown");
+        dd.classList.toggle("hidden");
+      }
+
+      function setRoleFilter(role) {
+        window._activeRoleFilter = role;
+        const labels = {
+          all: "All Roles",
+          student: "Students",
+          mentor: "Mentors",
+          admin: "Admins",
+        };
+        document.getElementById("filter-btn-label").textContent =
+          labels[role] || "All Roles";
+        ["all", "student", "mentor", "admin"].forEach((r) => {
+          const el = document.getElementById("filter-opt-" + r);
+          if (!el) return;
+          if (r === role) {
+            el.classList.add("bg-primary/5", "font-medium", "text-primary");
+            el.classList.remove("text-slate-700");
+          } else {
+            el.classList.remove("bg-primary/5", "font-medium", "text-primary");
+            el.classList.add("text-slate-700");
+          }
+        });
+        document.getElementById("filter-dropdown").classList.add("hidden");
+        renderUsers();
+      }
+
+      document.addEventListener("click", function (e) {
+        const wrapper = document.getElementById("filter-dropdown-wrapper");
+        if (wrapper && !wrapper.contains(e.target)) {
+          const dd = document.getElementById("filter-dropdown");
+          if (dd) dd.classList.add("hidden");
+        }
+      });
+
       // --- 3. DYNAMIC UI RENDER FUNCTIONS ---
 
       function updateStats() {
@@ -995,13 +1080,29 @@
         const tbody = document.getElementById("users-table-body");
         tbody.innerHTML = "";
 
-        if (state.users.length === 0) {
+        const searchQuery = (
+          document.getElementById("q-user-search")?.value || ""
+        )
+          .toLowerCase()
+          .trim();
+        const activeRole = window._activeRoleFilter || "all";
+
+        const filtered = state.users.filter((u) => {
+          const matchesRole = activeRole === "all" || u.role === activeRole;
+          const matchesSearch =
+            !searchQuery ||
+            u.name.toLowerCase().includes(searchQuery) ||
+            u.email.toLowerCase().includes(searchQuery);
+          return matchesRole && matchesSearch;
+        });
+
+        if (filtered.length === 0) {
           tbody.innerHTML =
-            '<tr><td colspan="4" class="text-center py-10 text-slate-500 italic">No users found in the system.</td></tr>';
+            '<tr><td colspan="4" class="text-center py-10 text-slate-500 italic">No users match your search or filter.</td></tr>';
           return;
         }
 
-        state.users.forEach((user) => {
+        filtered.forEach((user) => {
           let roleBadge = "";
           if (user.role === "admin")
             roleBadge =

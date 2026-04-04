@@ -868,8 +868,11 @@
           performance: "Student Performance Review",
           resumes: "Resume Review Portal",
           feedback: "Mentor Feedback System",
+          ocr: "AI Resume OCR",
+          bulkregister: "Bulk Register Students",
         };
-        document.getElementById("page-title").innerText = titles[sectionId];
+        document.getElementById("page-title").innerText =
+          titles[sectionId] || sectionId;
       }
 
       // --- 3. DYNAMIC UI RENDERERS (With Empty States) ---
@@ -1219,44 +1222,118 @@
       }
 
       async function loadOCRData() {
+        // FIX: use state.currentUser instead of loggedInUser (local to window.onload)
+        const mentor = state.currentUser;
+        if (!mentor) {
+          document.getElementById("ocr-results").innerHTML =
+            '<div class="p-8 text-center text-red-500">Session expired. Please refresh the page.</div>';
+          return;
+        }
+
         const btn = document.getElementById("ocr-run-btn");
         const results = document.getElementById("ocr-results");
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+        btn.innerHTML =
+          '<i class="fas fa-spinner fa-spin mr-2"></i> Analyzing...';
         btn.disabled = true;
+        results.innerHTML =
+          '<div class="p-12 text-center text-slate-400"><i class="fas fa-spinner fa-spin text-3xl mb-3 block"></i><p>Gemini AI is reading your students\' resumes. This may take a moment...</p></div>';
+
         try {
           const res = await fetch(
-            `${API_BASE}/api/mentor/${loggedInUser.id}/resumes-ocr`,
+            `${API_BASE}/api/mentor/${mentor.id}/resumes-ocr`,
           );
           if (!res.ok) throw new Error("OCR fetch failed");
           const data = await res.json();
+
           if (data.length === 0) {
             results.innerHTML =
-              '<div class="p-10 text-center text-slate-400">No resumes found for your students.</div>';
+              '<div class="p-12 text-center text-slate-400"><i class="fas fa-inbox text-3xl mb-3 block"></i><p class="font-medium">No resumes found for your assigned students.</p></div>';
           } else {
             const rows = data
-              .map(
-                (d) => `<tr class="hover:bg-slate-50">
-              <td class="px-4 py-3 font-semibold text-slate-800 text-sm">${d.student_name}</td>
-              <td class="px-4 py-3 text-xs text-slate-500">${d.student_email}</td>
-              <td class="px-4 py-3 text-xs text-slate-600">${d.education || "—"}</td>
-              <td class="px-4 py-3 text-xs text-slate-600">${Array.isArray(d.skills) ? d.skills.slice(0, 4).join(", ") : d.skills || "—"}</td>
-              <td class="px-4 py-3 text-center">${d.gemini_score != null ? `<span class="px-2 py-1 rounded-full text-xs font-bold ${d.gemini_score >= 70 ? "bg-green-100 text-green-700" : d.gemini_score >= 50 ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"}">${d.gemini_score}/100</span>` : "<span class='text-slate-400 text-xs'>N/A</span>"}</td>
-              <td class="px-4 py-3 text-center"><button onclick="viewResumeInline(${d.resume_id}, '${(d.resume_name || "").replace(/'/g, "\\'")}')" class="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded text-xs transition"><i class="fas fa-eye"></i></button></td>
-            </tr>`,
-              )
+              .map((d) => {
+                const scoreBadge =
+                  d.gemini_score != null
+                    ? `<span class="px-2 py-1 rounded-full text-xs font-bold ${d.gemini_score >= 70 ? "bg-green-100 text-green-700" : d.gemini_score >= 50 ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"}">${d.gemini_score}/100</span>`
+                    : '<span class="text-slate-400 text-xs">N/A</span>';
+                const skillsText = Array.isArray(d.skills)
+                  ? d.skills.slice(0, 4).join(", ")
+                  : d.skills || "—";
+                const projectsText = Array.isArray(d.projects)
+                  ? d.projects.slice(0, 2).join(", ")
+                  : "—";
+                const expText = Array.isArray(d.experience)
+                  ? d.experience.slice(0, 1).join("")
+                  : d.experience || "—";
+                const safeName = (d.student_name || "").replace(/'/g, "\\'");
+                const safeResume = (d.resume_name || "Resume").replace(
+                  /'/g,
+                  "\\'",
+                );
+                return `<tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-4 py-3">
+                  <div class="flex items-center gap-2">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(d.student_name || "")}"
+                      class="w-7 h-7 rounded-full bg-slate-200 shrink-0">
+                    <div>
+                      <p class="font-semibold text-slate-800 text-sm">${d.student_name}</p>
+                      <p class="text-xs text-slate-400">${d.student_email}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-xs text-slate-600 max-w-[130px] truncate">${d.education || "—"}</td>
+                <td class="px-4 py-3 text-xs text-slate-600 max-w-[150px]">${skillsText}</td>
+                <td class="px-4 py-3 text-xs text-slate-600 max-w-[130px] truncate">${projectsText}</td>
+                <td class="px-4 py-3 text-xs text-slate-600 max-w-[120px] truncate">${expText}</td>
+                <td class="px-4 py-3 text-center">${scoreBadge}</td>
+                <td class="px-4 py-3 text-center">
+                  <div class="flex items-center justify-center gap-1.5">
+                    <button onclick="viewResumeInline(${d.resume_id}, '${safeResume}')"
+                      class="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg text-xs transition flex items-center gap-1" title="View PDF">
+                      <i class="fas fa-eye"></i> View
+                    </button>
+                    <button onclick="openResumeReviewModal(${d.resume_id}, ${d.student_id}, '${safeName}', '${safeResume}')"
+                      class="px-2 py-1 bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white rounded-lg text-xs transition flex items-center gap-1" title="Give Feedback">
+                      <i class="fas fa-comment-alt"></i> Feedback
+                    </button>
+                  </div>
+                </td>
+              </tr>`;
+              })
               .join("");
+
             window._mentorOcrData = data;
-            results.innerHTML = `<div class="p-4 border-b flex justify-between items-center"><p class="text-sm font-semibold text-slate-700">${data.length} resume(s)</p>
-              <button onclick="exportOCRCSV()" class="px-3 py-1.5 bg-green-50 text-green-700 hover:bg-green-600 hover:text-white rounded-lg text-xs font-medium transition"><i class="fas fa-download mr-1"></i>Export CSV</button></div>
-              <div class="overflow-x-auto"><table class="w-full text-left"><thead><tr class="bg-slate-50 text-slate-500 text-xs uppercase">
-                <th class="px-4 py-3">Name</th><th class="px-4 py-3">Email</th><th class="px-4 py-3">Education</th>
-                <th class="px-4 py-3">Skills</th><th class="px-4 py-3 text-center">Score</th><th class="px-4 py-3 text-center">PDF</th>
-              </tr></thead><tbody class="divide-y divide-slate-100">${rows}</tbody></table></div>`;
+            results.innerHTML = `
+              <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+                <div>
+                  <p class="text-sm font-bold text-slate-700">${data.length} resume${data.length !== 1 ? "s" : ""} analyzed</p>
+                  <p class="text-xs text-slate-400 mt-0.5">Cached results shown — click Re-run to refresh with latest uploads</p>
+                </div>
+                <button onclick="exportOCRCSV()"
+                  class="px-3 py-2 bg-green-50 text-green-700 hover:bg-green-600 hover:text-white rounded-xl text-xs font-medium transition flex items-center gap-2">
+                  <i class="fas fa-download"></i> Export CSV
+                </button>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-200">
+                      <th class="px-4 py-3 font-semibold">Student</th>
+                      <th class="px-4 py-3 font-semibold">Education</th>
+                      <th class="px-4 py-3 font-semibold">Skills</th>
+                      <th class="px-4 py-3 font-semibold">Projects</th>
+                      <th class="px-4 py-3 font-semibold">Experience</th>
+                      <th class="px-4 py-3 font-semibold text-center">AI Score</th>
+                      <th class="px-4 py-3 font-semibold text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100 text-sm">${rows}</tbody>
+                </table>
+              </div>`;
           }
         } catch (err) {
-          results.innerHTML = `<div class="p-8 text-center text-red-500">${err.message}</div>`;
+          results.innerHTML = `<div class="p-8 text-center text-red-500"><i class="fas fa-exclamation-triangle text-3xl mb-3 block"></i><p>${err.message}</p></div>`;
         } finally {
-          btn.innerHTML = '<i class="fas fa-robot"></i> Re-run';
+          btn.innerHTML = '<i class="fas fa-robot mr-2"></i> Re-run';
           btn.disabled = false;
         }
       }
