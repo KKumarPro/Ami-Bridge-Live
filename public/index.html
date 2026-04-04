@@ -13,6 +13,8 @@
       href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Instrument+Sans:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
+    <link rel="icon" href="logo.png" type="image/logo.png" />
+
     <script>
       tailwind.config = {
         theme: {
@@ -60,8 +62,16 @@
       /* Gradient mesh hero — clean light */
       .mesh-bg {
         background:
-          radial-gradient(ellipse 70% 60% at 10% 0%, rgba(79,70,229,0.08) 0%, transparent 60%),
-          radial-gradient(ellipse 50% 50% at 90% 80%, rgba(14,165,233,0.07) 0%, transparent 60%),
+          radial-gradient(
+            ellipse 70% 60% at 10% 0%,
+            rgba(79, 70, 229, 0.08) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 50% 50% at 90% 80%,
+            rgba(14, 165, 233, 0.07) 0%,
+            transparent 60%
+          ),
           #f8faff;
       }
 
@@ -176,7 +186,7 @@
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(20px);
         border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-        box-shadow: 0 1px 16px rgba(0,0,0,0.06);
+        box-shadow: 0 1px 16px rgba(0, 0, 0, 0.06);
       }
 
       /* Pill */
@@ -208,7 +218,9 @@
         font-family: "Syne", sans-serif;
         font-weight: 700;
         font-size: 1rem;
-        transition: transform 0.2s, box-shadow 0.2s;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
         box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
         cursor: pointer;
         border: none;
@@ -244,8 +256,11 @@
         border: 1px solid rgba(226, 232, 240, 0.8);
         border-radius: 1.5rem;
         padding: 2rem;
-        box-shadow: 0 2px 16px rgba(0,0,0,0.04);
-        transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
+        transition:
+          transform 0.3s,
+          border-color 0.3s,
+          box-shadow 0.3s;
       }
       .fc:hover {
         transform: translateY(-6px);
@@ -260,11 +275,11 @@
         transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         position: relative;
         border: 1px solid rgba(226, 232, 240, 0.8);
-        box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
       }
       .rc:hover {
         transform: translateY(-6px);
-        box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
       }
 
       /* Stat */
@@ -282,7 +297,7 @@
         border: 1px solid rgba(226, 232, 240, 0.8);
         border-radius: 1.25rem;
         padding: 1.75rem;
-        box-shadow: 0 2px 14px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 14px rgba(0, 0, 0, 0.05);
       }
 
       /* Floating UI card */
@@ -291,7 +306,7 @@
         backdrop-filter: blur(20px);
         border: 1px solid rgba(226, 232, 240, 0.9);
         border-radius: 1.25rem;
-        box-shadow: 0 16px 40px rgba(0,0,0,0.1);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
       }
 
       /* Timeline dot */
@@ -345,12 +360,15 @@
         color: #1e293b;
         font-size: 0.95rem;
         outline: none;
-        transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+        transition:
+          border-color 0.2s,
+          background 0.2s,
+          box-shadow 0.2s;
       }
       .auth-input:focus {
         border-color: #4f46e5;
         background: #fff;
-        box-shadow: 0 0 0 3px rgba(79,70,229,0.12);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
       }
       .auth-input::placeholder {
         color: #94a3b8;
@@ -382,13 +400,11 @@
         color: #475569;
       }
 
-
-
       /* Grid pattern */
       .grid-bg {
         background-image:
-          linear-gradient(rgba(79,70,229,0.04) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(79,70,229,0.04) 1px, transparent 1px);
+          linear-gradient(rgba(79, 70, 229, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(79, 70, 229, 0.04) 1px, transparent 1px);
         background-size: 60px 60px;
       }
     </style>
@@ -419,7 +435,12 @@
             >
           </div>
           <span
-            style="font-family: Syne, sans-serif; font-weight: 700; font-size: 1.25rem; color: #1e293b;"
+            style="
+              font-family: Syne, sans-serif;
+              font-weight: 700;
+              font-size: 1.25rem;
+              color: #1e293b;
+            "
             >Ami<span style="color: #4f46e5">Bridge</span></span
           >
         </div>
@@ -486,7 +507,8 @@
           <div>
             <div class="pill mb-8 reveal">
               <span
-                class="w-1.5 h-1.5 rounded-full animate-pulse inline-block" style="background:#4f46e5"
+                class="w-1.5 h-1.5 rounded-full animate-pulse inline-block"
+                style="background: #4f46e5"
               ></span>
               AI-Powered Placement Prep
             </div>
@@ -605,7 +627,13 @@
                   <i class="fas fa-building text-sm"></i>
                 </div>
                 <div style="flex: 1">
-                  <p style="color: #1e293b; font-weight: 600; font-size: 0.875rem">
+                  <p
+                    style="
+                      color: #1e293b;
+                      font-weight: 600;
+                      font-size: 0.875rem;
+                    "
+                  >
                     Google Assessment
                   </p>
                   <p style="color: #94a3b8; font-size: 0.75rem">
@@ -613,13 +641,19 @@
                   </p>
                 </div>
                 <span
-                  style="color: #4f46e5; font-weight: 700; font-size: 0.875rem; font-family: Syne, sans-serif;" >90%</span
+                  style="
+                    color: #4f46e5;
+                    font-weight: 700;
+                    font-size: 0.875rem;
+                    font-family: Syne, sans-serif;
+                  "
+                  >90%</span
                 >
               </div>
               <div
                 style="
                   width: 100%;
-                  background: rgba(79,70,229,0.05);
+                  background: rgba(79, 70, 229, 0.05);
                   border-radius: 9999px;
                   height: 6px;
                 "
@@ -633,8 +667,7 @@
                   "
                 ></div>
               </div>
-              <p
-                style="font-size: 0.7rem; color: #94a3b8; margin-top: 0.5rem;">
+              <p style="font-size: 0.7rem; color: #94a3b8; margin-top: 0.5rem">
                 5 / 5 correct answers
               </p>
             </div>
@@ -652,10 +685,7 @@
                   margin-bottom: 0.75rem;
                 "
               >
-                <i
-                  class="fas fa-robot text-sm"
-                  style="color: #6366f1"
-                ></i>
+                <i class="fas fa-robot text-sm" style="color: #6366f1"></i>
                 <p
                   style="
                     color: #64748b;
@@ -677,7 +707,13 @@
                 "
               >
                 <span
-                  style="font-family: Syne, sans-serif; font-size: 3rem; font-weight: 900; color: #0f172a; line-height: 1;"
+                  style="
+                    font-family: Syne, sans-serif;
+                    font-size: 3rem;
+                    font-weight: 900;
+                    color: #0f172a;
+                    line-height: 1;
+                  "
                   >84</span
                 >
                 <span
@@ -747,13 +783,7 @@
                   "
                 ></div>
               </div>
-              <p
-                style="
-                  font-size: 0.7rem;
-                  color: #cbd5e1;
-                  margin-top: 0.5rem;
-                "
-              >
+              <p style="font-size: 0.7rem; color: #cbd5e1; margin-top: 0.5rem">
                 ATS: <span style="color: #0ea5e9">78/100</span>
               </p>
             </div>
@@ -777,7 +807,13 @@
                   alt=""
                 />
                 <div>
-                  <p style="color: #1e293b; font-size: 0.875rem; font-weight: 600">
+                  <p
+                    style="
+                      color: #1e293b;
+                      font-size: 0.875rem;
+                      font-weight: 600;
+                    "
+                  >
                     Sanjay Verma
                   </p>
                   <p style="color: #94a3b8; font-size: 0.75rem">
@@ -785,13 +821,7 @@
                   </p>
                 </div>
               </div>
-              <p
-                style="
-                  color: #475569;
-                  font-size: 0.8rem;
-                  line-height: 1.6;
-                "
-              >
+              <p style="color: #475569; font-size: 0.8rem; line-height: 1.6">
                 "Your DSA approach is solid. Focus on system design and clean up
                 the resume formatting — you're almost ready."
               </p>
@@ -834,9 +864,17 @@
               "
             >
               <span
-                style="width: 8px; height: 8px; border-radius: 9999px; background: #4f46e5; animation: pulse 2s infinite; display: inline-block;"
+                style="
+                  width: 8px;
+                  height: 8px;
+                  border-radius: 9999px;
+                  background: #4f46e5;
+                  animation: pulse 2s infinite;
+                  display: inline-block;
+                "
               ></span>
-              <span style="font-size: 0.8rem; color: #475569">Live mock in progress</span
+              <span style="font-size: 0.8rem; color: #475569"
+                >Live mock in progress</span
               >
             </div>
 
@@ -1005,8 +1043,7 @@
               margin-bottom: 1rem;
             "
           >
-            Everything you need.<br /><span
-              style="color: #94a3b8"
+            Everything you need.<br /><span style="color: #94a3b8"
               >Nothing you don't.</span
             >
           </h2>
@@ -1050,13 +1087,7 @@
             >
               Company-Specific Banks
             </h3>
-            <p
-              style="
-                color: #475569;
-                font-size: 0.9rem;
-                line-height: 1.7;
-              "
-            >
+            <p style="color: #475569; font-size: 0.9rem; line-height: 1.7">
               Curated question sets for Google, Amazon, TCS, Infosys and more —
               updated by mentors.
             </p>
@@ -1105,13 +1136,7 @@
             >
               Gemini AI Resume Check
             </h3>
-            <p
-              style="
-                color: #475569;
-                font-size: 0.9rem;
-                line-height: 1.7;
-              "
-            >
+            <p style="color: #475569; font-size: 0.9rem; line-height: 1.7">
               Upload any PDF — scanned or text. Gemini Vision returns ATS score,
               strengths, gaps, and section-level feedback.
             </p>
@@ -1160,13 +1185,7 @@
             >
               Performance Analytics
             </h3>
-            <p
-              style="
-                color: #475569;
-                font-size: 0.9rem;
-                line-height: 1.7;
-              "
-            >
+            <p style="color: #475569; font-size: 0.9rem; line-height: 1.7">
               Score history, accuracy trends, and company-wise breakdowns so you
               always know what to focus on.
             </p>
@@ -1215,13 +1234,7 @@
             >
               Inline PDF Viewer
             </h3>
-            <p
-              style="
-                color: #475569;
-                font-size: 0.9rem;
-                line-height: 1.7;
-              "
-            >
+            <p style="color: #475569; font-size: 0.9rem; line-height: 1.7">
               Resumes open directly in the browser. Mentors and admins view all
               student resumes instantly — no downloads.
             </p>
@@ -1270,13 +1283,7 @@
             >
               CSV Bulk Registration
             </h3>
-            <p
-              style="
-                color: #475569;
-                font-size: 0.9rem;
-                line-height: 1.7;
-              "
-            >
+            <p style="color: #475569; font-size: 0.9rem; line-height: 1.7">
               Onboard entire batches at once via CSV — auto-assigns students to
               mentors. Admin &amp; mentor only.
             </p>
@@ -1325,13 +1332,7 @@
             >
               AI Mentor Draft
             </h3>
-            <p
-              style="
-                color: #475569;
-                font-size: 0.9rem;
-                line-height: 1.7;
-              "
-            >
+            <p style="color: #475569; font-size: 0.9rem; line-height: 1.7">
               Mentors pick a focus area and Gemini drafts professional feedback
               based on the student's actual resume.
             </p>
@@ -1397,13 +1398,7 @@
             >
               0
             </div>
-            <div
-              style="
-                font-size: 0.875rem;
-                color: #94a3b8;
-                font-weight: 500;
-              "
-            >
+            <div style="font-size: 0.875rem; color: #94a3b8; font-weight: 500">
               Students &amp; Mentors
             </div>
           </div>
@@ -1415,13 +1410,7 @@
             >
               0
             </div>
-            <div
-              style="
-                font-size: 0.875rem;
-                color: #94a3b8;
-                font-weight: 500;
-              "
-            >
+            <div style="font-size: 0.875rem; color: #94a3b8; font-weight: 500">
               Companies Covered
             </div>
           </div>
@@ -1433,13 +1422,7 @@
             >
               0
             </div>
-            <div
-              style="
-                font-size: 0.875rem;
-                color: #94a3b8;
-                font-weight: 500;
-              "
-            >
+            <div style="font-size: 0.875rem; color: #94a3b8; font-weight: 500">
               AI Resumes Analyzed
             </div>
           </div>
@@ -1451,13 +1434,7 @@
             >
               0
             </div>
-            <div
-              style="
-                font-size: 0.875rem;
-                color: #94a3b8;
-                font-weight: 500;
-              "
-            >
+            <div style="font-size: 0.875rem; color: #94a3b8; font-weight: 500">
               % Placement Rate
             </div>
           </div>
@@ -1538,13 +1515,7 @@
               >
                 Sign up as Student, Mentor, or Admin
               </h3>
-              <p
-                style="
-                  color: #64748b;
-                  line-height: 1.7;
-                  max-width: 36rem;
-                "
-              >
+              <p style="color: #64748b; line-height: 1.7; max-width: 36rem">
                 Create your account in seconds. The platform shows the right
                 dashboard automatically — practice tools for students, review
                 tools for mentors, management tools for admins.
@@ -1603,13 +1574,7 @@
               >
                 Upload resume — get instant AI feedback
               </h3>
-              <p
-                style="
-                  color: #64748b;
-                  line-height: 1.7;
-                  max-width: 36rem;
-                "
-              >
+              <p style="color: #64748b; line-height: 1.7; max-width: 36rem">
                 Drag and drop your PDF. Gemini Vision reads it visually (works
                 on scanned PDFs too) and returns an overall score, ATS rating,
                 section feedback, and missing keywords in seconds.
@@ -1668,13 +1633,7 @@
               >
                 Practice company-specific questions
               </h3>
-              <p
-                style="
-                  color: #64748b;
-                  line-height: 1.7;
-                  max-width: 36rem;
-                "
-              >
+              <p style="color: #64748b; line-height: 1.7; max-width: 36rem">
                 Pick a company, take the assessment, see your score instantly.
                 History is tracked with visual charts so you can spot weak areas
                 and measure improvement.
@@ -1716,13 +1675,7 @@
               >
                 Get mentor feedback &amp; land the job
               </h3>
-              <p
-                style="
-                  color: #64748b;
-                  line-height: 1.7;
-                  max-width: 36rem;
-                "
-              >
+              <p style="color: #64748b; line-height: 1.7; max-width: 36rem">
                 Your assigned mentor reviews your resume, provides targeted
                 feedback (AI-drafted in one click), and you iterate. The admin
                 tracks placements and manages the whole ecosystem.
@@ -1803,13 +1756,7 @@
             >
               Students
             </h3>
-            <p
-              style="
-                color: #94a3b8;
-                font-size: 0.85rem;
-                margin-bottom: 2rem;
-              "
-            >
+            <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 2rem">
               Final-year engineering students preparing for campus placements.
             </p>
             <ul
@@ -1829,8 +1776,7 @@
                     margin-top: 4px;
                   "
                 ></div>
-                <span
-                  style="color: #475569; font-size: 0.875rem"
+                <span style="color: #475569; font-size: 0.875rem"
                   >Practice 500+ company-specific questions</span
                 >
               </li>
@@ -1843,8 +1789,7 @@
                     margin-top: 4px;
                   "
                 ></div>
-                <span
-                  style="color: #475569; font-size: 0.875rem"
+                <span style="color: #475569; font-size: 0.875rem"
                   >Upload resume, get AI score + mentor feedback</span
                 >
               </li>
@@ -1857,8 +1802,7 @@
                     margin-top: 4px;
                   "
                 ></div>
-                <span
-                  style="color: #475569; font-size: 0.875rem"
+                <span style="color: #475569; font-size: 0.875rem"
                   >Track scores and accuracy over time</span
                 >
               </li>
@@ -1871,8 +1815,7 @@
                     margin-top: 4px;
                   "
                 ></div>
-                <span
-                  style="color: #475569; font-size: 0.875rem"
+                <span style="color: #475569; font-size: 0.875rem"
                   >View resume inline — no downloads needed</span
                 >
               </li>
@@ -1943,13 +1886,7 @@
             >
               Mentors
             </h3>
-            <p
-              style="
-                color: #94a3b8;
-                font-size: 0.85rem;
-                margin-bottom: 2rem;
-              "
-            >
+            <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 2rem">
               Industry professionals who want to guide the next generation.
             </p>
             <ul
@@ -1962,29 +1899,25 @@
             >
               <li style="display: flex; align-items: flex-start; gap: 0.75rem">
                 <div class="tdot" style="margin-top: 4px"></div>
-                <span
-                  style="color: #475569; font-size: 0.875rem"
+                <span style="color: #475569; font-size: 0.875rem"
                   >View &amp; review assigned students' resumes</span
                 >
               </li>
               <li style="display: flex; align-items: flex-start; gap: 0.75rem">
                 <div class="tdot" style="margin-top: 4px"></div>
-                <span
-                  style="color: #475569; font-size: 0.875rem"
+                <span style="color: #475569; font-size: 0.875rem"
                   >Use AI to draft feedback in one click</span
                 >
               </li>
               <li style="display: flex; align-items: flex-start; gap: 0.75rem">
                 <div class="tdot" style="margin-top: 4px"></div>
-                <span
-                  style="color: #475569; font-size: 0.875rem"
+                <span style="color: #475569; font-size: 0.875rem"
                   >Monitor student performance charts</span
                 >
               </li>
               <li style="display: flex; align-items: flex-start; gap: 0.75rem">
                 <div class="tdot" style="margin-top: 4px"></div>
-                <span
-                  style="color: #475569; font-size: 0.875rem"
+                <span style="color: #475569; font-size: 0.875rem"
                   >Bulk register students via CSV</span
                 >
               </li>
@@ -2037,13 +1970,7 @@
             >
               Admins
             </h3>
-            <p
-              style="
-                color: #94a3b8;
-                font-size: 0.85rem;
-                margin-bottom: 2rem;
-              "
-            >
+            <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 2rem">
               Placement cells and coordinators managing the full ecosystem.
             </p>
             <ul
@@ -2063,8 +1990,7 @@
                     margin-top: 4px;
                   "
                 ></div>
-                <span
-                  style="color: #475569; font-size: 0.875rem"
+                <span style="color: #475569; font-size: 0.875rem"
                   >Manage all users, roles, assignments</span
                 >
               </li>
@@ -2077,8 +2003,7 @@
                     margin-top: 4px;
                   "
                 ></div>
-                <span
-                  style="color: #475569; font-size: 0.875rem"
+                <span style="color: #475569; font-size: 0.875rem"
                   >Curate question banks for all companies</span
                 >
               </li>
@@ -2091,8 +2016,7 @@
                     margin-top: 4px;
                   "
                 ></div>
-                <span
-                  style="color: #475569; font-size: 0.875rem"
+                <span style="color: #475569; font-size: 0.875rem"
                   >Run AI OCR on all student resumes</span
                 >
               </li>
@@ -2105,8 +2029,7 @@
                     margin-top: 4px;
                   "
                 ></div>
-                <span
-                  style="color: #475569; font-size: 0.875rem"
+                <span style="color: #475569; font-size: 0.875rem"
                   >View platform-wide analytics &amp; charts</span
                 >
               </li>
@@ -2190,7 +2113,9 @@
                 alt=""
               />
               <div>
-                <p style="color: #0f172a; font-size: 0.875rem; font-weight: 600">
+                <p
+                  style="color: #0f172a; font-size: 0.875rem; font-weight: 600"
+                >
                   Priya Sharma
                 </p>
                 <p style="color: #94a3b8; font-size: 0.75rem">
@@ -2226,7 +2151,9 @@
                 alt=""
               />
               <div>
-                <p style="color: #0f172a; font-size: 0.875rem; font-weight: 600">
+                <p
+                  style="color: #0f172a; font-size: 0.875rem; font-weight: 600"
+                >
                   Ravi Kumar
                 </p>
                 <p style="color: #94a3b8; font-size: 0.75rem">
@@ -2261,7 +2188,9 @@
                 alt=""
               />
               <div>
-                <p style="color: #0f172a; font-size: 0.875rem; font-weight: 600">
+                <p
+                  style="color: #0f172a; font-size: 0.875rem; font-weight: 600"
+                >
                   Dr. Anita Sinha
                 </p>
                 <p style="color: #94a3b8; font-size: 0.75rem">
@@ -2320,13 +2249,7 @@
             >story starts here.</span
           >
         </h2>
-        <p
-          style="
-            color: #64748b;
-            font-size: 1.1rem;
-            margin-bottom: 2.5rem;
-          "
-        >
+        <p style="color: #64748b; font-size: 1.1rem; margin-bottom: 2.5rem">
           Join thousands of students and mentors building India's next
           generation of tech talent.
         </p>
@@ -2431,7 +2354,7 @@
                   width: 2.25rem;
                   height: 2.25rem;
                   border-radius: 0.5rem;
-                  background: rgba(79,70,229,0.05);
+                  background: rgba(79, 70, 229, 0.05);
                   display: flex;
                   align-items: center;
                   justify-content: center;
@@ -2454,7 +2377,7 @@
                   width: 2.25rem;
                   height: 2.25rem;
                   border-radius: 0.5rem;
-                  background: rgba(79,70,229,0.05);
+                  background: rgba(79, 70, 229, 0.05);
                   display: flex;
                   align-items: center;
                   justify-content: center;
@@ -2477,7 +2400,7 @@
                   width: 2.25rem;
                   height: 2.25rem;
                   border-radius: 0.5rem;
-                  background: rgba(79,70,229,0.05);
+                  background: rgba(79, 70, 229, 0.05);
                   display: flex;
                   align-items: center;
                   justify-content: center;
@@ -2674,12 +2597,7 @@
         <div
           style="
             height: 3px;
-            background: linear-gradient(
-              90deg,
-              #6366f1,
-              #4f46e5,
-              #0ea5e9
-            );
+            background: linear-gradient(90deg, #6366f1, #4f46e5, #0ea5e9);
           "
         ></div>
         <button
@@ -2691,7 +2609,7 @@
             width: 2rem;
             height: 2rem;
             border-radius: 0.5rem;
-            background: rgba(79,70,229,0.05);
+            background: rgba(79, 70, 229, 0.05);
             border: none;
             color: #64748b;
             cursor: pointer;
@@ -2743,7 +2661,7 @@
                   font-family: Syne, sans-serif;
                   font-weight: 800;
                   font-size: 1.5rem;
-                  color: #9eb3e3;
+                  color: #96afe8;
                   margin-bottom: 0.25rem;
                 "
               >
@@ -2851,7 +2769,7 @@
                   font-family: Syne, sans-serif;
                   font-weight: 800;
                   font-size: 1.5rem;
-                  color: #0f172a;
+                  color: #96afe8;
                   margin-bottom: 0.25rem;
                 "
               >
@@ -3020,9 +2938,6 @@
           setTimeout(() => toast.remove(), 300);
         }, 3000);
       }
-
-
-
 
       // Navbar
       window.addEventListener("scroll", () => {
