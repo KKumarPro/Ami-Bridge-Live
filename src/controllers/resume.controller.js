@@ -27,7 +27,9 @@ const list = async (req, res, next) => {
 
 const view = async (req, res, next) => {
   try {
-    const { buffer, name, type } = await resumeService.getResumeFile(req.params.resumeId);
+    const { buffer, name, type } = await resumeService.getResumeFile(
+      req.params.resumeId,
+    );
     res.setHeader("Content-Type", type || "application/pdf");
     res.setHeader("Content-Disposition", `inline; filename="${name}"`);
     res.setHeader("Content-Length", buffer.length);
@@ -52,6 +54,15 @@ const analyze = async (req, res, next) => {
     const analysis = await resumeService.analyzeResumeAI(req.params.resumeId);
     return R.ok(res, analysis);
   } catch (err) {
+    // NOT_A_RESUME: Gemini confirmed the uploaded PDF is not a resume
+    if (err.code === "NOT_A_RESUME") {
+      return res.status(422).json({
+        error: "NOT_A_RESUME",
+        message:
+          err.message ||
+          "The uploaded document does not appear to be a resume or CV.",
+      });
+    }
     if (err.status) return res.status(err.status).json({ error: err.message });
     next(err);
   }
@@ -74,7 +85,7 @@ const mentorAISuggest = async (req, res, next) => {
     const suggestion = await resumeService.getMentorAISuggestion(
       req.params.resumeId,
       req.body.mentor_name,
-      req.body.focus_area
+      req.body.focus_area,
     );
     return R.ok(res, { suggestion });
   } catch (err) {
@@ -85,7 +96,9 @@ const mentorAISuggest = async (req, res, next) => {
 
 const mentorOCR = async (req, res, next) => {
   try {
-    const studentsResult = await InterviewModel.getAssignedStudents(req.params.id);
+    const studentsResult = await InterviewModel.getAssignedStudents(
+      req.params.id,
+    );
     const data = await resumeService.getOCRForMentor(studentsResult.rows);
     return R.ok(res, data);
   } catch (err) {
@@ -104,4 +117,14 @@ const adminOCR = async (req, res, next) => {
   }
 };
 
-module.exports = { upload, list, view, remove, analyze, getAIFeedback, mentorAISuggest, mentorOCR, adminOCR };
+module.exports = {
+  upload,
+  list,
+  view,
+  remove,
+  analyze,
+  getAIFeedback,
+  mentorAISuggest,
+  mentorOCR,
+  adminOCR,
+};

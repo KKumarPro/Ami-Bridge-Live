@@ -4,18 +4,22 @@ const multer = require("multer");
 
 const memoryStorage = multer.memoryStorage();
 
-// ── Resume upload (PDF / Word, max 5 MB) ────────────────────────────────────
+// ── Resume upload (PDF only, max 5 MB) ──────────────────────────────────────
 const resumeUpload = multer({
   storage: memoryStorage,
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
-    const allowed = [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
-    if (allowed.includes(file.mimetype)) return cb(null, true);
-    cb(new Error("Only PDF and Word documents are allowed"), false);
+    // Accept PDF only — Word docs cannot be reliably parsed for AI text extraction
+    const isPdf =
+      file.mimetype === "application/pdf" ||
+      file.originalname.toLowerCase().endsWith(".pdf");
+    if (isPdf) return cb(null, true);
+    cb(
+      new Error(
+        "Only PDF files are accepted. Please convert your document to PDF and try again.",
+      ),
+      false,
+    );
   },
 });
 
