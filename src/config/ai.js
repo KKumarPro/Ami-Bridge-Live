@@ -1,17 +1,20 @@
 "use strict";
 
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+// Groq client configuration
+// Previously this file configured the Google Gemini SDK.
+// It now configures the Groq SDK used for all AI features.
+
+const Groq = require("groq-sdk");
 const env = require("./env");
 
-const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY);
+let _client = null;
 
 /**
- * Returns a Gemini model instance.
- * @param {string} modelName
- * @param {object} generationConfig
+ * Returns a singleton Groq client instance.
  */
-const getModel = (modelName = "gemini-1.5-flash-latest", generationConfig = {}) => {
-  return genAI.getGenerativeModel({ model: modelName, generationConfig });
+const getGroqClient = () => {
+  if (!_client) _client = new Groq({ apiKey: env.GROQ_API_KEY });
+  return _client;
 };
 
-module.exports = { genAI, getModel };
+module.exports = { getGroqClient };

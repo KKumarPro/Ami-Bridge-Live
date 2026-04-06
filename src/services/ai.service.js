@@ -1,37 +1,35 @@
 "use strict";
 
-const { getModel } = require("../config/ai");
+const Groq = require("groq-sdk");
 const env = require("../config/env");
 const logger = require("../utils/logger");
 
+// Groq free-tier models ordered by capability
 const MODELS_TO_TRY = [
-  "gemini-2.0-flash",
-  "gemini-2.0-flash-lite",
-  "gemini-1.5-flash-latest",
-  "gemini-1.5-flash",
-  "gemini-1.5-pro",
+  "llama-3.3-70b-versatile", // Best: 14,400 req/day free
+  "llama-3.1-8b-instant", // Fast fallback
+  "gemma2-9b-it", // Google Gemma via Groq
+  "mixtral-8x7b-32768", // Mixtral fallback
 ];
 
-// ── JSON extractor ────────────────────────────────────────────────────────────
-// Handles markdown fences, preamble text, trailing commentary — all common
-// ways Gemini wraps its response even when told not to.
+// Singleton Groq client
+let _groq = null;
+function getGroq() {
+  if (!_groq) _groq = new Groq({ apiKey: env.GROQ_API_KEY });
+  return _groq;
+}
 
+// ── JSON extractor ────────────────────────────────────────────────────────────
 function extractJSON(raw) {
   if (!raw || typeof raw !== "string") return null;
   let text = raw.trim();
-
-  // Strip ```json ... ``` or ``` ... ``` fences
   text = text
     .replace(/^```(?:json)?[\r\n]*/im, "")
     .replace(/[\r\n]*```\s*$/im, "")
     .trim();
-
-  // Direct parse (best case — model obeyed instructions)
   try {
     return JSON.parse(text);
   } catch (_) {}
-
-  // Find and extract the outermost { ... } block
   let depth = 0,
     start = -1,
     end = -1;
@@ -52,188 +50,131 @@ function extractJSON(raw) {
       return JSON.parse(text.slice(start, end + 1));
     } catch (_) {}
   }
-
   return null;
 }
 
-// ── Prompt ────────────────────────────────────────────────────────────────────
-// Kept deliberately simple and concrete so every Gemini version returns
-// a clean JSON object without preamble or markdown wrapping.
-
+// ── Prompt builder ────────────────────────────────────────────────────────────
 function buildPrompt(studentName, resumeText) {
-  return `You are a professional resume reviewer and ATS (Applicant Tracking System) expert for Indian engineering/tech placements.
+  return `You are a professional resume reviewer and ATS expert for Indian engineering and tech placements.
 
 Analyze the resume text below for the student named "${studentName || "the student"}".
 
-IMPORTANT RULES:
-1. First verify this is actually a resume or CV. If it is NOT a resume (e.g. article, notes, assignment), output ONLY: {"not_a_resume":true,"reason":"describe what it actually is"}
-2. If it IS a resume, output ONLY a raw JSON object with no markdown, no code fences, no text before or after the JSON.
-3. Be specific — reference actual names, skills, companies, or projects from the resume. Do NOT give generic advice.
+STRICT RULES:
+1. If this is NOT a resume/CV (e.g. article, notes, assignment), output ONLY: {"not_a_resume":true,"reason":"what it actually is"}
+2. If it IS a resume, output ONLY a raw JSON object. No markdown, no code fences, no text before or after.
+3. Reference actual content from this specific resume. Do NOT give generic advice.
+4. score and ats_score must be integers 0-100.
 
-Required JSON format (output this and nothing else):
-{"score":75,"ats_score":68,"summary":"Write 3-5 sentences evaluating the overall quality, completeness, and impact of this specific resume.","strengths":["Specific strength #1 from this resume","Specific strength #2 from this resume","Specific strength #3 from this resume"],"improvements":["Specific weakness #1 with an actionable fix","Specific weakness #2 with an actionable fix","Specific weakness #3 with an actionable fix"],"keywords_missing":["keyword1","keyword2","keyword3","keyword4","keyword5"],"sections_feedback":{"contact":"Feedback on the contact/header section of this resume.","education":"Feedback on the education section of this resume.","skills":"Feedback on the skills section of this resume.","experience":"Feedback on the experience/internships section of this resume.","projects":"Feedback on the projects section of this resume."}}
-
-Scoring:
-- score: Overall resume quality (0-100). Consider content, formatting, impact, completeness.
-- ats_score: ATS compatibility (0-100). Consider keywords, formatting, section headers.
+Required JSON format:
+{"score":75,"ats_score":68,"summary":"3-5 sentences about this specific resume quality and career readiness.","strengths":["Specific strength from this resume","Specific strength from this resume","Specific strength from this resume"],"improvements":["Specific weakness + actionable fix","Specific weakness + actionable fix","Specific weakness + actionable fix"],"keywords_missing":["kw1","kw2","kw3","kw4","kw5"],"sections_feedback":{"contact":"Feedback on this contact section.","education":"Feedback on this education section.","skills":"Feedback on this skills section.","experience":"Feedback on this experience section.","projects":"Feedback on this projects section."}}
 
 RESUME TEXT:
 ---
 ${resumeText}
 ---
 
-Output only the JSON. No explanation, no markdown.`;
+Output only the JSON. Nothing else.`;
 }
 
-// ── Main analysis function ────────────────────────────────────────────────────
-
+// ── Resume analysis ───────────────────────────────────────────────────────────
 const analyzeResume = async (resumeText, studentName, pdfBase64) => {
-  if (
-    !env.GEMINI_API_KEY ||
-    env.GEMINI_API_KEY === "your_gemini_api_key_here"
-  ) {
-    return noKeyResponse();
-  }
+  if (!env.GROQ_API_KEY) return noKeyResponse();
 
   const textIsUsable = resumeText && resumeText.trim().length > 100;
-
-  // ── METHOD 1: Text mode — preferred for all standard text-based PDFs ──────
-  if (textIsUsable) {
-    const prompt = buildPrompt(
-      studentName,
-      resumeText.trim().substring(0, 12000),
+  if (!textIsUsable) {
+    logger.warn(
+      `[AI] Resume text too short (${(resumeText || "").trim().length} chars) — likely a scanned image PDF.`,
     );
-
-    for (const modelName of MODELS_TO_TRY) {
-      try {
-        logger.info(
-          `[AI] Text mode → ${modelName} | ${resumeText.trim().length} chars | student: ${studentName}`,
-        );
-        const model = getModel(modelName, { temperature: 0.1 });
-        const result = await model.generateContent(prompt);
-        const raw = result.response.text();
-        logger.info(`[AI] Response (first 300): ${raw.substring(0, 300)}`);
-
-        const parsed = extractJSON(raw);
-        if (!parsed) {
-          logger.warn(
-            `[AI] extractJSON returned null. Full raw response: ${raw.substring(0, 600)}`,
-          );
-          throw new Error("Could not parse JSON from Gemini response");
-        }
-
-        if (parsed.not_a_resume) {
-          logger.warn(`[AI] Not a resume: ${parsed.reason}`);
-          const err = new Error(
-            parsed.reason || "This does not appear to be a resume or CV.",
-          );
-          err.code = "NOT_A_RESUME";
-          throw err;
-        }
-
-        if (typeof parsed.score !== "number") {
-          logger.warn(
-            `[AI] Parsed JSON missing score field: ${JSON.stringify(parsed).substring(0, 200)}`,
-          );
-          throw new Error("JSON response missing required score field");
-        }
-
-        logger.info(
-          `[AI] SUCCESS via text mode (${modelName}) — score: ${parsed.score}`,
-        );
-        return parsed;
-      } catch (err) {
-        if (err.code === "NOT_A_RESUME") throw err;
-        logger.warn(`[AI] Text mode FAILED (${modelName}): ${err.message}`);
-      }
-    }
-  } else {
-    logger.info(
-      `[AI] Text too short (${(resumeText || "").trim().length} chars) — skipping text mode, going to vision`,
+    return genericFeedback(
+      studentName,
+      "The uploaded PDF appears to be a scanned image and contains no readable text. Please upload a text-based PDF resume.",
     );
   }
 
-  // ── METHOD 2: Vision mode — fallback for scanned/image PDFs ──────────────
-  if (pdfBase64) {
-    const visionPrompt = buildPrompt(
-      studentName,
-      "[The resume is provided as a PDF image below. Please read it and analyze it.]",
-    );
+  const prompt = buildPrompt(
+    studentName,
+    resumeText.trim().substring(0, 12000),
+  );
 
-    for (const modelName of MODELS_TO_TRY) {
-      try {
-        const sizeMB = ((pdfBase64.length * 0.75) / 1048576).toFixed(2);
-        logger.info(
-          `[AI] Vision mode → ${modelName} | ${sizeMB} MB | student: ${studentName}`,
+  for (const modelName of MODELS_TO_TRY) {
+    try {
+      logger.info(
+        `[AI] Groq → ${modelName} | ${resumeText.trim().length} chars | student: ${studentName}`,
+      );
+      const chat = await getGroq().chat.completions.create({
+        model: modelName,
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are a resume analysis expert. Always respond with raw JSON only — no markdown, no code fences, no explanations.",
+          },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.1,
+        max_tokens: 2000,
+      });
+
+      const raw = chat.choices[0]?.message?.content || "";
+      logger.info(`[AI] Response (first 400): ${raw.substring(0, 400)}`);
+
+      const parsed = extractJSON(raw);
+      if (!parsed) {
+        logger.warn(
+          `[AI] JSON extraction failed. Full response: ${raw.substring(0, 800)}`,
         );
-        const model = getModel(modelName, { temperature: 0.1 });
-        const result = await model.generateContent([
-          visionPrompt,
-          { inlineData: { mimeType: "application/pdf", data: pdfBase64 } },
-        ]);
-        const raw = result.response.text();
-        logger.info(
-          `[AI] Vision response (first 300): ${raw.substring(0, 300)}`,
-        );
-
-        const parsed = extractJSON(raw);
-        if (!parsed) {
-          logger.warn(
-            `[AI] Vision extractJSON null. Raw: ${raw.substring(0, 600)}`,
-          );
-          throw new Error("Could not parse JSON from Gemini vision response");
-        }
-
-        if (parsed.not_a_resume) {
-          const err = new Error(
-            parsed.reason || "This does not appear to be a resume or CV.",
-          );
-          err.code = "NOT_A_RESUME";
-          throw err;
-        }
-
-        if (typeof parsed.score !== "number")
-          throw new Error("Vision JSON missing score field");
-
-        logger.info(
-          `[AI] SUCCESS via vision mode (${modelName}) — score: ${parsed.score}`,
-        );
-        return parsed;
-      } catch (err) {
-        if (err.code === "NOT_A_RESUME") throw err;
-        logger.warn(`[AI] Vision mode FAILED (${modelName}): ${err.message}`);
+        throw new Error("Could not parse JSON from AI response");
       }
+
+      if (parsed.not_a_resume) {
+        const err = new Error(
+          parsed.reason || "This does not appear to be a resume or CV.",
+        );
+        err.code = "NOT_A_RESUME";
+        throw err;
+      }
+
+      if (typeof parsed.score !== "number") {
+        logger.warn(
+          `[AI] Missing score. Parsed: ${JSON.stringify(parsed).substring(0, 300)}`,
+        );
+        throw new Error("AI response missing required score field");
+      }
+
+      logger.info(
+        `[AI] SUCCESS (${modelName}) — score: ${parsed.score}, ats: ${parsed.ats_score}`,
+      );
+      return parsed;
+    } catch (err) {
+      if (err.code === "NOT_A_RESUME") throw err;
+      logger.warn(`[AI] FAILED (${modelName}): ${err.message}`);
     }
   }
 
-  logger.error(`[AI] All methods exhausted for student: ${studentName}`);
+  logger.error(`[AI] All models exhausted for: ${studentName}`);
   return genericFeedback(studentName);
 };
 
 // ── Mentor suggestion ─────────────────────────────────────────────────────────
+const generateMentorSuggestion = async (mentorName, studentName, focusArea) => {
+  if (!env.GROQ_API_KEY)
+    return "AI suggestion unavailable — GROQ_API_KEY not configured.";
 
-const generateMentorSuggestion = async (
-  mentorName,
-  studentName,
-  focusArea,
-  pdfBase64,
-) => {
   const prompt =
-    `You are helping mentor "${mentorName || "Mentor"}" write placement feedback for student "${studentName || "Student"}". ` +
-    `Focus on: ${focusArea || "overall resume quality and career readiness"}. ` +
-    `Write a professional, constructive, encouraging message (3-5 sentences) in first person as the mentor. No greetings or sign-offs.`;
+    `Help mentor "${mentorName || "Mentor"}" write professional feedback for student "${studentName || "Student"}". ` +
+    `Focus: ${focusArea || "overall resume quality and career readiness"}. ` +
+    `Write 3-5 sentences in first person as the mentor. No greetings or sign-offs.`;
 
   for (const modelName of MODELS_TO_TRY) {
     try {
-      const model = getModel(modelName, { temperature: 0.3 });
-      const parts = pdfBase64
-        ? [
-            prompt,
-            { inlineData: { mimeType: "application/pdf", data: pdfBase64 } },
-          ]
-        : [prompt];
-      const result = await model.generateContent(parts);
-      return result.response.text().trim();
+      const chat = await getGroq().chat.completions.create({
+        model: modelName,
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.4,
+        max_tokens: 300,
+      });
+      const text = chat.choices[0]?.message?.content?.trim() || "";
+      if (text) return text;
     } catch (err) {
       logger.warn(`[AI] Mentor suggest FAILED (${modelName}): ${err.message}`);
     }
@@ -242,13 +183,12 @@ const generateMentorSuggestion = async (
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
 function noKeyResponse() {
   return {
     score: null,
     ats_score: null,
     summary:
-      "Gemini API key not configured. Please set GEMINI_API_KEY in your .env file.",
+      "GROQ_API_KEY is not set in your .env file. Get a free key at https://console.groq.com",
     strengths: [],
     improvements: [],
     keywords_missing: [],
@@ -256,12 +196,14 @@ function noKeyResponse() {
   };
 }
 
-function genericFeedback(studentName) {
+function genericFeedback(studentName, reason) {
   return {
     score: null,
     ats_score: null,
     _generic: true,
-    summary: `AI analysis could not be completed for ${studentName || "this resume"} right now. Please check your server logs for the exact error, then try again.`,
+    summary:
+      reason ||
+      `AI analysis could not be completed for ${studentName || "this resume"}. Check your server terminal for the exact error.`,
     strengths: [],
     improvements: [],
     keywords_missing: [],
