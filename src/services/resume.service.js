@@ -1,13 +1,30 @@
 "use strict";
 
 const ResumeModel = require("../models/resume.model");
+const UserModel = require("../models/user.model");
 const { analyzeResume, generateMentorSuggestion } = require("./ai.service");
 const { processUploadedFile, base64ToBuffer } = require("./file.service");
+const { extractTextFromPDF } = require("../utils/parser");
 const logger = require("../utils/logger");
 
 // ── Upload ───────────────────────────────────────────────────────────────────
 const uploadResume = async (file, studentId) => {
+  // 1. Process the uploaded file
   const { base64, filePath } = await processUploadedFile(file, studentId);
+
+  // 2. Fetch the student's name to personalize the AI prompt
+  const userResult = await UserModel.findById(studentId);
+  const studentName = userResult.rows.length > 0 ? userResult.rows[0].name : "Student";
+
+  // 3. Extract Text from the PDF buffer instantly
+  const resumeText = await extractTextFromPDF(file.buffer);
+
+  // 4. Run AI Analysis BEFORE saving to the database
+  // If the AI detects it's a random file, it throws a 'NOT_A_RESUME' error here.
+  // Execution stops, meaning the file is never saved to the DB.
+  const analysis = await analyzeResume(resumeText, studentName, base64);
+
+  // 5. If the code reaches here, it IS a valid resume. Save it to the DB.
   const result = await ResumeModel.create(
     studentId,
     file.originalname,
@@ -15,7 +32,21 @@ const uploadResume = async (file, studentId) => {
     base64,
     file.mimetype,
   );
-  return result.rows[0];
+  const resumeId = result.rows[0].resume_id;
+
+  // 6. Save the AI feedback and score instantly
+  await ResumeModel.saveAIFeedback(
+    resumeId,
+    JSON.stringify(analysis),
+    analysis.score,
+  );
+
+  // Return the combined resume data with the new AI score
+  return {
+    ...result.rows[0],
+    gemini_score: analysis.score,
+    analysis
+  };
 };
 
 // ── List ─────────────────────────────────────────────────────────────────────
@@ -67,7 +98,6 @@ const analyzeResumeAI = async (resumeId) => {
 
   const pdfBase64 = resume.file_data;
   const fileBuffer = base64ToBuffer(pdfBase64);
-  const { extractTextFromPDF } = require("../utils/parser");
   const resumeText = await extractTextFromPDF(fileBuffer);
 
   const analysis = await analyzeResume(
@@ -131,8 +161,6 @@ const getOCRForMentor = async (students) => {
     if (!resume.gemini_feedback && resume.file_data) {
       // No cached analysis — run AI extraction now and cache the result
       try {
-        const { extractTextFromPDF } = require("../utils/parser");
-        const { base64ToBuffer } = require("./file.service");
         const fileBuffer = base64ToBuffer(resume.file_data);
         const resumeText = await extractTextFromPDF(fileBuffer);
         const analysis = await analyzeResume(
@@ -186,8 +214,6 @@ const getOCRForAdmin = async () => {
     if (!resume.gemini_feedback && resume.file_data) {
       // No cached analysis — run AI extraction now and cache the result
       try {
-        const { extractTextFromPDF } = require("../utils/parser");
-        const { base64ToBuffer } = require("./file.service");
         const fileBuffer = base64ToBuffer(resume.file_data);
         const resumeText = await extractTextFromPDF(fileBuffer);
         const analysis = await analyzeResume(

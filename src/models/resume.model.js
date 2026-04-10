@@ -13,7 +13,7 @@ const ResumeModel = {
 
   findByStudent: (studentId) =>
     pool.query(
-      `SELECT resume_id, student_id, resume_name, upload_date, file_type, gemini_score
+      `SELECT resume_id, student_id, resume_name, upload_date, file_type, gemini_score, gemini_feedback
        FROM resumes WHERE student_id = $1 ORDER BY upload_date DESC`,
       [studentId]
     ),

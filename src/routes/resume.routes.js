@@ -7,7 +7,7 @@ const { requireRole }             = require("../middlewares/auth.middleware");
 const { rateLimit }               = require("../middlewares/rateLimit.middleware");
 
 // ── Student routes ────────────────────────────────────────────────────────────
-router.post(  "/student/:id/resumes",         resumeUpload.single("resume"), ctrl.upload);
+router.post(  "/student/:id/resumes",         rateLimit(5, 60_000), resumeUpload.single("resume"), ctrl.upload);
 router.get(   "/student/:id/resumes",         ctrl.list);
 
 // ── Per-resume routes ─────────────────────────────────────────────────────────

@@ -9,9 +9,23 @@ const R = require("../utils/response");
 const upload = async (req, res, next) => {
   try {
     if (!req.file) return R.badRequest(res, "No file uploaded");
+
+    // The upload service now handles AI processing instantly
     const resume = await resumeService.uploadResume(req.file, req.params.id);
+
     return R.created(res, resume);
   } catch (err) {
+    // Catch the AI rejection if the user uploads a random PDF
+    if (err.code === "NOT_A_RESUME") {
+      return res.status(422).json({
+        error: "NOT_A_RESUME",
+        message:
+          err.message ||
+          "The uploaded document does not appear to be a resume or CV. Please upload a valid resume.",
+      });
+    }
+
+    if (err.status) return res.status(err.status).json({ error: err.message });
     next(err);
   }
 };
