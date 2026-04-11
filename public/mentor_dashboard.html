@@ -1,4 +1,4 @@
-<!-- Updated Mentor Dashboard with all the updates done -->
+<!-- Mentor Dashboard with all the updates done -->
 
 <!doctype html>
 <html lang="en">
@@ -137,7 +137,7 @@
           class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
         >
           <i class="fas fa-robot w-5"></i>
-          <span class="font-medium">AI Resume OCR</span>
+          <span class="font-medium">Ami-Bridge AI OCR</span>
         </button>
         <button
           onclick="navigate('bulkregister')"
@@ -589,7 +589,7 @@
               id="ai-suggest-loader"
               class="hidden text-xs text-purple-500 mb-1 flex items-center gap-1"
             >
-              <i class="fas fa-spinner fa-spin"></i> Gemini is drafting
+              <i class="fas fa-spinner fa-spin"></i> Ami-Bridge AI is drafting
               feedback...
             </div>
             <textarea
@@ -667,8 +667,8 @@
         ocrSection.innerHTML = `
         <div class="mb-6 flex items-center justify-between">
           <div>
-            <h2 class="text-2xl font-bold text-slate-800">AI Resume OCR</h2>
-            <p class="text-slate-500 mt-1">Extract structured data from all your students' resumes using Gemini AI.</p>
+            <h2 class="text-2xl font-bold text-slate-800">Ami-Bridge AI Resume OCR</h2>
+            <p class="text-slate-500 mt-1">Extract structured data from all your students' resumes using Ami-Bridge AI.</p>
           </div>
           <button onclick="loadOCRData()" id="ocr-run-btn"
             class="px-5 py-2.5 bg-purple-600 text-white rounded-xl font-medium hover:bg-purple-700 transition flex items-center gap-2">
@@ -1188,7 +1188,7 @@
           const data = await res.json();
           document.getElementById("modal-feedback-text").value =
             data.suggestion;
-          showToast("AI drafted feedback!", "success");
+          showToast("Ami-Bridge AI drafted feedback!", "success");
         } catch (err) {
           showToast("AI failed: " + err.message, "error");
         } finally {

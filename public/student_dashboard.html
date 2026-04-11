@@ -1,4 +1,4 @@
-<!-- Updated Student Dashboard with all the updates done -->
+<!-- Student Dashboard with all the updates done -->
 
 <!doctype html>
 <html lang="en">
@@ -794,9 +794,16 @@
             <!-- Left column: Upload + AI score -->
             <div class="md:col-span-1 space-y-4">
               <div class="panel-card p-6">
-                <h3 class="text-lg font-bold text-slate-800 mb-4">
-                  Upload Resume
-                </h3>
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-lg font-bold text-slate-800">
+                    Upload Resume
+                  </h3>
+                  <span
+                    class="text-xs bg-purple-100 text-purple-700 px-2.5 py-1 rounded-full font-medium flex items-center gap-1"
+                  >
+                    <i class="fas fa-robot text-xs"></i> Ami-Bridge AI
+                  </span>
+                </div>
 
                 <!-- Drop zone -->
                 <div
@@ -823,7 +830,7 @@
                     Click or drag &amp; drop
                   </p>
                   <p class="text-xs text-slate-400 mt-1">
-                    PDF only · Max 5MB · Must be a resume/CV
+                    PDF only · Max 5MB · AI checks automatically on upload
                   </p>
                   <input
                     type="file"
@@ -887,7 +894,7 @@
               >
                 <div class="flex items-center gap-2 mb-3">
                   <i class="fas fa-robot text-lg"></i>
-                  <span class="font-bold text-sm">AI Resume Score</span>
+                  <span class="font-bold text-sm">Ami-Bridge AI Score</span>
                 </div>
                 <div class="text-5xl font-black mb-1" id="ai-score-display">
                   --
@@ -971,7 +978,8 @@
                   <h3
                     class="text-lg font-bold text-slate-800 flex items-center gap-2"
                   >
-                    <i class="fas fa-robot text-purple-500"></i> AI Feedback
+                    <i class="fas fa-robot text-purple-500"></i> Ami-Bridge AI
+                    Feedback
                   </h3>
                   <button
                     onclick="
@@ -1376,7 +1384,7 @@
             <div class="text-center p-8 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 flex flex-col items-center">
                 <i class="fas fa-file-pdf text-3xl text-slate-300 mb-2"></i>
                 <p class="text-slate-500 font-medium">No resumes uploaded yet.</p>
-                <p class="text-slate-400 text-sm mt-1">Upload a PDF to get AI-powered feedback</p>
+                <p class="text-slate-400 text-sm mt-1">Upload a PDF to get Ami-Bridge AI feedback</p>
             </div>`;
           return;
         }
@@ -1385,12 +1393,34 @@
           countEl.textContent = `${state.resumes.length} file${state.resumes.length !== 1 ? "s" : ""}`;
 
         state.resumes.forEach((res) => {
-          const scoreHTML =
+          // Pre-compute HTML strings to avoid nested backtick conflicts
+          const scoreBadge =
             res.gemini_score != null
-              ? `<span class="px-2 py-0.5 rounded-full text-xs font-bold ${res.gemini_score >= 70 ? "bg-green-100 text-green-700" : res.gemini_score >= 50 ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"}">
-                AI Score: ${res.gemini_score}/100
-               </span>`
-              : `<span class="px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full text-xs">Not analyzed</span>`;
+              ? '<span class="px-2 py-0.5 rounded-full text-xs font-bold ' +
+                (res.gemini_score >= 70
+                  ? "bg-green-100 text-green-700"
+                  : res.gemini_score >= 50
+                    ? "bg-yellow-100 text-yellow-700"
+                    : "bg-red-100 text-red-700") +
+                '">Ami-Bridge AI: ' +
+                res.gemini_score +
+                "/100</span>"
+              : '<span class="px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full text-xs">Not analyzed</span>';
+
+          const safeName = (res.resume_name || "Resume").replace(/'/g, "\'");
+
+          const actionBtn =
+            res.gemini_score != null
+              ? '<button onclick="analyzeResume(' +
+                res.resume_id +
+                ')" ' +
+                'class="px-3 py-1.5 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-colors text-xs font-medium flex items-center gap-1" title="Re-analyse with AI">' +
+                '<i class="fas fa-redo"></i> Re-analyse</button>'
+              : '<button onclick="analyzeResume(' +
+                res.resume_id +
+                ')" ' +
+                'class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white transition-colors text-xs font-medium flex items-center gap-1" title="Run AI Check">' +
+                '<i class="fas fa-robot"></i> AI Check</button>';
 
           list.innerHTML += `
             <div class="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-blue-200 hover:bg-blue-50/30 transition-all group">
@@ -1402,19 +1432,16 @@
                         <p class="font-semibold text-slate-800 text-sm truncate">${res.resume_name || res.file_name || "Resume"}</p>
                         <div class="flex items-center gap-2 mt-1 flex-wrap">
                           <p class="text-xs text-slate-400">${new Date(res.upload_date).toLocaleDateString()}</p>
-                          ${scoreHTML}
+                          ${scoreBadge}
                         </div>
                     </div>
                 </div>
                 <div class="flex gap-2 shrink-0 ml-2">
-                    <button onclick="viewResume(${res.resume_id}, '${(res.resume_name || "Resume").replace(/'/g, "\\'")}')"
+                    <button onclick="viewResume(${res.resume_id}, '${safeName}')"
                       class="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors text-xs font-medium flex items-center gap-1" title="View PDF">
                         <i class="fas fa-eye"></i> View
                     </button>
-                    <button onclick="analyzeResume(${res.resume_id})"
-                      class="px-3 py-1.5 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-colors text-xs font-medium flex items-center gap-1" title="AI Feedback">
-                        <i class="fas fa-robot"></i> AI Check
-                    </button>
+                    ${actionBtn}
                     <button onclick="deleteResume(${res.resume_id})"
                       class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center" title="Delete">
                         <i class="fas fa-trash text-xs"></i>
@@ -1714,7 +1741,7 @@
       }
 
       function processResumeFile(file) {
-        // Validate type — check both MIME and extension (some OS report wrong MIME)
+        // Validate type — PDF only
         const isValidType =
           file.type === "application/pdf" ||
           file.name.toLowerCase().endsWith(".pdf");
@@ -1736,21 +1763,19 @@
         const statusTxt = document.getElementById("upload-status-text");
         const banner = document.getElementById("upload-success-banner");
 
-        // Reset & show progress
+        // Reset UI
         banner.classList.add("hidden");
         prog.classList.remove("hidden");
         fname.textContent = file.name;
         bar.style.width = "0%";
         pct.textContent = "0%";
         statusTxt.textContent = "Uploading...";
-        bar.classList.remove("bg-red-500");
+        bar.classList.remove("bg-red-500", "bg-amber-500");
         bar.classList.add("bg-blue-500");
 
         const formData = new FormData();
         formData.append("resume", file);
 
-        // Use XMLHttpRequest — avoids the browser-extension fetch interception
-        // that causes "message channel closed" errors in the console
         const xhr = new XMLHttpRequest();
 
         xhr.upload.addEventListener("progress", (e) => {
@@ -1761,11 +1786,10 @@
           }
         });
 
-        xhr.addEventListener("load", () => {
+        xhr.addEventListener("load", async () => {
           if (xhr.status >= 200 && xhr.status < 300) {
             bar.style.width = "100%";
             pct.textContent = "100%";
-            statusTxt.textContent = "Done!";
 
             let newResume;
             try {
@@ -1775,26 +1799,272 @@
               return;
             }
 
-            // Add to local state and re-render list
-            state.resumes.unshift(newResume);
-            renderResumes();
+            // ── Auto AI analysis immediately after upload ─────────────────
+            // Switch progress bar to AI-checking state
+            bar.classList.remove("bg-blue-500");
+            bar.classList.add("bg-purple-500");
+            statusTxt.textContent =
+              "🤖 Ami-Bridge AI is checking your resume...";
 
-            // Show green success banner
-            document.getElementById("upload-success-name").textContent =
-              file.name;
-            banner.classList.remove("hidden");
+            // Show AI panel loading state immediately
+            const panel = document.getElementById("ai-feedback-panel");
+            const feedbackContent = document.getElementById(
+              "ai-feedback-content",
+            );
+            feedbackContent.innerHTML = `
+              <div class="flex flex-col items-center justify-center py-12 text-slate-400">
+                <i class="fas fa-spinner fa-spin text-4xl mb-4 text-purple-400"></i>
+                <p class="text-sm font-semibold text-slate-600">Checking your document...</p>
+                <p class="text-xs mt-1 text-slate-400">Ami-Bridge AI is verifying this is a resume and scoring it</p>
+              </div>`;
+            panel.classList.remove("hidden");
 
-            // Auto-open the PDF inline immediately after upload
-            const resumeUrl = `${API_BASE}/api/resume/${newResume.resume_id}/view`;
-            openInlinePdf(resumeUrl, file.name);
+            try {
+              const analysisRes = await fetch(
+                `${API_BASE}/api/resume/${newResume.resume_id}/analyze`,
+                { method: "POST" },
+              );
 
-            showToast("Resume uploaded! Showing preview below.", "success");
+              // ── NOT A RESUME: delete it silently and reject ──────────────
+              if (analysisRes.status === 422) {
+                const errData = await analysisRes.json();
 
-            // Hide progress bar after a moment
-            setTimeout(() => {
-              prog.classList.add("hidden");
-              bar.style.width = "0%";
-            }, 2000);
+                // Delete the uploaded file from DB — it's not a resume
+                await fetch(`${API_BASE}/api/resume/${newResume.resume_id}`, {
+                  method: "DELETE",
+                });
+
+                // Show rejection in progress bar area
+                bar.classList.remove("bg-purple-500");
+                bar.classList.add("bg-red-500");
+                statusTxt.textContent = "❌ Not a resume — file removed.";
+
+                // Show rejection in AI panel
+                feedbackContent.innerHTML = `
+                  <div class="p-6 bg-red-50 border border-red-200 rounded-xl text-center">
+                    <i class="fas fa-file-circle-xmark text-red-500 text-4xl mb-3 block"></i>
+                    <p class="font-bold text-red-800 text-base mb-2">Not a Resume — File Rejected</p>
+                    <p class="text-sm text-red-700 mb-1">${errData.message || "The uploaded PDF is not a resume or CV."}</p>
+                    <p class="text-xs text-red-500 mt-3">The file has been automatically removed. Please upload your actual resume/CV.</p>
+                  </div>`;
+
+                showToast(
+                  "Rejected: Not a resume. File deleted automatically.",
+                  "error",
+                );
+
+                // Hide progress after delay
+                setTimeout(() => {
+                  prog.classList.add("hidden");
+                  bar.style.width = "0%";
+                }, 4000);
+                return;
+              }
+
+              // ── AI unavailable: keep file, show retry ────────────────────
+              if (!analysisRes.ok) {
+                const err = await analysisRes.json();
+                throw new Error(err.error || "AI analysis failed");
+              }
+
+              const data = await analysisRes.json();
+
+              if (data._generic) {
+                // Add to state so user can see it and retry manually
+                state.resumes.unshift(newResume);
+                renderResumes();
+                bar.classList.remove("bg-purple-500");
+                bar.classList.add("bg-amber-500");
+                statusTxt.textContent =
+                  "⚠️ Ami-Bridge AI busy — use AI Check to retry.";
+                feedbackContent.innerHTML = `
+                  <div class="p-6 bg-slate-50 border border-slate-200 rounded-xl text-center">
+                    <i class="fas fa-clock text-slate-400 text-4xl mb-3 block"></i>
+                    <p class="font-bold text-slate-700 text-base mb-1">Ami-Bridge AI Temporarily Unavailable</p>
+                    <p class="text-sm text-slate-500">${data.summary}</p>
+                    <button onclick="analyzeResume(${newResume.resume_id})"
+                      class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition">
+                      <i class="fas fa-redo mr-1"></i> Try AI Check Again
+                    </button>
+                  </div>`;
+                showToast(
+                  "Resume saved. Ami-Bridge AI is busy — click 'Try Again' to retry.",
+                  "info",
+                );
+                setTimeout(() => {
+                  prog.classList.add("hidden");
+                  bar.style.width = "0%";
+                }, 3000);
+                return;
+              }
+
+              // ── SUCCESS: valid resume, show full results ─────────────────
+              newResume.gemini_score = data.score;
+              state.resumes.unshift(newResume);
+              renderResumes();
+
+              bar.classList.remove("bg-purple-500");
+              bar.classList.add("bg-green-500");
+              statusTxt.textContent = "✅ Resume verified & scored!";
+
+              // Show success banner
+              document.getElementById("upload-success-name").textContent =
+                file.name;
+              banner.classList.remove("hidden");
+
+              // Update score card
+              const scoreCard = document.getElementById("ai-score-card");
+              const score = data.score ?? null;
+              const atsScore = data.ats_score ?? null;
+              const scoreColor =
+                score == null
+                  ? "text-white"
+                  : score >= 75
+                    ? "text-green-300"
+                    : score >= 50
+                      ? "text-yellow-300"
+                      : "text-red-300";
+              document.getElementById("ai-score-display").className =
+                "text-5xl font-black mb-1 " + scoreColor;
+              document.getElementById("ai-score-display").textContent =
+                score ?? "--";
+              document.getElementById("ai-ats-score").textContent =
+                atsScore ?? "--";
+              document.getElementById("ai-summary-short").textContent =
+                data.summary || "";
+              scoreCard.classList.remove("hidden");
+
+              // Build full feedback panel
+              const strengths = (data.strengths || [])
+                .map(
+                  (s) =>
+                    `<li class="flex gap-2 items-start">
+                  <i class="fas fa-check-circle text-green-500 mt-0.5 shrink-0"></i>
+                  <span class="text-sm text-slate-700">${s}</span>
+                </li>`,
+                )
+                .join("");
+
+              const improvements = (data.improvements || [])
+                .map(
+                  (imp) =>
+                    `<li class="flex gap-2 items-start">
+                  <i class="fas fa-times-circle text-red-400 mt-0.5 shrink-0"></i>
+                  <span class="text-sm text-slate-700">${imp}</span>
+                </li>`,
+                )
+                .join("");
+
+              const keywords = (data.keywords_missing || [])
+                .map(
+                  (k) =>
+                    `<span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-medium">${k}</span>`,
+                )
+                .join("");
+
+              const sectionIcons = {
+                contact: "fa-address-card",
+                education: "fa-graduation-cap",
+                skills: "fa-code",
+                experience: "fa-briefcase",
+                projects: "fa-rocket",
+              };
+              const sectionsHTML = Object.entries(data.sections_feedback || {})
+                .map(
+                  ([key, val]) =>
+                    `<div class="flex gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                  <div class="w-7 h-7 rounded-lg bg-purple-100 flex items-center justify-center shrink-0 mt-0.5">
+                    <i class="fas ${sectionIcons[key] || "fa-file-alt"} text-purple-600 text-xs"></i>
+                  </div>
+                  <div>
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-0.5">${key}</p>
+                    <p class="text-sm text-slate-700 leading-relaxed">${val}</p>
+                  </div>
+                </div>`,
+                )
+                .join("");
+
+              feedbackContent.innerHTML = `
+                <div class="space-y-5">
+                  <div class="p-4 bg-indigo-50 rounded-xl border border-indigo-100">
+                    <p class="text-xs font-bold text-indigo-600 uppercase tracking-wide mb-1.5">
+                      <i class="fas fa-robot mr-1"></i> Ami-Bridge AI Summary
+                    </p>
+                    <p class="text-sm text-slate-700 leading-relaxed">${data.summary || "No summary available."}</p>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="bg-green-50 border border-green-100 rounded-xl p-4">
+                      <p class="text-xs font-bold text-green-700 uppercase tracking-wide mb-2.5 flex items-center gap-1.5">
+                        <i class="fas fa-thumbs-up"></i> Pros
+                      </p>
+                      <ul class="space-y-2">${strengths || "<li class='text-sm text-slate-400 italic'>No strengths identified</li>"}</ul>
+                    </div>
+                    <div class="bg-red-50 border border-red-100 rounded-xl p-4">
+                      <p class="text-xs font-bold text-red-700 uppercase tracking-wide mb-2.5 flex items-center gap-1.5">
+                        <i class="fas fa-thumbs-down"></i> Cons
+                      </p>
+                      <ul class="space-y-2">${improvements || "<li class='text-sm text-slate-400 italic'>No issues found</li>"}</ul>
+                    </div>
+                  </div>
+                  ${
+                    keywords
+                      ? `
+                  <div>
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                      <i class="fas fa-tags text-slate-400"></i> Missing ATS Keywords
+                    </p>
+                    <div class="flex flex-wrap gap-2">${keywords}</div>
+                  </div>`
+                      : ""
+                  }
+                  ${
+                    sectionsHTML
+                      ? `
+                  <div>
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2.5 flex items-center gap-1.5">
+                      <i class="fas fa-list-check text-slate-400"></i> Section Feedback
+                    </p>
+                    <div class="space-y-2">${sectionsHTML}</div>
+                  </div>`
+                      : ""
+                  }
+                </div>`;
+
+              panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+              showToast(
+                "Resume verified and scored by Ami-Bridge AI!",
+                "success",
+              );
+              setTimeout(() => {
+                prog.classList.add("hidden");
+                bar.style.width = "0%";
+              }, 3000);
+            } catch (aiErr) {
+              // AI errored but file is uploaded — keep it, let user retry manually
+              state.resumes.unshift(newResume);
+              renderResumes();
+              bar.classList.remove("bg-purple-500");
+              bar.classList.add("bg-amber-500");
+              statusTxt.textContent =
+                "⚠️ Ami-Bridge AI check failed — use AI Check button to retry.";
+              feedbackContent.innerHTML = `
+                <div class="p-6 text-center text-red-500">
+                  <i class="fas fa-exclamation-triangle text-3xl mb-2 block"></i>
+                  <p class="text-sm font-medium">${aiErr.message}</p>
+                  <button onclick="analyzeResume(${newResume.resume_id})"
+                    class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition">
+                    <i class="fas fa-redo mr-1"></i> Try AI Check Again
+                  </button>
+                </div>`;
+              showToast(
+                "Resume saved but AI check failed. Try again.",
+                "error",
+              );
+              setTimeout(() => {
+                prog.classList.add("hidden");
+                bar.style.width = "0%";
+              }, 3000);
+            }
           } else {
             let errMsg = "Upload failed.";
             try {
@@ -1809,12 +2079,11 @@
             "Network error — make sure the server is running on port 5000.",
           );
         });
-
         xhr.addEventListener("timeout", () => {
           showUploadError("Upload timed out. Try a smaller file.");
         });
 
-        xhr.timeout = 30000; // 30 second timeout
+        xhr.timeout = 30000;
         xhr.open(
           "POST",
           `${API_BASE}/api/student/${state.currentUser.id}/resumes`,
@@ -1877,7 +2146,7 @@
 
       async function analyzeResume(resumeId) {
         showToast(
-          "Analyzing resume with Gemini AI... This may take a moment.",
+          "Analyzing resume with AI... This may take a moment.",
           "info",
         );
 
@@ -1887,7 +2156,7 @@
           <div class="flex flex-col items-center justify-center py-12 text-slate-400">
             <i class="fas fa-spinner fa-spin text-4xl mb-4 text-purple-400"></i>
             <p class="text-sm font-semibold text-slate-600">Reading your resume...</p>
-            <p class="text-xs mt-1 text-slate-400">Gemini AI is analyzing every section in detail</p>
+            <p class="text-xs mt-1 text-slate-400">Ami-Bridge AI is analysing every section in detail</p>
           </div>`;
         panel.classList.remove("hidden");
         panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -1927,7 +2196,7 @@
             feedbackContent.innerHTML = `
               <div class="p-6 bg-slate-50 border border-slate-200 rounded-xl text-center">
                 <i class="fas fa-clock text-slate-400 text-4xl mb-3 block"></i>
-                <p class="font-bold text-slate-700 text-base mb-1">AI Temporarily Unavailable</p>
+                <p class="font-bold text-slate-700 text-base mb-1">Ami-Bridge AI Temporarily Unavailable</p>
                 <p class="text-sm text-slate-500">${data.summary}</p>
                 <button onclick="analyzeResume(${resumeId})"
                   class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition">
@@ -2024,7 +2293,7 @@
               <!-- Summary -->
               <div class="p-4 bg-indigo-50 rounded-xl border border-indigo-100">
                 <p class="text-xs font-bold text-indigo-600 uppercase tracking-wide mb-1.5">
-                  <i class="fas fa-robot mr-1"></i> AI Summary
+                  <i class="fas fa-robot mr-1"></i> Ami-Bridge AI Summary
                 </p>
                 <p class="text-sm text-slate-700 leading-relaxed">${data.summary || "No summary available."}</p>
               </div>
@@ -2074,7 +2343,7 @@
             </div>`;
 
           panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
-          showToast("AI analysis complete!", "success");
+          showToast("Ami-Bridge AI analysis complete!", "success");
         } catch (err) {
           feedbackContent.innerHTML = `
             <div class="p-6 text-center text-red-500">

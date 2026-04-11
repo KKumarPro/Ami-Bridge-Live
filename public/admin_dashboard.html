@@ -148,7 +148,7 @@
           class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
         >
           <i class="fas fa-robot w-5"></i>
-          <span class="font-medium">AI Resume OCR</span>
+          <span class="font-medium">Ami-Bridge AI OCR</span>
         </button>
         <button
           onclick="navigate('bulkregister')"
@@ -334,7 +334,7 @@
                     class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
                   />
                 </div>
-                <!-- Filter Button + Dropdown -->
+                <!-- Role filter dropdown -->
                 <div class="relative" id="filter-dropdown-wrapper">
                   <button
                     onclick="toggleFilterDropdown()"
@@ -1002,7 +1002,7 @@
           companies: "Company Configuration",
           questions: "Interview Question Bank",
           mentors: "Mentor Assignments",
-          ocr: "AI Resume OCR — All Students",
+          ocr: "Ami-Bridge AI OCR — All Students",
           bulkregister: "Bulk Register Students",
         };
         document.getElementById("page-title").innerText =
@@ -1013,12 +1013,33 @@
         }
       }
 
-      // --- FILTER DROPDOWN HELPERS ---
+      // --- 3. DYNAMIC UI RENDER FUNCTIONS ---
+
+      function updateStats() {
+        // Calculate dynamic stats from the fetched DB data
+        state.stats.students = state.users.filter(
+          (u) => u.role === "student",
+        ).length;
+        state.stats.mentors = state.users.filter(
+          (u) => u.role === "mentor",
+        ).length;
+        state.stats.companies = state.companies.length;
+
+        document.getElementById("stat-students").innerText =
+          state.stats.students.toLocaleString();
+        document.getElementById("stat-mentors").innerText =
+          state.stats.mentors.toLocaleString();
+        document.getElementById("stat-companies").innerText =
+          state.stats.companies.toLocaleString();
+        document.getElementById("stat-attempts").innerText =
+          state.stats.attempts.toLocaleString(); // Would be fetched dynamically
+      }
+
+      // ── Filter helpers ─────────────────────────────────────────────────────
       window._activeRoleFilter = "all";
 
       function toggleFilterDropdown() {
-        const dd = document.getElementById("filter-dropdown");
-        dd.classList.toggle("hidden");
+        document.getElementById("filter-dropdown").classList.toggle("hidden");
       }
 
       function setRoleFilter(role) {
@@ -1046,6 +1067,7 @@
         renderUsers();
       }
 
+      // Close dropdown when clicking outside
       document.addEventListener("click", function (e) {
         const wrapper = document.getElementById("filter-dropdown-wrapper");
         if (wrapper && !wrapper.contains(e.target)) {
@@ -1053,28 +1075,6 @@
           if (dd) dd.classList.add("hidden");
         }
       });
-
-      // --- 3. DYNAMIC UI RENDER FUNCTIONS ---
-
-      function updateStats() {
-        // Calculate dynamic stats from the fetched DB data
-        state.stats.students = state.users.filter(
-          (u) => u.role === "student",
-        ).length;
-        state.stats.mentors = state.users.filter(
-          (u) => u.role === "mentor",
-        ).length;
-        state.stats.companies = state.companies.length;
-
-        document.getElementById("stat-students").innerText =
-          state.stats.students.toLocaleString();
-        document.getElementById("stat-mentors").innerText =
-          state.stats.mentors.toLocaleString();
-        document.getElementById("stat-companies").innerText =
-          state.stats.companies.toLocaleString();
-        document.getElementById("stat-attempts").innerText =
-          state.stats.attempts.toLocaleString(); // Would be fetched dynamically
-      }
 
       function renderUsers() {
         const tbody = document.getElementById("users-table-body");
@@ -1639,7 +1639,7 @@
           '<i class="fas fa-spinner fa-spin mr-2"></i>Analyzing all resumes...';
         btn.disabled = true;
         results.innerHTML =
-          '<div class="p-12 text-center text-slate-400"><i class="fas fa-spinner fa-spin text-3xl mb-3 block"></i><p>Gemini AI is reading all student resumes. This may take a moment...</p></div>';
+          '<div class="p-12 text-center text-slate-400"><i class="fas fa-spinner fa-spin text-3xl mb-3 block"></i><p>Ami-Bridge AI is reading all student resumes. This may take a moment...</p></div>';
 
         try {
           const res = await fetch(`${API_BASE}/api/admin/resumes-ocr`);
@@ -1698,7 +1698,7 @@
                     <th class="px-4 py-3 font-semibold">Education</th>
                     <th class="px-4 py-3 font-semibold">Skills</th>
                     <th class="px-4 py-3 font-semibold">Projects</th>
-                    <th class="px-4 py-3 font-semibold text-center">AI Score</th>
+                    <th class="px-4 py-3 font-semibold text-center">Ami-Bridge AI Score</th>
                     <th class="px-4 py-3 font-semibold text-center">Resume</th>
                   </tr>
                 </thead>
@@ -1902,8 +1902,8 @@
         ocrSection.innerHTML = `
           <div class="mb-6 flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h2 class="text-2xl font-bold text-slate-800">AI Resume OCR — All Students</h2>
-              <p class="text-slate-500 mt-1">Gemini AI extracts structured data from every student resume in the system.</p>
+              <h2 class="text-2xl font-bold text-slate-800">Ami-Bridge AI Resume OCR</h2>
+              <p class="text-slate-500 mt-1">Ami-Bridge AI extracts structured data from every student resume in the system.</p>
             </div>
             <button id="admin-ocr-btn" onclick="loadAdminOCR()"
               class="px-5 py-2.5 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition flex items-center gap-2 shadow-sm">
