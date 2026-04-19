@@ -13,9 +13,9 @@ if (!process.env.GROQ_API_KEY) {
   );
 }
 
-if (!process.env.ANTHROPIC_API_KEY) {
+if (!process.env.GEMINI_API_KEY) {
   console.warn(
-    "\n⚠️  ANTHROPIC_API_KEY not set — image/scanned PDF analysis will not work.\n   Get free key: https://console.anthropic.com\n",
+    "\n⚠️  GEMINI_API_KEY not set — image/scanned PDF analysis will not work.\n   Get free key: https://aistudio.google.com/\n",
   );
 }
 
@@ -23,7 +23,7 @@ module.exports = {
   PORT: process.env.PORT || 5000,
   DATABASE_URL: process.env.DATABASE_URL,
   GROQ_API_KEY: process.env.GROQ_API_KEY || "",
-  ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || "",
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY || "",
   JWT_SECRET: process.env.JWT_SECRET || "ami-bridge-secret-change-in-prod",
   NODE_ENV: process.env.NODE_ENV || "development",
 };

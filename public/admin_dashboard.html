@@ -1,4 +1,4 @@
-<!-- Admin Dashboard Updated-->
+<!-- Admin Dashboard with all the updates done... -->
 
 <!doctype html>
 <html lang="en">
@@ -149,6 +149,14 @@
         >
           <i class="fas fa-robot w-5"></i>
           <span class="font-medium">Ami-Bridge AI OCR</span>
+        </button>
+        <button
+          onclick="navigate('internships')"
+          id="nav-internships"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+        >
+          <i class="fas fa-briefcase w-5"></i>
+          <span class="font-medium">Local Internships</span>
         </button>
         <button
           onclick="navigate('bulkregister')"
@@ -566,6 +574,209 @@
                 </tbody>
               </table>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: LOCAL INTERNSHIPS -->
+      <div
+        id="sec-internships"
+        class="section-container hidden fade-in max-w-6xl mx-auto"
+      >
+        <div class="mb-6 flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-bold text-slate-800">Local Internships</h2>
+            <p class="text-slate-500 mt-1">
+              Manage local internship listings visible to all students.
+            </p>
+          </div>
+          <button
+            onclick="openInternModal()"
+            class="px-5 py-2 bg-primary text-white rounded-lg hover:bg-primaryHover transition flex items-center gap-2 font-medium"
+          >
+            <i class="fas fa-plus"></i> Add Internship
+          </button>
+        </div>
+
+        <!-- Filter row -->
+        <div class="flex items-center gap-3 mb-5">
+          <div class="relative flex-1 max-w-xs">
+            <i
+              class="fas fa-search absolute left-3 top-2.5 text-slate-400 text-sm"
+            ></i>
+            <input
+              type="text"
+              id="admin-intern-search"
+              placeholder="Search..."
+              oninput="renderAdminInternships()"
+              class="w-full border border-slate-300 rounded-lg py-2 pl-8 pr-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+            />
+          </div>
+          <select
+            id="admin-intern-filter"
+            onchange="renderAdminInternships()"
+            class="border border-slate-300 rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+          >
+            <option value="all">All Types</option>
+            <option value="paid">Paid</option>
+            <option value="unpaid">Unpaid</option>
+          </select>
+        </div>
+
+        <div id="admin-internship-list" class="space-y-3">
+          <div class="text-center py-10 text-slate-400">
+            <i class="fas fa-spinner fa-spin text-2xl block mb-2"></i>Loading...
+          </div>
+        </div>
+      </div>
+
+      <!-- Internship Modal (Add / Edit) -->
+      <div
+        id="internship-modal"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop fade-in"
+      >
+        <div
+          class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden max-h-[90vh] flex flex-col"
+        >
+          <div
+            class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0"
+          >
+            <h3
+              id="intern-modal-title"
+              class="font-bold text-lg text-slate-800"
+            >
+              Add Internship
+            </h3>
+            <button
+              onclick="closeModal('internship-modal')"
+              class="text-slate-400 hover:text-danger transition"
+            >
+              <i class="fas fa-times text-xl"></i>
+            </button>
+          </div>
+          <div class="p-6 space-y-4 overflow-y-auto">
+            <input type="hidden" id="intern-edit-id" />
+            <div class="grid grid-cols-2 gap-4">
+              <div class="col-span-2">
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Company Name *</label
+                >
+                <input
+                  type="text"
+                  id="intern-company"
+                  placeholder="e.g. TechStart Solutions"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
+                />
+              </div>
+              <div class="col-span-2">
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Role / Position *</label
+                >
+                <input
+                  type="text"
+                  id="intern-role"
+                  placeholder="e.g. Web Development Intern"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Location *</label
+                >
+                <input
+                  type="text"
+                  id="intern-location"
+                  placeholder="e.g. Bhagalpur, Bihar"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Duration *</label
+                >
+                <input
+                  type="text"
+                  id="intern-duration"
+                  placeholder="e.g. 2 months"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Type *</label
+                >
+                <select
+                  id="intern-type"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
+                >
+                  <option value="unpaid">Unpaid</option>
+                  <option value="paid">Paid</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Stipend (if paid)</label
+                >
+                <input
+                  type="text"
+                  id="intern-stipend"
+                  placeholder="e.g. ₹5,000/month"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
+                />
+              </div>
+              <div class="col-span-2">
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Description *</label
+                >
+                <textarea
+                  id="intern-desc"
+                  rows="3"
+                  placeholder="What will the intern do? What will they learn?"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm resize-none"
+                ></textarea>
+              </div>
+              <div class="col-span-2">
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Requirements</label
+                >
+                <textarea
+                  id="intern-requirements"
+                  rows="2"
+                  placeholder="e.g. Basic knowledge of HTML/CSS, Python basics..."
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm resize-none"
+                ></textarea>
+              </div>
+              <div class="col-span-2">
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Apply Contact (Email / Phone) *</label
+                >
+                <input
+                  type="text"
+                  id="intern-contact"
+                  placeholder="e.g. hr@techstart.in or 98XXXXXXXX"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="p-5 border-t border-slate-200 flex justify-end gap-3 shrink-0 bg-slate-50"
+          >
+            <button
+              type="button"
+              onclick="closeModal('internship-modal')"
+              class="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition text-sm"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              id="intern-submit-btn"
+              onclick="submitInternship()"
+              class="px-5 py-2 bg-primary text-white font-medium rounded-lg hover:bg-primaryHover transition text-sm flex items-center gap-2"
+            >
+              <i class="fas fa-save"></i> Save Internship
+            </button>
           </div>
         </div>
       </div>
@@ -1004,12 +1215,16 @@
           mentors: "Mentor Assignments",
           ocr: "Ami-Bridge AI OCR — All Students",
           bulkregister: "Bulk Register Students",
+          internships: "Local Internships",
         };
         document.getElementById("page-title").innerText =
           titles[sectionId] || sectionId;
 
         if (sectionId === "questions") {
           renderQuestions();
+        }
+        if (sectionId === "internships") {
+          loadInternships();
         }
       }
 
@@ -1976,6 +2191,198 @@
           </div>`;
         document.body.appendChild(pdfModal);
       });
+
+      // ── LOCAL INTERNSHIPS ─────────────────────────────────────────────────
+      state.internships = [];
+
+      async function loadInternships() {
+        try {
+          const res = await fetch(`${API_BASE}/api/internships`);
+          if (res.ok) state.internships = await res.json();
+          renderAdminInternships();
+        } catch (e) {
+          console.error("loadInternships:", e);
+        }
+      }
+
+      function renderAdminInternships() {
+        const list = document.getElementById("admin-internship-list");
+        const search = (
+          document.getElementById("admin-intern-search")?.value || ""
+        ).toLowerCase();
+        const type =
+          document.getElementById("admin-intern-filter")?.value || "all";
+
+        const filtered = state.internships.filter((i) => {
+          const matchType = type === "all" || i.type === type;
+          const matchSearch =
+            !search ||
+            i.company_name.toLowerCase().includes(search) ||
+            i.role.toLowerCase().includes(search) ||
+            i.location.toLowerCase().includes(search);
+          return matchType && matchSearch;
+        });
+
+        if (filtered.length === 0) {
+          list.innerHTML = `<div class="text-center py-10 bg-white rounded-xl border border-slate-200 text-slate-400">
+            <i class="fas fa-briefcase text-3xl mb-2 block text-slate-300"></i>
+            <p class="font-medium">No internships yet. Click "Add Internship" to create one.</p></div>`;
+          return;
+        }
+
+        list.innerHTML = filtered
+          .map((i) => {
+            const typeBadge =
+              i.type === "paid"
+                ? '<span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-bold uppercase">Paid</span>'
+                : '<span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs font-bold uppercase">Unpaid</span>';
+            const activeBadge = i.is_active
+              ? '<span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">Active</span>'
+              : '<span class="px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full text-xs font-bold">Inactive</span>';
+
+            return `<div class="bg-white rounded-xl border border-slate-200 p-5 flex items-start justify-between gap-4 hover:border-primary/30 transition">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap mb-1">
+                <h3 class="font-bold text-slate-800">${i.role}</h3>
+                ${typeBadge} ${activeBadge}
+              </div>
+              <p class="text-sm text-primary font-semibold">${i.company_name}</p>
+              <div class="flex items-center gap-4 mt-1 text-xs text-slate-500 flex-wrap">
+                <span><i class="fas fa-map-marker-alt mr-1"></i>${i.location}</span>
+                <span><i class="fas fa-clock mr-1"></i>${i.duration}</span>
+                ${i.stipend ? `<span><i class="fas fa-rupee-sign mr-1"></i>${i.stipend}</span>` : ""}
+                <span><i class="fas fa-envelope mr-1"></i>${i.apply_contact}</span>
+              </div>
+              <p class="text-sm text-slate-600 mt-2 line-clamp-2">${i.description}</p>
+            </div>
+            <div class="flex gap-2 shrink-0">
+              <button onclick="editInternship(${i.internship_id})"
+                class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition flex items-center justify-center" title="Edit">
+                <i class="fas fa-edit text-xs"></i>
+              </button>
+              <button onclick="deleteInternship(${i.internship_id})"
+                class="w-8 h-8 rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition flex items-center justify-center" title="Delete">
+                <i class="fas fa-trash-alt text-xs"></i>
+              </button>
+            </div>
+          </div>`;
+          })
+          .join("");
+      }
+
+      function openInternModal(data) {
+        document.getElementById("intern-edit-id").value =
+          data?.internship_id || "";
+        document.getElementById("intern-company").value =
+          data?.company_name || "";
+        document.getElementById("intern-role").value = data?.role || "";
+        document.getElementById("intern-location").value = data?.location || "";
+        document.getElementById("intern-duration").value = data?.duration || "";
+        document.getElementById("intern-type").value = data?.type || "unpaid";
+        document.getElementById("intern-stipend").value = data?.stipend || "";
+        document.getElementById("intern-desc").value = data?.description || "";
+        document.getElementById("intern-requirements").value =
+          data?.requirements || "";
+        document.getElementById("intern-contact").value =
+          data?.apply_contact || "";
+        document.getElementById("intern-modal-title").textContent = data
+          ? "Edit Internship"
+          : "Add Internship";
+        openModal("internship-modal");
+      }
+
+      function editInternship(id) {
+        const data = state.internships.find((i) => i.internship_id === id);
+        if (data) openInternModal(data);
+      }
+
+      async function submitInternship() {
+        const id = document.getElementById("intern-edit-id").value;
+        const payload = {
+          company_name: document.getElementById("intern-company").value.trim(),
+          role: document.getElementById("intern-role").value.trim(),
+          location: document.getElementById("intern-location").value.trim(),
+          duration: document.getElementById("intern-duration").value.trim(),
+          type: document.getElementById("intern-type").value,
+          stipend: document.getElementById("intern-stipend").value.trim(),
+          description: document.getElementById("intern-desc").value.trim(),
+          requirements: document
+            .getElementById("intern-requirements")
+            .value.trim(),
+          apply_contact: document.getElementById("intern-contact").value.trim(),
+          is_active: true,
+        };
+
+        const required = [
+          "company_name",
+          "role",
+          "location",
+          "duration",
+          "description",
+          "apply_contact",
+        ];
+        for (const f of required) {
+          if (!payload[f]) {
+            showToast(`Please fill in: ${f.replace("_", " ")}`, "error");
+            return;
+          }
+        }
+
+        const btn = document.getElementById("intern-submit-btn");
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+        try {
+          const url = id
+            ? `${API_BASE}/api/internships/${id}`
+            : `${API_BASE}/api/internships`;
+          const method = id ? "PUT" : "POST";
+          const res = await fetch(url, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          if (!res.ok) {
+            const e = await res.json();
+            throw new Error(e.error || "Save failed");
+          }
+          const saved = await res.json();
+          if (id) {
+            state.internships = state.internships.map((i) =>
+              i.internship_id == id ? saved : i,
+            );
+          } else {
+            state.internships.unshift(saved);
+          }
+          renderAdminInternships();
+          closeModal("internship-modal");
+          showToast(
+            id ? "Internship updated!" : "Internship added!",
+            "success",
+          );
+        } catch (err) {
+          showToast("Error: " + err.message, "error");
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-save"></i> Save Internship';
+        }
+      }
+
+      async function deleteInternship(id) {
+        if (!confirm("Delete this internship listing?")) return;
+        try {
+          await fetch(`${API_BASE}/api/internships/${id}`, {
+            method: "DELETE",
+          });
+          state.internships = state.internships.filter(
+            (i) => i.internship_id !== id,
+          );
+          renderAdminInternships();
+          showToast("Internship deleted.", "info");
+        } catch (err) {
+          showToast("Delete failed: " + err.message, "error");
+        }
+      }
     </script>
   </body>
 </html>

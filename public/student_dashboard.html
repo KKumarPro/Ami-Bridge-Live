@@ -1,4 +1,4 @@
-<!-- Student Dashboard-->
+<!-- Student Dashboard with all the updates done -->
 
 <!doctype html>
 <html lang="en">
@@ -411,6 +411,14 @@
           <i class="fas fa-user w-5"></i>
           <span class="font-medium">My Profile</span>
         </button>
+        <button
+          onclick="navigate('internships')"
+          id="nav-internships"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+        >
+          <i class="fas fa-briefcase w-5"></i>
+          <span class="font-medium">Local Internships</span>
+        </button>
       </nav>
 
       <div class="p-4 border-t border-slate-700">
@@ -795,12 +803,8 @@
             <div class="md:col-span-1 space-y-4">
               <div class="panel-card p-6">
                 <div class="flex items-center justify-between mb-4">
-                  <h3 class="text-lg font-bold text-slate-800">
-                    Upload Resume
-                  </h3>
-                  <span
-                    class="text-xs bg-purple-100 text-purple-700 px-2.5 py-1 rounded-full font-medium flex items-center gap-1"
-                  >
+                  <h3 class="text-lg font-bold text-slate-800">Upload Resume</h3>
+                  <span class="text-xs bg-purple-100 text-purple-700 px-2.5 py-1 rounded-full font-medium flex items-center gap-1">
                     <i class="fas fa-robot text-xs"></i> Ami-Bridge AI
                   </span>
                 </div>
@@ -829,9 +833,7 @@
                   >
                     Click or drag &amp; drop
                   </p>
-                  <p class="text-xs text-slate-400 mt-1">
-                    PDF only · Max 5MB · AI checks automatically on upload
-                  </p>
+                  <p class="text-xs text-slate-400 mt-1">PDF only · Max 5MB · AI checks automatically on upload</p>
                   <input
                     type="file"
                     id="file-upload"
@@ -978,8 +980,7 @@
                   <h3
                     class="text-lg font-bold text-slate-800 flex items-center gap-2"
                   >
-                    <i class="fas fa-robot text-purple-500"></i> Ami-Bridge AI
-                    Feedback
+                    <i class="fas fa-robot text-purple-500"></i> Ami-Bridge AI Feedback
                   </h3>
                   <button
                     onclick="
@@ -1190,6 +1191,47 @@
           </div>
         </div>
       </div>
+
+        <!-- SECTION: LOCAL INTERNSHIPS -->
+        <div
+          id="sec-internships"
+          class="section-container hidden fade-in max-w-6xl mx-auto"
+        >
+          <!-- Header -->
+          <div class="mb-6 flex items-center justify-between">
+            <div>
+              <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                <i class="fas fa-briefcase text-primary"></i> Local Internships
+              </h2>
+              <p class="text-slate-500 mt-1">Offline internships from local companies near you — both paid and unpaid.</p>
+            </div>
+            <!-- Filter bar -->
+            <div class="flex items-center gap-2">
+              <select id="intern-filter-type"
+                onchange="renderInternships()"
+                class="border border-slate-300 rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-primary outline-none">
+                <option value="all">All Types</option>
+                <option value="paid">Paid</option>
+                <option value="unpaid">Unpaid</option>
+              </select>
+              <div class="relative">
+                <i class="fas fa-search absolute left-3 top-2.5 text-slate-400 text-sm"></i>
+                <input type="text" id="intern-search" placeholder="Search role or company..."
+                  oninput="renderInternships()"
+                  class="border border-slate-300 rounded-lg py-2 pl-8 pr-3 text-sm focus:ring-2 focus:ring-primary outline-none w-52"/>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cards grid -->
+          <div id="internship-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div class="col-span-full text-center py-16 text-slate-400">
+              <i class="fas fa-spinner fa-spin text-3xl mb-3 block"></i>
+              <p>Loading internships...</p>
+            </div>
+          </div>
+        </div>
+
     </main>
 
     <!-- Application Logic -->
@@ -1208,6 +1250,7 @@
         resumes: [],
         history: [],
         feedback: [],
+        internships: [],
         activeTest: {
           isActive: false,
           companyId: null,
@@ -1274,18 +1317,20 @@
 
         // 3. Fetch Real Data from Database
         try {
-          const [companiesRes, historyRes, resumesRes, feedbackRes] =
+          const [companiesRes, historyRes, resumesRes, feedbackRes, internshipsRes] =
             await Promise.all([
               fetch(`${API_BASE}/api/companies`),
               fetch(`${API_BASE}/api/student/${loggedInUser.id}/attempts`),
               fetch(`${API_BASE}/api/student/${loggedInUser.id}/resumes`),
               fetch(`${API_BASE}/api/student/${loggedInUser.id}/feedback`),
+              fetch(`${API_BASE}/api/internships`),
             ]);
 
           if (companiesRes.ok) state.companies = await companiesRes.json();
           if (historyRes.ok) state.history = await historyRes.json();
           if (resumesRes.ok) state.resumes = await resumesRes.json();
           if (feedbackRes.ok) state.feedback = await feedbackRes.json();
+          if (internshipsRes.ok) state.internships = await internshipsRes.json();
         } catch (error) {
           console.error("Error fetching dashboard data:", error);
           showToast(
@@ -1333,12 +1378,16 @@
           history: "Assessment History",
           analytics: "Performance Analytics",
           feedback: "Mentor Feedback",
+          internships: "Local Internships",
         };
-        document.getElementById("page-title").innerText = titles[sectionId];
+        document.getElementById("page-title").innerText = titles[sectionId] || sectionId;
 
         // Ensure charts render correctly when visible
         if (sectionId === "analytics") {
           initCharts();
+        }
+        if (sectionId === "internships") {
+          renderInternships();
         }
       }
 
@@ -1394,33 +1443,23 @@
 
         state.resumes.forEach((res) => {
           // Pre-compute HTML strings to avoid nested backtick conflicts
-          const scoreBadge =
-            res.gemini_score != null
-              ? '<span class="px-2 py-0.5 rounded-full text-xs font-bold ' +
-                (res.gemini_score >= 70
-                  ? "bg-green-100 text-green-700"
-                  : res.gemini_score >= 50
-                    ? "bg-yellow-100 text-yellow-700"
-                    : "bg-red-100 text-red-700") +
-                '">Ami-Bridge AI: ' +
-                res.gemini_score +
-                "/100</span>"
-              : '<span class="px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full text-xs">Not analyzed</span>';
+          const scoreBadge = res.gemini_score != null
+            ? '<span class="px-2 py-0.5 rounded-full text-xs font-bold ' +
+              (res.gemini_score >= 70 ? 'bg-green-100 text-green-700' :
+               res.gemini_score >= 50 ? 'bg-yellow-100 text-yellow-700' :
+               'bg-red-100 text-red-700') +
+              '">Ami-Bridge AI: ' + res.gemini_score + '/100</span>'
+            : '<span class="px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full text-xs">Not analyzed</span>';
 
-          const safeName = (res.resume_name || "Resume").replace(/'/g, "\'");
+          const safeName = (res.resume_name || 'Resume').replace(/'/g, "\'");
 
-          const actionBtn =
-            res.gemini_score != null
-              ? '<button onclick="analyzeResume(' +
-                res.resume_id +
-                ')" ' +
-                'class="px-3 py-1.5 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-colors text-xs font-medium flex items-center gap-1" title="Re-analyse with AI">' +
-                '<i class="fas fa-redo"></i> Re-analyse</button>'
-              : '<button onclick="analyzeResume(' +
-                res.resume_id +
-                ')" ' +
-                'class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white transition-colors text-xs font-medium flex items-center gap-1" title="Run AI Check">' +
-                '<i class="fas fa-robot"></i> AI Check</button>';
+          const actionBtn = res.gemini_score != null
+            ? '<button onclick="analyzeResume(' + res.resume_id + ')" ' +
+              'class="px-3 py-1.5 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-colors text-xs font-medium flex items-center gap-1" title="Re-analyse with AI">' +
+              '<i class="fas fa-redo"></i> Re-analyse</button>'
+            : '<button onclick="analyzeResume(' + res.resume_id + ')" ' +
+              'class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white transition-colors text-xs font-medium flex items-center gap-1" title="Run AI Check">' +
+              '<i class="fas fa-robot"></i> AI Check</button>';
 
           list.innerHTML += `
             <div class="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-blue-200 hover:bg-blue-50/30 transition-all group">
@@ -1746,9 +1785,7 @@
           file.type === "application/pdf" ||
           file.name.toLowerCase().endsWith(".pdf");
         if (!isValidType) {
-          showUploadError(
-            "Only PDF files are allowed. Please select a .pdf file.",
-          );
+          showUploadError("Only PDF files are allowed. Please select a .pdf file.");
           return;
         }
         if (file.size > 5 * 1024 * 1024) {
@@ -1756,12 +1793,12 @@
           return;
         }
 
-        const prog = document.getElementById("upload-progress");
-        const bar = document.getElementById("upload-bar");
-        const pct = document.getElementById("upload-pct");
-        const fname = document.getElementById("upload-filename");
+        const prog    = document.getElementById("upload-progress");
+        const bar     = document.getElementById("upload-bar");
+        const pct     = document.getElementById("upload-pct");
+        const fname   = document.getElementById("upload-filename");
         const statusTxt = document.getElementById("upload-status-text");
-        const banner = document.getElementById("upload-success-banner");
+        const banner  = document.getElementById("upload-success-banner");
 
         // Reset UI
         banner.classList.add("hidden");
@@ -1803,14 +1840,11 @@
             // Switch progress bar to AI-checking state
             bar.classList.remove("bg-blue-500");
             bar.classList.add("bg-purple-500");
-            statusTxt.textContent =
-              "🤖 Ami-Bridge AI is checking your resume...";
+            statusTxt.textContent = "🤖 Ami-Bridge AI is checking your resume...";
 
             // Show AI panel loading state immediately
             const panel = document.getElementById("ai-feedback-panel");
-            const feedbackContent = document.getElementById(
-              "ai-feedback-content",
-            );
+            const feedbackContent = document.getElementById("ai-feedback-content");
             feedbackContent.innerHTML = `
               <div class="flex flex-col items-center justify-center py-12 text-slate-400">
                 <i class="fas fa-spinner fa-spin text-4xl mb-4 text-purple-400"></i>
@@ -1822,7 +1856,7 @@
             try {
               const analysisRes = await fetch(
                 `${API_BASE}/api/resume/${newResume.resume_id}/analyze`,
-                { method: "POST" },
+                { method: "POST" }
               );
 
               // ── NOT A RESUME: delete it silently and reject ──────────────
@@ -1830,9 +1864,7 @@
                 const errData = await analysisRes.json();
 
                 // Delete the uploaded file from DB — it's not a resume
-                await fetch(`${API_BASE}/api/resume/${newResume.resume_id}`, {
-                  method: "DELETE",
-                });
+                await fetch(`${API_BASE}/api/resume/${newResume.resume_id}`, { method: "DELETE" });
 
                 // Show rejection in progress bar area
                 bar.classList.remove("bg-purple-500");
@@ -1848,16 +1880,10 @@
                     <p class="text-xs text-red-500 mt-3">The file has been automatically removed. Please upload your actual resume/CV.</p>
                   </div>`;
 
-                showToast(
-                  "Rejected: Not a resume. File deleted automatically.",
-                  "error",
-                );
+                showToast("Rejected: Not a resume. File deleted automatically.", "error");
 
                 // Hide progress after delay
-                setTimeout(() => {
-                  prog.classList.add("hidden");
-                  bar.style.width = "0%";
-                }, 4000);
+                setTimeout(() => { prog.classList.add("hidden"); bar.style.width = "0%"; }, 4000);
                 return;
               }
 
@@ -1875,8 +1901,7 @@
                 renderResumes();
                 bar.classList.remove("bg-purple-500");
                 bar.classList.add("bg-amber-500");
-                statusTxt.textContent =
-                  "⚠️ Ami-Bridge AI busy — use AI Check to retry.";
+                statusTxt.textContent = "⚠️ Ami-Bridge AI busy — use AI Check to retry.";
                 feedbackContent.innerHTML = `
                   <div class="p-6 bg-slate-50 border border-slate-200 rounded-xl text-center">
                     <i class="fas fa-clock text-slate-400 text-4xl mb-3 block"></i>
@@ -1887,14 +1912,8 @@
                       <i class="fas fa-redo mr-1"></i> Try AI Check Again
                     </button>
                   </div>`;
-                showToast(
-                  "Resume saved. Ami-Bridge AI is busy — click 'Try Again' to retry.",
-                  "info",
-                );
-                setTimeout(() => {
-                  prog.classList.add("hidden");
-                  bar.style.width = "0%";
-                }, 3000);
+                showToast("Resume saved. Ami-Bridge AI is busy — click 'Try Again' to retry.", "info");
+                setTimeout(() => { prog.classList.add("hidden"); bar.style.width = "0%"; }, 3000);
                 return;
               }
 
@@ -1908,71 +1927,46 @@
               statusTxt.textContent = "✅ Resume verified & scored!";
 
               // Show success banner
-              document.getElementById("upload-success-name").textContent =
-                file.name;
+              document.getElementById("upload-success-name").textContent = file.name;
               banner.classList.remove("hidden");
 
               // Update score card
               const scoreCard = document.getElementById("ai-score-card");
               const score = data.score ?? null;
               const atsScore = data.ats_score ?? null;
-              const scoreColor =
-                score == null
-                  ? "text-white"
-                  : score >= 75
-                    ? "text-green-300"
-                    : score >= 50
-                      ? "text-yellow-300"
-                      : "text-red-300";
-              document.getElementById("ai-score-display").className =
-                "text-5xl font-black mb-1 " + scoreColor;
-              document.getElementById("ai-score-display").textContent =
-                score ?? "--";
-              document.getElementById("ai-ats-score").textContent =
-                atsScore ?? "--";
-              document.getElementById("ai-summary-short").textContent =
-                data.summary || "";
+              const scoreColor = score == null ? "text-white"
+                : score >= 75 ? "text-green-300"
+                : score >= 50 ? "text-yellow-300"
+                : "text-red-300";
+              document.getElementById("ai-score-display").className = "text-5xl font-black mb-1 " + scoreColor;
+              document.getElementById("ai-score-display").textContent = score ?? "--";
+              document.getElementById("ai-ats-score").textContent = atsScore ?? "--";
+              document.getElementById("ai-summary-short").textContent = data.summary || "";
               scoreCard.classList.remove("hidden");
 
               // Build full feedback panel
-              const strengths = (data.strengths || [])
-                .map(
-                  (s) =>
-                    `<li class="flex gap-2 items-start">
+              const strengths = (data.strengths || []).map((s) =>
+                `<li class="flex gap-2 items-start">
                   <i class="fas fa-check-circle text-green-500 mt-0.5 shrink-0"></i>
                   <span class="text-sm text-slate-700">${s}</span>
-                </li>`,
-                )
-                .join("");
+                </li>`).join("");
 
-              const improvements = (data.improvements || [])
-                .map(
-                  (imp) =>
-                    `<li class="flex gap-2 items-start">
+              const improvements = (data.improvements || []).map((imp) =>
+                `<li class="flex gap-2 items-start">
                   <i class="fas fa-times-circle text-red-400 mt-0.5 shrink-0"></i>
                   <span class="text-sm text-slate-700">${imp}</span>
-                </li>`,
-                )
-                .join("");
+                </li>`).join("");
 
-              const keywords = (data.keywords_missing || [])
-                .map(
-                  (k) =>
-                    `<span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-medium">${k}</span>`,
-                )
-                .join("");
+              const keywords = (data.keywords_missing || []).map((k) =>
+                `<span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-medium">${k}</span>`
+              ).join("");
 
               const sectionIcons = {
-                contact: "fa-address-card",
-                education: "fa-graduation-cap",
-                skills: "fa-code",
-                experience: "fa-briefcase",
-                projects: "fa-rocket",
+                contact: "fa-address-card", education: "fa-graduation-cap",
+                skills: "fa-code", experience: "fa-briefcase", projects: "fa-rocket",
               };
-              const sectionsHTML = Object.entries(data.sections_feedback || {})
-                .map(
-                  ([key, val]) =>
-                    `<div class="flex gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+              const sectionsHTML = Object.entries(data.sections_feedback || {}).map(([key, val]) =>
+                `<div class="flex gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
                   <div class="w-7 h-7 rounded-lg bg-purple-100 flex items-center justify-center shrink-0 mt-0.5">
                     <i class="fas ${sectionIcons[key] || "fa-file-alt"} text-purple-600 text-xs"></i>
                   </div>
@@ -1980,9 +1974,7 @@
                     <p class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-0.5">${key}</p>
                     <p class="text-sm text-slate-700 leading-relaxed">${val}</p>
                   </div>
-                </div>`,
-                )
-                .join("");
+                </div>`).join("");
 
               feedbackContent.innerHTML = `
                 <div class="space-y-5">
@@ -2006,47 +1998,33 @@
                       <ul class="space-y-2">${improvements || "<li class='text-sm text-slate-400 italic'>No issues found</li>"}</ul>
                     </div>
                   </div>
-                  ${
-                    keywords
-                      ? `
+                  ${keywords ? `
                   <div>
                     <p class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 flex items-center gap-1.5">
                       <i class="fas fa-tags text-slate-400"></i> Missing ATS Keywords
                     </p>
                     <div class="flex flex-wrap gap-2">${keywords}</div>
-                  </div>`
-                      : ""
-                  }
-                  ${
-                    sectionsHTML
-                      ? `
+                  </div>` : ""}
+                  ${sectionsHTML ? `
                   <div>
                     <p class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2.5 flex items-center gap-1.5">
                       <i class="fas fa-list-check text-slate-400"></i> Section Feedback
                     </p>
                     <div class="space-y-2">${sectionsHTML}</div>
-                  </div>`
-                      : ""
-                  }
+                  </div>` : ""}
                 </div>`;
 
               panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
-              showToast(
-                "Resume verified and scored by Ami-Bridge AI!",
-                "success",
-              );
-              setTimeout(() => {
-                prog.classList.add("hidden");
-                bar.style.width = "0%";
-              }, 3000);
+              showToast("Resume verified and scored by Ami-Bridge AI!", "success");
+              setTimeout(() => { prog.classList.add("hidden"); bar.style.width = "0%"; }, 3000);
+
             } catch (aiErr) {
               // AI errored but file is uploaded — keep it, let user retry manually
               state.resumes.unshift(newResume);
               renderResumes();
               bar.classList.remove("bg-purple-500");
               bar.classList.add("bg-amber-500");
-              statusTxt.textContent =
-                "⚠️ Ami-Bridge AI check failed — use AI Check button to retry.";
+              statusTxt.textContent = "⚠️ Ami-Bridge AI check failed — use AI Check button to retry.";
               feedbackContent.innerHTML = `
                 <div class="p-6 text-center text-red-500">
                   <i class="fas fa-exclamation-triangle text-3xl mb-2 block"></i>
@@ -2056,38 +2034,26 @@
                     <i class="fas fa-redo mr-1"></i> Try AI Check Again
                   </button>
                 </div>`;
-              showToast(
-                "Resume saved but AI check failed. Try again.",
-                "error",
-              );
-              setTimeout(() => {
-                prog.classList.add("hidden");
-                bar.style.width = "0%";
-              }, 3000);
+              showToast("Resume saved but AI check failed. Try again.", "error");
+              setTimeout(() => { prog.classList.add("hidden"); bar.style.width = "0%"; }, 3000);
             }
+
           } else {
             let errMsg = "Upload failed.";
-            try {
-              errMsg = JSON.parse(xhr.responseText).error || errMsg;
-            } catch (e) {}
+            try { errMsg = JSON.parse(xhr.responseText).error || errMsg; } catch (e) {}
             showUploadError(errMsg);
           }
         });
 
         xhr.addEventListener("error", () => {
-          showUploadError(
-            "Network error — make sure the server is running on port 5000.",
-          );
+          showUploadError("Network error — make sure the server is running on port 5000.");
         });
         xhr.addEventListener("timeout", () => {
           showUploadError("Upload timed out. Try a smaller file.");
         });
 
         xhr.timeout = 30000;
-        xhr.open(
-          "POST",
-          `${API_BASE}/api/student/${state.currentUser.id}/resumes`,
-        );
+        xhr.open("POST", `${API_BASE}/api/student/${state.currentUser.id}/resumes`);
         xhr.send(formData);
       }
 
@@ -2145,10 +2111,7 @@
       }
 
       async function analyzeResume(resumeId) {
-        showToast(
-          "Analyzing resume with AI... This may take a moment.",
-          "info",
-        );
+        showToast("Analyzing resume with AI... This may take a moment.", "info");
 
         const panel = document.getElementById("ai-feedback-panel");
         const feedbackContent = document.getElementById("ai-feedback-content");
@@ -2177,10 +2140,7 @@
                 <p class="text-sm text-amber-700">${errData.message || "The uploaded PDF does not appear to be a resume or CV."}</p>
                 <p class="text-xs text-amber-600 mt-3">Please upload your actual resume/CV in PDF format.</p>
               </div>`;
-            showToast(
-              "Document rejected — does not appear to be a resume.",
-              "error",
-            );
+            showToast("Document rejected — does not appear to be a resume.", "error");
             return;
           }
 
@@ -2209,74 +2169,47 @@
 
           // Update gemini_score in local state
           const r = state.resumes.find((r) => r.resume_id === resumeId);
-          if (r) {
-            r.gemini_score = data.score;
-            renderResumes();
-          }
+          if (r) { r.gemini_score = data.score; renderResumes(); }
 
           // ── Score card ────────────────────────────────────────────────────
           const scoreCard = document.getElementById("ai-score-card");
           const score = data.score ?? null;
           const atsScore = data.ats_score ?? null;
-          const scoreColor =
-            score == null
-              ? "text-white"
-              : score >= 75
-                ? "text-green-300"
-                : score >= 50
-                  ? "text-yellow-300"
-                  : "text-red-300";
+          const scoreColor = score == null ? "text-white"
+            : score >= 75 ? "text-green-300"
+            : score >= 50 ? "text-yellow-300"
+            : "text-red-300";
 
-          document.getElementById("ai-score-display").className =
-            "text-5xl font-black mb-1 " + scoreColor;
-          document.getElementById("ai-score-display").textContent =
-            score ?? "--";
-          document.getElementById("ai-ats-score").textContent =
-            atsScore ?? "--";
-          document.getElementById("ai-summary-short").textContent =
-            data.summary || "";
+          document.getElementById("ai-score-display").className = "text-5xl font-black mb-1 " + scoreColor;
+          document.getElementById("ai-score-display").textContent = score ?? "--";
+          document.getElementById("ai-ats-score").textContent = atsScore ?? "--";
+          document.getElementById("ai-summary-short").textContent = data.summary || "";
           scoreCard.classList.remove("hidden");
 
           // ── Feedback panel ────────────────────────────────────────────────
-          const strengths = (data.strengths || [])
-            .map(
-              (s) =>
-                `<li class="flex gap-2 items-start">
+          const strengths = (data.strengths || []).map((s) =>
+            `<li class="flex gap-2 items-start">
               <i class="fas fa-check-circle text-green-500 mt-0.5 shrink-0"></i>
               <span class="text-sm text-slate-700">${s}</span>
-            </li>`,
-            )
-            .join("");
+            </li>`).join("");
 
-          const improvements = (data.improvements || [])
-            .map(
-              (imp) =>
-                `<li class="flex gap-2 items-start">
+          const improvements = (data.improvements || []).map((imp) =>
+            `<li class="flex gap-2 items-start">
               <i class="fas fa-times-circle text-red-400 mt-0.5 shrink-0"></i>
               <span class="text-sm text-slate-700">${imp}</span>
-            </li>`,
-            )
-            .join("");
+            </li>`).join("");
 
-          const keywords = (data.keywords_missing || [])
-            .map(
-              (k) =>
-                `<span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-medium">${k}</span>`,
-            )
-            .join("");
+          const keywords = (data.keywords_missing || []).map((k) =>
+            `<span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-medium">${k}</span>`
+          ).join("");
 
           const sectionIcons = {
-            contact: "fa-address-card",
-            education: "fa-graduation-cap",
-            skills: "fa-code",
-            experience: "fa-briefcase",
-            projects: "fa-rocket",
+            contact: "fa-address-card", education: "fa-graduation-cap",
+            skills: "fa-code", experience: "fa-briefcase", projects: "fa-rocket",
           };
           const sections = data.sections_feedback || {};
-          const sectionsHTML = Object.entries(sections)
-            .map(
-              ([key, val]) =>
-                `<div class="flex gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+          const sectionsHTML = Object.entries(sections).map(([key, val]) =>
+            `<div class="flex gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
               <div class="w-7 h-7 rounded-lg bg-purple-100 flex items-center justify-center shrink-0 mt-0.5">
                 <i class="fas ${sectionIcons[key] || "fa-file-alt"} text-purple-600 text-xs"></i>
               </div>
@@ -2284,9 +2217,7 @@
                 <p class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-0.5">${key}</p>
                 <p class="text-sm text-slate-700 leading-relaxed">${val}</p>
               </div>
-            </div>`,
-            )
-            .join("");
+            </div>`).join("");
 
           feedbackContent.innerHTML = `
             <div class="space-y-5">
@@ -2317,29 +2248,21 @@
                 </div>
               </div>
               <!-- Missing keywords -->
-              ${
-                keywords
-                  ? `
+              ${keywords ? `
               <div>
                 <p class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 flex items-center gap-1.5">
                   <i class="fas fa-tags text-slate-400"></i> Missing ATS Keywords
                 </p>
                 <div class="flex flex-wrap gap-2">${keywords}</div>
-              </div>`
-                  : ""
-              }
+              </div>` : ""}
               <!-- Section feedback -->
-              ${
-                sectionsHTML
-                  ? `
+              ${sectionsHTML ? `
               <div>
                 <p class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2.5 flex items-center gap-1.5">
                   <i class="fas fa-list-check text-slate-400"></i> Section Feedback
                 </p>
                 <div class="space-y-2">${sectionsHTML}</div>
-              </div>`
-                  : ""
-              }
+              </div>` : ""}
             </div>`;
 
           panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -2511,6 +2434,68 @@
           },
         });
       }
-    </script>
+    
+      // ── LOCAL INTERNSHIPS ─────────────────────────────────────────────────
+      function renderInternships() {
+        const grid   = document.getElementById("internship-grid");
+        const search = (document.getElementById("intern-search")?.value || "").toLowerCase();
+        const type   = document.getElementById("intern-filter-type")?.value || "all";
+
+        const filtered = state.internships.filter((i) => {
+          const matchType   = type === "all" || i.type === type;
+          const matchSearch = !search ||
+            i.company_name.toLowerCase().includes(search) ||
+            i.role.toLowerCase().includes(search) ||
+            i.location.toLowerCase().includes(search);
+          return matchType && matchSearch && i.is_active !== false;
+        });
+
+        if (filtered.length === 0) {
+          grid.innerHTML = `
+            <div class="col-span-full text-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm">
+              <i class="fas fa-briefcase text-4xl text-slate-300 mb-3 block"></i>
+              <p class="text-slate-500 font-medium">No internships found.</p>
+              <p class="text-slate-400 text-sm mt-1">Check back later — mentors and admins add new listings regularly.</p>
+            </div>`;
+          return;
+        }
+
+        grid.innerHTML = filtered.map((i) => {
+          const typeBadge = i.type === "paid"
+            ? '<span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-bold uppercase">Paid</span>'
+            : '<span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs font-bold uppercase">Unpaid</span>';
+
+          return `
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-primary/40 transition-all p-5 flex flex-col gap-3">
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <h3 class="font-bold text-slate-800 text-base leading-tight">${i.role}</h3>
+                  <p class="text-sm text-primary font-semibold mt-0.5">${i.company_name}</p>
+                </div>
+                ${typeBadge}
+              </div>
+
+              <div class="space-y-1.5 text-sm text-slate-600">
+                <p class="flex items-center gap-2"><i class="fas fa-map-marker-alt text-slate-400 w-4"></i>${i.location}</p>
+                <p class="flex items-center gap-2"><i class="fas fa-clock text-slate-400 w-4"></i>${i.duration}</p>
+                ${i.stipend ? `<p class="flex items-center gap-2"><i class="fas fa-rupee-sign text-slate-400 w-4"></i>${i.stipend}</p>` : ""}
+              </div>
+
+              <p class="text-sm text-slate-600 leading-relaxed line-clamp-3 flex-1">${i.description}</p>
+
+              ${i.requirements ? `
+              <div class="bg-slate-50 rounded-lg p-3 text-xs text-slate-600">
+                <p class="font-semibold text-slate-700 mb-1">Requirements</p>
+                <p>${i.requirements}</p>
+              </div>` : ""}
+
+              <a href="mailto:${i.apply_contact}" class="mt-auto w-full text-center px-4 py-2.5 bg-primary text-white rounded-xl font-medium text-sm hover:bg-primaryHover transition flex items-center justify-center gap-2">
+                <i class="fas fa-paper-plane"></i> Apply — ${i.apply_contact}
+              </a>
+            </div>`;
+        }).join("");
+      }
+
+      </script>
   </body>
 </html>

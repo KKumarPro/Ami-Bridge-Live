@@ -1,4 +1,4 @@
-<!-- Mentor Dashboard-->
+<!-- Mentor Dashboard with all the updates done -->
 
 <!doctype html>
 <html lang="en">
@@ -498,6 +498,208 @@
           </div>
         </div>
       </div>
+
+      <!-- SECTION: LOCAL INTERNSHIPS -->
+      <div
+        id="sec-internships"
+        class="section-container hidden fade-in max-w-6xl mx-auto"
+      >
+        <div class="mb-6 flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-bold text-slate-800">Local Internships</h2>
+            <p class="text-slate-500 mt-1">
+              Post and manage local internship opportunities for your students.
+            </p>
+          </div>
+          <button
+            onclick="openMentorInternModal()"
+            class="px-5 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition flex items-center gap-2 font-medium"
+          >
+            <i class="fas fa-plus"></i> Add Internship
+          </button>
+        </div>
+
+        <div class="flex items-center gap-3 mb-5">
+          <div class="relative flex-1 max-w-xs">
+            <i
+              class="fas fa-search absolute left-3 top-2.5 text-slate-400 text-sm"
+            ></i>
+            <input
+              type="text"
+              id="mentor-intern-search"
+              placeholder="Search..."
+              oninput="renderMentorInternships()"
+              class="w-full border border-slate-300 rounded-lg py-2 pl-8 pr-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+            />
+          </div>
+          <select
+            id="mentor-intern-filter"
+            onchange="renderMentorInternships()"
+            class="border border-slate-300 rounded-lg py-2 px-3 text-sm focus:ring-2 focus:ring-primary outline-none"
+          >
+            <option value="all">All Types</option>
+            <option value="paid">Paid</option>
+            <option value="unpaid">Unpaid</option>
+          </select>
+        </div>
+
+        <div id="mentor-internship-list" class="space-y-3">
+          <div class="text-center py-10 text-slate-400">
+            <i class="fas fa-spinner fa-spin text-2xl block mb-2"></i>Loading...
+          </div>
+        </div>
+      </div>
+
+      <!-- Mentor Internship Modal (Add / Edit) -->
+      <div
+        id="mentor-internship-modal"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop fade-in"
+      >
+        <div
+          class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden max-h-[90vh] flex flex-col"
+        >
+          <div
+            class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0"
+          >
+            <h3
+              id="mentor-intern-modal-title"
+              class="font-bold text-lg text-slate-800"
+            >
+              Add Internship
+            </h3>
+            <button
+              onclick="closeModal('mentor-internship-modal')"
+              class="text-slate-400 hover:text-danger transition"
+            >
+              <i class="fas fa-times text-xl"></i>
+            </button>
+          </div>
+          <div class="p-6 space-y-4 overflow-y-auto">
+            <input type="hidden" id="mentor-intern-edit-id" />
+            <div class="grid grid-cols-2 gap-4">
+              <div class="col-span-2">
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Company Name *</label
+                >
+                <input
+                  type="text"
+                  id="mentor-intern-company"
+                  placeholder="e.g. TechStart Solutions"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
+                />
+              </div>
+              <div class="col-span-2">
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Role / Position *</label
+                >
+                <input
+                  type="text"
+                  id="mentor-intern-role"
+                  placeholder="e.g. Web Development Intern"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Location *</label
+                >
+                <input
+                  type="text"
+                  id="mentor-intern-location"
+                  placeholder="e.g. Bhagalpur, Bihar"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Duration *</label
+                >
+                <input
+                  type="text"
+                  id="mentor-intern-duration"
+                  placeholder="e.g. 2 months"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Type *</label
+                >
+                <select
+                  id="mentor-intern-type"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
+                >
+                  <option value="unpaid">Unpaid</option>
+                  <option value="paid">Paid</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Stipend (if paid)</label
+                >
+                <input
+                  type="text"
+                  id="mentor-intern-stipend"
+                  placeholder="e.g. ₹5,000/month"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
+                />
+              </div>
+              <div class="col-span-2">
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Description *</label
+                >
+                <textarea
+                  id="mentor-intern-desc"
+                  rows="3"
+                  placeholder="What will the intern do? What will they learn?"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm resize-none"
+                ></textarea>
+              </div>
+              <div class="col-span-2">
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Requirements</label
+                >
+                <textarea
+                  id="mentor-intern-requirements"
+                  rows="2"
+                  placeholder="e.g. Basic HTML/CSS, Python basics..."
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm resize-none"
+                ></textarea>
+              </div>
+              <div class="col-span-2">
+                <label class="block text-sm font-semibold text-slate-700 mb-1"
+                  >Apply Contact (Email / Phone) *</label
+                >
+                <input
+                  type="text"
+                  id="mentor-intern-contact"
+                  placeholder="e.g. hr@techstart.in or 98XXXXXXXX"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="p-5 border-t border-slate-200 flex justify-end gap-3 shrink-0 bg-slate-50"
+          >
+            <button
+              type="button"
+              onclick="closeModal('mentor-internship-modal')"
+              class="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition text-sm"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              id="mentor-intern-submit-btn"
+              onclick="submitMentorInternship()"
+              class="px-5 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition text-sm flex items-center gap-2"
+            >
+              <i class="fas fa-save"></i> Save Internship
+            </button>
+          </div>
+        </div>
+      </div>
     </main>
 
     <!-- MODALS -->
@@ -868,8 +1070,16 @@
           performance: "Student Performance Review",
           resumes: "Resume Review Portal",
           feedback: "Mentor Feedback System",
+          ocr: "Ami-Bridge AI OCR",
+          bulkregister: "Bulk Register Students",
+          internships: "Local Internships",
         };
-        document.getElementById("page-title").innerText = titles[sectionId];
+        document.getElementById("page-title").innerText =
+          titles[sectionId] || sectionId;
+
+        if (sectionId === "internships") {
+          loadMentorInternships();
+        }
       }
 
       // --- 3. DYNAMIC UI RENDERERS (With Empty States) ---
@@ -1476,6 +1686,212 @@
             plugins: { legend: { display: false } },
           },
         });
+      }
+
+      // ── LOCAL INTERNSHIPS ─────────────────────────────────────────────────
+      let _mentorInternships = [];
+
+      async function loadMentorInternships() {
+        try {
+          const res = await fetch(`${API_BASE}/api/internships`);
+          if (res.ok) _mentorInternships = await res.json();
+          renderMentorInternships();
+        } catch (e) {
+          console.error("loadMentorInternships:", e);
+        }
+      }
+
+      function renderMentorInternships() {
+        const list = document.getElementById("mentor-internship-list");
+        const search = (
+          document.getElementById("mentor-intern-search")?.value || ""
+        ).toLowerCase();
+        const type =
+          document.getElementById("mentor-intern-filter")?.value || "all";
+
+        const filtered = _mentorInternships.filter((i) => {
+          const matchType = type === "all" || i.type === type;
+          const matchSearch =
+            !search ||
+            i.company_name.toLowerCase().includes(search) ||
+            i.role.toLowerCase().includes(search) ||
+            i.location.toLowerCase().includes(search);
+          return matchType && matchSearch;
+        });
+
+        if (filtered.length === 0) {
+          list.innerHTML = `<div class="text-center py-10 bg-white rounded-xl border border-slate-200 text-slate-400">
+            <i class="fas fa-briefcase text-3xl mb-2 block text-slate-300"></i>
+            <p class="font-medium">No internships yet. Click "Add Internship" to post one.</p></div>`;
+          return;
+        }
+
+        list.innerHTML = filtered
+          .map((i) => {
+            const typeBadge =
+              i.type === "paid"
+                ? '<span class="px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-bold uppercase">Paid</span>'
+                : '<span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs font-bold uppercase">Unpaid</span>';
+
+            return `<div class="bg-white rounded-xl border border-slate-200 p-5 flex items-start justify-between gap-4 hover:border-purple-200 transition">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap mb-1">
+                <h3 class="font-bold text-slate-800">${i.role}</h3>
+                ${typeBadge}
+              </div>
+              <p class="text-sm text-purple-600 font-semibold">${i.company_name}</p>
+              <div class="flex items-center gap-4 mt-1 text-xs text-slate-500 flex-wrap">
+                <span><i class="fas fa-map-marker-alt mr-1"></i>${i.location}</span>
+                <span><i class="fas fa-clock mr-1"></i>${i.duration}</span>
+                ${i.stipend ? `<span><i class="fas fa-rupee-sign mr-1"></i>${i.stipend}</span>` : ""}
+                <span><i class="fas fa-envelope mr-1"></i>${i.apply_contact}</span>
+              </div>
+              <p class="text-sm text-slate-600 mt-2 line-clamp-2">${i.description}</p>
+            </div>
+            <div class="flex gap-2 shrink-0">
+              <button onclick="editMentorInternship(${i.internship_id})"
+                class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition flex items-center justify-center" title="Edit">
+                <i class="fas fa-edit text-xs"></i>
+              </button>
+              <button onclick="deleteMentorInternship(${i.internship_id})"
+                class="w-8 h-8 rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition flex items-center justify-center" title="Delete">
+                <i class="fas fa-trash-alt text-xs"></i>
+              </button>
+            </div>
+          </div>`;
+          })
+          .join("");
+      }
+
+      function openMentorInternModal(data) {
+        document.getElementById("mentor-intern-edit-id").value =
+          data?.internship_id || "";
+        document.getElementById("mentor-intern-company").value =
+          data?.company_name || "";
+        document.getElementById("mentor-intern-role").value = data?.role || "";
+        document.getElementById("mentor-intern-location").value =
+          data?.location || "";
+        document.getElementById("mentor-intern-duration").value =
+          data?.duration || "";
+        document.getElementById("mentor-intern-type").value =
+          data?.type || "unpaid";
+        document.getElementById("mentor-intern-stipend").value =
+          data?.stipend || "";
+        document.getElementById("mentor-intern-desc").value =
+          data?.description || "";
+        document.getElementById("mentor-intern-requirements").value =
+          data?.requirements || "";
+        document.getElementById("mentor-intern-contact").value =
+          data?.apply_contact || "";
+        document.getElementById("mentor-intern-modal-title").textContent = data
+          ? "Edit Internship"
+          : "Add Internship";
+        openModal("mentor-internship-modal");
+      }
+
+      function editMentorInternship(id) {
+        const data = _mentorInternships.find((i) => i.internship_id === id);
+        if (data) openMentorInternModal(data);
+      }
+
+      async function submitMentorInternship() {
+        const id = document.getElementById("mentor-intern-edit-id").value;
+        const payload = {
+          company_name: document
+            .getElementById("mentor-intern-company")
+            .value.trim(),
+          role: document.getElementById("mentor-intern-role").value.trim(),
+          location: document
+            .getElementById("mentor-intern-location")
+            .value.trim(),
+          duration: document
+            .getElementById("mentor-intern-duration")
+            .value.trim(),
+          type: document.getElementById("mentor-intern-type").value,
+          stipend: document
+            .getElementById("mentor-intern-stipend")
+            .value.trim(),
+          description: document
+            .getElementById("mentor-intern-desc")
+            .value.trim(),
+          requirements: document
+            .getElementById("mentor-intern-requirements")
+            .value.trim(),
+          apply_contact: document
+            .getElementById("mentor-intern-contact")
+            .value.trim(),
+          is_active: true,
+        };
+
+        const required = [
+          "company_name",
+          "role",
+          "location",
+          "duration",
+          "description",
+          "apply_contact",
+        ];
+        for (const f of required) {
+          if (!payload[f]) {
+            showToast(`Please fill in: ${f.replace(/_/g, " ")}`, "error");
+            return;
+          }
+        }
+
+        const btn = document.getElementById("mentor-intern-submit-btn");
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+        try {
+          const url = id
+            ? `${API_BASE}/api/internships/${id}`
+            : `${API_BASE}/api/internships`;
+          const method = id ? "PUT" : "POST";
+          const res = await fetch(url, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          if (!res.ok) {
+            const e = await res.json();
+            throw new Error(e.error || "Save failed");
+          }
+          const saved = await res.json();
+          if (id) {
+            _mentorInternships = _mentorInternships.map((i) =>
+              i.internship_id == id ? saved : i,
+            );
+          } else {
+            _mentorInternships.unshift(saved);
+          }
+          renderMentorInternships();
+          closeModal("mentor-internship-modal");
+          showToast(
+            id ? "Internship updated!" : "Internship added!",
+            "success",
+          );
+        } catch (err) {
+          showToast("Error: " + err.message, "error");
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-save"></i> Save Internship';
+        }
+      }
+
+      async function deleteMentorInternship(id) {
+        if (!confirm("Delete this internship listing?")) return;
+        try {
+          await fetch(`${API_BASE}/api/internships/${id}`, {
+            method: "DELETE",
+          });
+          _mentorInternships = _mentorInternships.filter(
+            (i) => i.internship_id !== id,
+          );
+          renderMentorInternships();
+          showToast("Internship deleted.", "info");
+        } catch (err) {
+          showToast("Delete failed: " + err.message, "error");
+        }
       }
     </script>
   </body>
