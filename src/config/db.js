@@ -3,8 +3,18 @@
 const { Pool } = require("pg");
 const env      = require("./env");
 
+function getConnectionString() {
+  try {
+    const url = new URL(env.DATABASE_URL);
+    url.searchParams.delete("sslmode");
+    return url.toString();
+  } catch (_) {
+    return env.DATABASE_URL;
+  }
+}
+
 const pool = new Pool({
-  connectionString: env.DATABASE_URL,
+  connectionString: getConnectionString(),
   ssl:              { rejectUnauthorized: false },
   connectionTimeoutMillis: 10_000,
   max: 10,

@@ -17,124 +17,94 @@
     />
     <link rel="icon" href="logo.png" type="image/logo.png" />
 
+        <!-- Fonts: Sora + DM Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
+            fontFamily: { sans: ["DM Sans","sans-serif"], display: ["Sora","sans-serif"] },
             colors: {
-              primary: "#7c3aed", // Violet for Mentor branding
-              primaryHover: "#6d28d9",
-              dark: "#0f172a",
-              darkPanel: "#1e293b",
-              danger: "#ef4444",
-              success: "#10b981",
+              primary: "#7C3AED", primaryHover: "#6D28D9",
+              accent: "#A78BFA", dark: "#0F172A", darkPanel: "#1E293B",
+              danger: "#EF4444", success: "#10B981",
             },
           },
         },
       };
     </script>
     <style>
-      /* Custom Scrollbar */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #f1f5f9;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-      }
+      *{font-family:"DM Sans",sans-serif;box-sizing:border-box;}
+      h1,h2,h3,h4,.font-display{font-family:"Sora",sans-serif;}
+      ::-webkit-scrollbar{width:5px;}
+      ::-webkit-scrollbar-track{background:transparent;}
+      ::-webkit-scrollbar-thumb{background:#A78BFA55;border-radius:99px;}
+      ::-webkit-scrollbar-thumb:hover{background:#A78BFA99;}
 
-      .fade-in {
-        animation: fadeIn 0.3s ease-in-out;
-      }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
+      aside{background:linear-gradient(170deg,#1A0A2E 0%,#2D1B69 100%)!important;position:relative;overflow:hidden;}
+      aside::before{content:"";position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0;}
+      aside::after{content:"";position:absolute;top:-100px;left:-60px;width:300px;height:300px;background:radial-gradient(circle,#7C3AED1A 0%,transparent 65%);pointer-events:none;z-index:0;}
+      aside>*{position:relative;z-index:1;}
 
-      /* Modal Backdrop */
-      .modal-backdrop {
-        background-color: rgba(15, 23, 42, 0.6);
-        backdrop-filter: blur(4px);
-      }
+      .brand-logo{width:38px;height:38px;background:linear-gradient(135deg,#7C3AED,#A78BFA);border-radius:11px;display:flex;align-items:center;justify-content:center;font-family:"Sora",sans-serif;font-weight:800;font-size:17px;color:#fff;box-shadow:0 4px 14px #7C3AED44;flex-shrink:0;}
+      .brand-name{font-family:"Sora",sans-serif;font-weight:700;font-size:15.5px;color:#fff;letter-spacing:-0.2px;}
+      .brand-role{font-size:9px;font-weight:600;letter-spacing:1.8px;color:#7C3AED;background:#7C3AED22;padding:2px 8px;border-radius:99px;width:fit-content;margin-top:2px;}
+
+      .nav-item{width:100%;display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:11px;color:rgba(255,255,255,0.5);font-size:13px;font-weight:500;transition:all 0.18s cubic-bezier(0.4,0,0.2,1);position:relative;border:none;background:none;cursor:pointer;text-align:left;}
+      .nav-item:hover{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.9);transform:translateX(3px);}
+      .nav-item.active{background:linear-gradient(135deg,#7C3AED30,#A78BFA18);color:#fff;box-shadow:inset 0 0 0 1px #7C3AED40;}
+      .nav-item.active::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:55%;background:#7C3AED;border-radius:0 3px 3px 0;}
+      .nav-item i{width:17px;text-align:center;font-size:13.5px;flex-shrink:0;}
+      .nav-divider{height:1px;background:rgba(255,255,255,0.07);margin:8px 12px;}
+      .nav-section-label{font-size:9.5px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,0.22);text-transform:uppercase;padding:12px 13px 3px;}
+
+      header{background:rgba(255,255,255,0.97)!important;backdrop-filter:blur(20px) saturate(180%)!important;border-bottom:1px solid rgba(226,232,240,0.7)!important;box-shadow:0 1px 0 rgba(0,0,0,0.04),0 2px 16px rgba(0,0,0,0.03)!important;height:62px!important;z-index:10;}
+
+      .main-bg{background:#F8FAFC;background-image:radial-gradient(ellipse at 15% 0%,#7C3AED07 0%,transparent 55%),radial-gradient(ellipse at 85% 100%,#A78BFA05 0%,transparent 55%);}
+
+      .panel-card{background:#fff;border:1px solid rgba(226,232,240,0.9);border-radius:18px;box-shadow:0 1px 2px rgba(0,0,0,0.04),0 3px 12px rgba(0,0,0,0.03);transition:box-shadow 0.2s,border-color 0.2s,transform 0.2s;}
+      .panel-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.08);border-color:rgba(203,213,225,0.9);}
+
+      .stat-card{background:#fff;border:1px solid rgba(226,232,240,0.8);border-radius:16px;padding:20px;position:relative;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s;}
+      .stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,0.09);}
+      .stat-card::after{content:"";position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#7C3AED,#A78BFA);border-radius:0 0 16px 16px;}
+      .stat-icon{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+      .stat-value{font-family:"Sora",sans-serif;font-weight:700;font-size:26px;color:#0F172A;line-height:1;}
+      .stat-label{font-size:11.5px;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:0.7px;margin-top:4px;}
+
+      .btn-primary{background:linear-gradient(135deg,#7C3AED,#A78BFA);color:#fff;border:none;border-radius:11px;padding:9px 18px;font-weight:600;font-size:13px;cursor:pointer;transition:all 0.2s;box-shadow:0 3px 10px #7C3AED30;display:inline-flex;align-items:center;gap:7px;font-family:"DM Sans",sans-serif;}
+      .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 18px #7C3AED44;}
+      .btn-primary:active{transform:translateY(0);}
+
+      .badge{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:0.3px;}
+
+      .modal-backdrop{background:rgba(2,8,23,0.7);backdrop-filter:blur(8px);}
+
+      input,select,textarea{font-family:"DM Sans",sans-serif!important;font-size:13.5px!important;transition:border-color 0.15s,box-shadow 0.15s;}
+      input:focus,select:focus,textarea:focus{outline:none!important;box-shadow:0 0 0 3px #7C3AED20!important;border-color:#7C3AED!important;}
+
+      .fade-in{animation:fadeUp 0.3s cubic-bezier(0.4,0,0.2,1) both;}
+      @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+      #page-title{font-family:"Sora",sans-serif!important;font-weight:700!important;font-size:17px!important;color:#0F172A!important;letter-spacing:-0.2px;}
+
+      .welcome-banner{background:linear-gradient(130deg,#7C3AED 0%,#A78BFA 100%);border-radius:22px;padding:26px 30px;position:relative;overflow:hidden;box-shadow:0 8px 30px #7C3AED30;}
+      .welcome-banner::before{content:"";position:absolute;top:-50px;right:-30px;width:220px;height:220px;background:radial-gradient(circle,rgba(255,255,255,0.13) 0%,transparent 70%);border-radius:50%;}
+      .welcome-banner::after{content:"";position:absolute;bottom:-70px;right:80px;width:180px;height:180px;background:radial-gradient(circle,rgba(255,255,255,0.07) 0%,transparent 70%);border-radius:50%;}
+
+      .user-chip{display:flex;align-items:center;gap:9px;padding:5px 11px 5px 5px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:99px;cursor:pointer;transition:all 0.18s;}
+      .user-chip:hover{background:#F5F3FF;border-color:#7C3AED33;}
+
+      .section-icon{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#7C3AED15,#A78BFA10);display:flex;align-items:center;justify-content:center;font-size:15px;color:#7C3AED;border:1px solid #7C3AED18;flex-shrink:0;}
+
+      .notif-btn{width:36px;height:36px;border-radius:11px;background:#F1F5F9;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;transition:background 0.18s;border:none;}
+      .notif-btn:hover{background:#F5F3FF;}
+      .notif-dot{position:absolute;top:7px;right:7px;width:7px;height:7px;background:#EF4444;border-radius:50%;border:2px solid #fff;}
     </style>
 
-    <style id="internship-styles">
-      .intern-card {
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 16px;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        transition:
-          box-shadow 0.2s,
-          border-color 0.2s,
-          transform 0.15s;
-      }
-      .intern-card:hover {
-        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
-        border-color: rgba(124, 58, 237, 0.3);
-        transform: translateY(-2px);
-      }
-      .intern-badge-paid {
-        background: #dcfce7;
-        color: #15803d;
-      }
-      .intern-badge-unpaid {
-        background: #fef9c3;
-        color: #a16207;
-      }
-      .intern-badge {
-        padding: 2px 10px;
-        border-radius: 999px;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-      .intern-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        font-size: 12px;
-        color: #64748b;
-      }
-      .intern-meta span {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-      }
-      .intern-req {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 10px 12px;
-        font-size: 12px;
-        color: #475569;
-      }
-      .intern-req strong {
-        display: block;
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: #94a3b8;
-        margin-bottom: 4px;
-      }
-    </style>
-  </head>
+</head>
   <body
     class="bg-slate-50 text-slate-800 font-sans antialiased flex h-screen overflow-hidden"
   >
@@ -148,26 +118,20 @@
     <aside
       class="w-64 bg-dark text-white flex flex-col transition-all duration-300 shadow-xl z-20 hidden md:flex"
     >
-      <div class="p-6 border-b border-slate-700 flex items-center gap-3">
-        <div
-          class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center font-bold text-xl"
-        >
-          A
-        </div>
+      <!-- Brand -->
+      <div class="flex items-center gap-3 px-5 py-5 border-b border-white/8">
+        <div class="brand-logo">A</div>
         <div>
-          <h2 class="text-xl font-bold tracking-wide">Ami-Bridge</h2>
-          <span
-            class="text-xs text-purple-300 font-semibold uppercase tracking-wider"
-            >Mentor Portal</span
-          >
+          <div class="brand-name">Ami-Bridge</div>
+          <div class="brand-role">MENTOR PORTAL</div>
         </div>
       </div>
 
-      <nav class="flex-1 py-6 px-3 space-y-2 overflow-y-auto">
+<nav class="flex-1 py-6 px-3 space-y-2 overflow-y-auto">
         <button
           onclick="navigate('assigned')"
           id="nav-assigned"
-          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white transition-colors"
+          class="nav-item active"
         >
           <i class="fas fa-user-graduate w-5"></i>
           <span class="font-medium">Assigned Students</span>
@@ -175,7 +139,7 @@
         <button
           onclick="navigate('performance')"
           id="nav-performance"
-          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+          class="nav-item"
         >
           <i class="fas fa-chart-line w-5"></i>
           <span class="font-medium">Student Performance</span>
@@ -183,7 +147,7 @@
         <button
           onclick="navigate('resumes')"
           id="nav-resumes"
-          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+          class="nav-item"
         >
           <i class="fas fa-file-signature w-5"></i>
           <span class="font-medium">Resume Review</span>
@@ -191,7 +155,7 @@
         <button
           onclick="navigate('internships')"
           id="nav-internships"
-          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+          class="nav-item"
         >
           <i class="fas fa-briefcase w-5"></i>
           <span class="font-medium">Local Internships</span>
@@ -199,7 +163,7 @@
         <button
           onclick="navigate('feedback')"
           id="nav-feedback"
-          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+          class="nav-item"
         >
           <i class="fas fa-comment-dots w-5"></i>
           <span class="font-medium">Provide Feedback</span>
@@ -207,7 +171,7 @@
         <button
           onclick="navigate('ocr')"
           id="nav-ocr"
-          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+          class="nav-item"
         >
           <i class="fas fa-robot w-5"></i>
           <span class="font-medium">Ami-Bridge AI OCR</span>
@@ -215,7 +179,7 @@
         <button
           onclick="navigate('bulkregister')"
           id="nav-bulkregister"
-          class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-darkPanel transition-colors"
+          class="nav-item"
         >
           <i class="fas fa-file-csv w-5"></i>
           <span class="font-medium">Bulk Register</span>
@@ -225,7 +189,7 @@
       <div class="p-4 border-t border-slate-700">
         <button
           onclick="logout()"
-          class="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-red-400 hover:bg-red-500 hover:text-white transition-colors"
+          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-400/80 hover:bg-red-500/15 hover:text-red-400 transition-all text-sm font-medium"
         >
           <i class="fas fa-sign-out-alt w-5"></i>
           <span class="font-medium">Logout</span>
@@ -239,7 +203,7 @@
       <header
         class="bg-white shadow-sm h-16 flex items-center justify-between px-8 z-10 shrink-0"
       >
-        <h1 id="page-title" class="text-xl font-bold text-slate-800">
+        <h1 id="page-title" style="font-family:'Sora',sans-serif;font-weight:700;letter-spacing:-0.3px;" class="text-xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;">
           Assigned Students
         </h1>
         <div class="flex items-center gap-4">
@@ -250,10 +214,10 @@
           </div>
           <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
             <div class="text-right hidden sm:block">
-              <p class="text-sm font-bold text-slate-700" id="header-user-name">
+              <p class="text-sm font-bold text-slate-700" id="header-user-name" style="font-family:'Sora',sans-serif;font-weight:600;font-size:13px;">
                 Loading...
               </p>
-              <p class="text-xs text-slate-500">Mentor</p>
+              <p class="text-xs text-slate-400" style="font-size:11px;">Mentor</p>
             </div>
             <div
               class="w-10 h-10 rounded-full bg-slate-200 border-2 border-primary flex items-center justify-center overflow-hidden"
@@ -278,7 +242,7 @@
         >
           <div class="mb-6 flex justify-between items-end">
             <div>
-              <h2 class="text-2xl font-bold text-slate-800">Your Mentees</h2>
+              <h2 class="text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;">Your Mentees</h2>
               <p class="text-slate-500 mt-1">
                 Students currently assigned to you for guidance.
               </p>
@@ -306,7 +270,7 @@
             class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4"
           >
             <div>
-              <h3 class="text-lg font-bold text-slate-800">
+              <h3 class="text-lg font-bold text-slate-800" style="font-family:'Sora',sans-serif;">
                 Performance Review
               </h3>
               <p class="text-sm text-slate-500">
@@ -341,7 +305,7 @@
                     Total Attempts
                   </p>
                   <p
-                    class="text-2xl font-bold text-slate-800"
+                    class="text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;"
                     id="perf-total-attempts"
                   >
                     0
@@ -361,7 +325,7 @@
                     Average Accuracy
                   </p>
                   <p
-                    class="text-2xl font-bold text-slate-800"
+                    class="text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;"
                     id="perf-avg-accuracy"
                   >
                     0%
@@ -381,7 +345,7 @@
                     Highest Score
                   </p>
                   <p
-                    class="text-2xl font-bold text-slate-800"
+                    class="text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;"
                     id="perf-high-score"
                   >
                     0
@@ -405,7 +369,7 @@
                 class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col"
               >
                 <div class="p-6 border-b border-slate-200 shrink-0">
-                  <h3 class="text-lg font-bold text-slate-800">
+                  <h3 class="text-lg font-bold text-slate-800" style="font-family:'Sora',sans-serif;">
                     Recent Assessments
                   </h3>
                 </div>
@@ -413,7 +377,7 @@
                   <table class="w-full text-left border-collapse">
                     <thead>
                       <tr
-                        class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider"
+                        class="bg-slate-50/80 text-slate-500 text-xs uppercase tracking-wider"
                       >
                         <th class="px-6 py-3 font-semibold">Date</th>
                         <th class="px-6 py-3 font-semibold">Company</th>
@@ -459,7 +423,7 @@
             class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
           >
             <div class="p-6 border-b border-slate-200">
-              <h3 class="text-lg font-bold text-slate-800">
+              <h3 class="text-lg font-bold text-slate-800" style="font-family:'Sora',sans-serif;">
                 Resumes Pending Review
               </h3>
               <p class="text-sm text-slate-500">
@@ -470,7 +434,7 @@
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr
-                    class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider"
+                    class="bg-slate-50/80 text-slate-500 text-xs uppercase tracking-wider"
                   >
                     <th class="px-6 py-4 font-semibold">Student Name</th>
                     <th class="px-6 py-4 font-semibold">Document</th>
@@ -570,242 +534,132 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- SECTION: LOCAL INTERNSHIPS -->
-      <div
-        id="sec-internships"
-        class="section-container hidden fade-in max-w-6xl mx-auto space-y-6"
-      >
-        <!-- Header row -->
-        <div
-          class="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-        >
-          <div>
-            <h2
-              class="text-2xl font-bold text-slate-800 flex items-center gap-2"
-            >
-              <span
-                class="w-9 h-9 rounded-xl bg-purple-100 flex items-center justify-center shrink-0"
-              >
-                <i class="fas fa-briefcase text-purple-600 text-base"></i>
-              </span>
-              Local Internships
-            </h2>
-            <p class="text-slate-500 text-sm mt-1">
-              Post and manage local internship opportunities for your students.
-            </p>
+        <!-- SECTION: LOCAL INTERNSHIPS -->
+        <div id="sec-internships" class="section-container hidden fade-in max-w-6xl mx-auto space-y-6">
+
+          <!-- Header row -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                <span class="w-9 h-9 rounded-xl bg-purple-100 flex items-center justify-center shrink-0">
+                  <i class="fas fa-briefcase text-purple-600 text-base"></i>
+                </span>
+                Local Internships
+              </h2>
+              <p class="text-slate-500 text-sm mt-1">Post and manage local internship opportunities for your students.</p>
+            </div>
+            <button onclick="openMentorInternModal()"
+              class="px-5 py-2.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition flex items-center gap-2 font-semibold shadow-sm shrink-0">
+              <i class="fas fa-plus"></i> Add Internship
+            </button>
           </div>
-          <button
-            onclick="openMentorInternModal()"
-            class="px-5 py-2.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition flex items-center gap-2 font-semibold shadow-sm shrink-0"
-          >
-            <i class="fas fa-plus"></i> Add Internship
+
+          <!-- Filter + Stats bar -->
+          <div class="bg-white border border-slate-200 rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+            <div class="flex items-center gap-3">
+              <div class="relative">
+                <i class="fas fa-search absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                <input type="text" id="mentor-intern-search" placeholder="Search role, company, location..."
+                  oninput="renderMentorInternships()"
+                  class="border border-slate-200 rounded-xl py-2 pl-8 pr-3 text-sm focus:ring-2 focus:ring-purple-400 outline-none w-52"/>
+              </div>
+              <select id="mentor-intern-filter" onchange="renderMentorInternships()"
+                class="border border-slate-200 rounded-xl py-2 px-3 text-sm focus:ring-2 focus:ring-purple-400 outline-none">
+                <option value="all">All Types</option>
+                <option value="paid">Paid</option>
+                <option value="unpaid">Unpaid</option>
+              </select>
+            </div>
+            <div id="mentor-intern-stats" class="hidden flex items-center gap-4 text-xs text-slate-500 font-medium">
+              <span id="mentor-stat-total" class="text-slate-700 font-semibold"></span>
+              <span class="w-px h-3 bg-slate-300"></span>
+              <span id="mentor-stat-paid" class="text-green-600"></span>
+              <span class="w-px h-3 bg-slate-300"></span>
+              <span id="mentor-stat-unpaid" class="text-amber-600"></span>
+            </div>
+          </div>
+
+          <!-- List -->
+          <div id="mentor-internship-list" class="space-y-3">
+            <div class="text-center py-10 text-slate-400">
+              <i class="fas fa-spinner fa-spin text-2xl block mb-2 text-slate-300"></i>
+              <p class="text-sm">Loading internships...</p>
+            </div>
+          </div>
+        </div>
+    <!-- Mentor Internship Modal (Add / Edit) -->
+    <div id="mentor-internship-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop fade-in">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden max-h-[90vh] flex flex-col">
+        <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0">
+          <h3 id="mentor-intern-modal-title" class="font-bold text-lg text-slate-800">Add Internship</h3>
+          <button onclick="closeModal('mentor-internship-modal')" class="text-slate-400 hover:text-danger transition">
+            <i class="fas fa-times text-xl"></i>
           </button>
         </div>
-
-        <!-- Filter + Stats bar -->
-        <div
-          class="bg-white border border-slate-200 rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm"
-        >
-          <div class="flex items-center gap-3">
-            <div class="relative">
-              <i
-                class="fas fa-search absolute left-3 top-2.5 text-slate-400 text-xs"
-              ></i>
-              <input
-                type="text"
-                id="mentor-intern-search"
-                placeholder="Search role, company, location..."
-                oninput="renderMentorInternships()"
-                class="border border-slate-200 rounded-xl py-2 pl-8 pr-3 text-sm focus:ring-2 focus:ring-purple-400 outline-none w-52"
-              />
+        <div class="p-6 space-y-4 overflow-y-auto">
+          <input type="hidden" id="mentor-intern-edit-id"/>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="col-span-2">
+              <label class="block text-sm font-semibold text-slate-700 mb-1">Company Name *</label>
+              <input type="text" id="mentor-intern-company" placeholder="e.g. TechStart Solutions"
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"/>
             </div>
-            <select
-              id="mentor-intern-filter"
-              onchange="renderMentorInternships()"
-              class="border border-slate-200 rounded-xl py-2 px-3 text-sm focus:ring-2 focus:ring-purple-400 outline-none"
-            >
-              <option value="all">All Types</option>
-              <option value="paid">Paid</option>
-              <option value="unpaid">Unpaid</option>
-            </select>
-          </div>
-          <div
-            id="mentor-intern-stats"
-            class="hidden flex items-center gap-4 text-xs text-slate-500 font-medium"
-          >
-            <span
-              id="mentor-stat-total"
-              class="text-slate-700 font-semibold"
-            ></span>
-            <span class="w-px h-3 bg-slate-300"></span>
-            <span id="mentor-stat-paid" class="text-green-600"></span>
-            <span class="w-px h-3 bg-slate-300"></span>
-            <span id="mentor-stat-unpaid" class="text-amber-600"></span>
-          </div>
-        </div>
-
-        <!-- List -->
-        <div id="mentor-internship-list" class="space-y-3">
-          <div class="text-center py-10 text-slate-400">
-            <i
-              class="fas fa-spinner fa-spin text-2xl block mb-2 text-slate-300"
-            ></i>
-            <p class="text-sm">Loading internships...</p>
-          </div>
-        </div>
-      </div>
-      <!-- Mentor Internship Modal (Add / Edit) -->
-      <div
-        id="mentor-internship-modal"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop fade-in"
-      >
-        <div
-          class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden max-h-[90vh] flex flex-col"
-        >
-          <div
-            class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0"
-          >
-            <h3
-              id="mentor-intern-modal-title"
-              class="font-bold text-lg text-slate-800"
-            >
-              Add Internship
-            </h3>
-            <button
-              onclick="closeModal('mentor-internship-modal')"
-              class="text-slate-400 hover:text-danger transition"
-            >
-              <i class="fas fa-times text-xl"></i>
-            </button>
-          </div>
-          <div class="p-6 space-y-4 overflow-y-auto">
-            <input type="hidden" id="mentor-intern-edit-id" />
-            <div class="grid grid-cols-2 gap-4">
-              <div class="col-span-2">
-                <label class="block text-sm font-semibold text-slate-700 mb-1"
-                  >Company Name *</label
-                >
-                <input
-                  type="text"
-                  id="mentor-intern-company"
-                  placeholder="e.g. TechStart Solutions"
-                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
-                />
-              </div>
-              <div class="col-span-2">
-                <label class="block text-sm font-semibold text-slate-700 mb-1"
-                  >Role / Position *</label
-                >
-                <input
-                  type="text"
-                  id="mentor-intern-role"
-                  placeholder="e.g. Web Development Intern"
-                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-1"
-                  >Location *</label
-                >
-                <input
-                  type="text"
-                  id="mentor-intern-location"
-                  placeholder="e.g. Bhagalpur, Bihar"
-                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-1"
-                  >Duration *</label
-                >
-                <input
-                  type="text"
-                  id="mentor-intern-duration"
-                  placeholder="e.g. 2 months"
-                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
-                />
-              </div>
-              <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-1"
-                  >Type *</label
-                >
-                <select
-                  id="mentor-intern-type"
-                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
-                >
-                  <option value="unpaid">Unpaid</option>
-                  <option value="paid">Paid</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-1"
-                  >Stipend (if paid)</label
-                >
-                <input
-                  type="text"
-                  id="mentor-intern-stipend"
-                  placeholder="e.g. ₹5,000/month"
-                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
-                />
-              </div>
-              <div class="col-span-2">
-                <label class="block text-sm font-semibold text-slate-700 mb-1"
-                  >Description *</label
-                >
-                <textarea
-                  id="mentor-intern-desc"
-                  rows="3"
-                  placeholder="What will the intern do? What will they learn?"
-                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm resize-none"
-                ></textarea>
-              </div>
-              <div class="col-span-2">
-                <label class="block text-sm font-semibold text-slate-700 mb-1"
-                  >Requirements</label
-                >
-                <textarea
-                  id="mentor-intern-requirements"
-                  rows="2"
-                  placeholder="e.g. Basic HTML/CSS, Python basics..."
-                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm resize-none"
-                ></textarea>
-              </div>
-              <div class="col-span-2">
-                <label class="block text-sm font-semibold text-slate-700 mb-1"
-                  >Apply Contact (Email / Phone) *</label
-                >
-                <input
-                  type="text"
-                  id="mentor-intern-contact"
-                  placeholder="e.g. hr@techstart.in or 98XXXXXXXX"
-                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"
-                />
-              </div>
+            <div class="col-span-2">
+              <label class="block text-sm font-semibold text-slate-700 mb-1">Role / Position *</label>
+              <input type="text" id="mentor-intern-role" placeholder="e.g. Web Development Intern"
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"/>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1">Location *</label>
+              <input type="text" id="mentor-intern-location" placeholder="e.g. Bhagalpur, Bihar"
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"/>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1">Duration *</label>
+              <input type="text" id="mentor-intern-duration" placeholder="e.g. 2 months"
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"/>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1">Type *</label>
+              <select id="mentor-intern-type" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm">
+                <option value="unpaid">Unpaid</option>
+                <option value="paid">Paid</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1">Stipend (if paid)</label>
+              <input type="text" id="mentor-intern-stipend" placeholder="e.g. ₹5,000/month"
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"/>
+            </div>
+            <div class="col-span-2">
+              <label class="block text-sm font-semibold text-slate-700 mb-1">Description *</label>
+              <textarea id="mentor-intern-desc" rows="3" placeholder="What will the intern do? What will they learn?"
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm resize-none"></textarea>
+            </div>
+            <div class="col-span-2">
+              <label class="block text-sm font-semibold text-slate-700 mb-1">Requirements</label>
+              <textarea id="mentor-intern-requirements" rows="2" placeholder="e.g. Basic HTML/CSS, Python basics..."
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm resize-none"></textarea>
+            </div>
+            <div class="col-span-2">
+              <label class="block text-sm font-semibold text-slate-700 mb-1">Apply Contact (Email / Phone) *</label>
+              <input type="text" id="mentor-intern-contact" placeholder="e.g. hr@techstart.in or 98XXXXXXXX"
+                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"/>
             </div>
           </div>
-          <div
-            class="p-5 border-t border-slate-200 flex justify-end gap-3 shrink-0 bg-slate-50"
-          >
-            <button
-              type="button"
-              onclick="closeModal('mentor-internship-modal')"
-              class="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition text-sm"
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              id="mentor-intern-submit-btn"
-              onclick="submitMentorInternship()"
-              class="px-5 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition text-sm flex items-center gap-2"
-            >
-              <i class="fas fa-save"></i> Save Internship
-            </button>
-          </div>
+        </div>
+        <div class="p-5 border-t border-slate-200 flex justify-end gap-3 shrink-0 bg-slate-50">
+          <button type="button" onclick="closeModal('mentor-internship-modal')"
+            class="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition text-sm">Cancel</button>
+          <button type="button" id="mentor-intern-submit-btn" onclick="submitMentorInternship()"
+            class="px-5 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition text-sm flex items-center gap-2">
+            <i class="fas fa-save"></i> Save Internship
+          </button>
         </div>
       </div>
+    </div>
+
     </main>
 
     <!-- MODALS -->
@@ -816,10 +670,10 @@
       class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop fade-in"
     >
       <div
-        class="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden"
+        class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden"
       >
         <div
-          class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50"
+          class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/70"
         >
           <h3 class="font-bold text-lg text-slate-800">Resume Feedback</h3>
           <button
@@ -975,7 +829,7 @@
         ocrSection.innerHTML = `
         <div class="mb-6 flex items-center justify-between">
           <div>
-            <h2 class="text-2xl font-bold text-slate-800">Ami-Bridge AI Resume OCR</h2>
+            <h2 class="text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;">Ami-Bridge AI Resume OCR</h2>
             <p class="text-slate-500 mt-1">Extract structured data from all your students' resumes using Ami-Bridge AI.</p>
           </div>
           <button onclick="loadOCRData()" id="ocr-run-btn"
@@ -999,7 +853,7 @@
           "section-container hidden fade-in max-w-3xl mx-auto";
         bulkSection.innerHTML = `
         <div class="mb-6">
-          <h2 class="text-2xl font-bold text-slate-800">Bulk Register Students</h2>
+          <h2 class="text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;">Bulk Register Students</h2>
           <p class="text-slate-500 mt-1">Upload a CSV file to register multiple students at once.</p>
         </div>
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-5">
@@ -1151,13 +1005,11 @@
       function navigate(sectionId) {
         // Update Navigation UI
         document.querySelectorAll("aside nav button").forEach((btn) => {
-          btn.classList.remove("bg-primary", "text-white");
-          btn.classList.add("text-slate-300");
+          btn.classList.remove("active");
         });
         const activeBtn = document.getElementById(`nav-${sectionId}`);
         if (activeBtn) {
-          activeBtn.classList.add("bg-primary", "text-white");
-          activeBtn.classList.remove("text-slate-300");
+          activeBtn.classList.add("active");
         }
 
         // Hide all sections
@@ -1180,8 +1032,7 @@
           bulkregister: "Bulk Register Students",
           internships: "Local Internships",
         };
-        document.getElementById("page-title").innerText =
-          titles[sectionId] || sectionId;
+        document.getElementById("page-title").innerText = titles[sectionId] || sectionId;
 
         if (sectionId === "internships") {
           loadMentorInternships();
@@ -1793,7 +1644,7 @@
           },
         });
       }
-
+    
       // ── LOCAL INTERNSHIPS ─────────────────────────────────────────────────
       let _mentorInternships = [];
 
@@ -1802,39 +1653,30 @@
           const res = await fetch(`${API_BASE}/api/internships`);
           if (res.ok) _mentorInternships = await res.json();
           renderMentorInternships();
-        } catch (e) {
-          console.error("loadMentorInternships:", e);
-        }
+        } catch (e) { console.error("loadMentorInternships:", e); }
       }
 
       function renderMentorInternships() {
-        const list = document.getElementById("mentor-internship-list");
-        const stats = document.getElementById("mentor-intern-stats");
-        const search = (
-          document.getElementById("mentor-intern-search")?.value || ""
-        ).toLowerCase();
-        const type =
-          document.getElementById("mentor-intern-filter")?.value || "all";
+        const list   = document.getElementById("mentor-internship-list");
+        const stats  = document.getElementById("mentor-intern-stats");
+        const search = (document.getElementById("mentor-intern-search")?.value || "").toLowerCase();
+        const type   = document.getElementById("mentor-intern-filter")?.value || "all";
 
-        const all = _mentorInternships;
-        const filtered = all.filter((i) => {
-          const mType = type === "all" || i.type === type;
-          const mSearch =
-            !search ||
-            i.company_name.toLowerCase().includes(search) ||
-            i.role.toLowerCase().includes(search) ||
-            (i.location || "").toLowerCase().includes(search);
+        const all      = _mentorInternships;
+        const filtered = all.filter(i => {
+          const mType   = type === "all" || i.type === type;
+          const mSearch = !search
+            || i.company_name.toLowerCase().includes(search)
+            || i.role.toLowerCase().includes(search)
+            || (i.location||"").toLowerCase().includes(search);
           return mType && mSearch;
         });
 
         if (all.length > 0) {
           stats.classList.remove("hidden");
-          document.getElementById("mentor-stat-total").textContent =
-            filtered.length + " listing" + (filtered.length !== 1 ? "s" : "");
-          document.getElementById("mentor-stat-paid").textContent =
-            all.filter((i) => i.type === "paid").length + " Paid";
-          document.getElementById("mentor-stat-unpaid").textContent =
-            all.filter((i) => i.type === "unpaid").length + " Unpaid";
+          document.getElementById("mentor-stat-total").textContent  = filtered.length + " listing" + (filtered.length!==1?"s":"");
+          document.getElementById("mentor-stat-paid").textContent   = all.filter(i=>i.type==="paid").length + " Paid";
+          document.getElementById("mentor-stat-unpaid").textContent = all.filter(i=>i.type==="unpaid").length + " Unpaid";
         }
 
         if (filtered.length === 0) {
@@ -1846,18 +1688,15 @@
           return;
         }
 
-        list.innerHTML = filtered
-          .map((i) => {
-            const isPaid = i.type === "paid";
-            const badgeCls = isPaid
-              ? "bg-green-100 text-green-700"
-              : "bg-amber-100 text-amber-700";
-            const badgeTxt = isPaid ? "Paid" : "Unpaid";
-            const stipend = i.stipend
-              ? `<span class="flex items-center gap-1.5"><i class="fas fa-indian-rupee-sign text-green-500"></i>${i.stipend}</span>`
-              : "";
+        list.innerHTML = filtered.map(i => {
+          const isPaid    = i.type === "paid";
+          const badgeCls  = isPaid ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700";
+          const badgeTxt  = isPaid ? "Paid" : "Unpaid";
+          const stipend   = i.stipend
+            ? `<span class="flex items-center gap-1.5"><i class="fas fa-indian-rupee-sign text-green-500"></i>${i.stipend}</span>`
+            : "";
 
-            return `
+          return `
           <div class="bg-white border border-slate-200 rounded-2xl p-5 flex gap-4 items-start hover:border-purple-200 hover:shadow-md transition group">
             <div class="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center shrink-0">
               <i class="fas fa-building text-purple-500 text-lg"></i>
@@ -1888,114 +1727,64 @@
               </button>
             </div>
           </div>`;
-          })
-          .join("");
+        }).join("");
       }
 
       function openMentorInternModal(data) {
-        document.getElementById("mentor-intern-edit-id").value =
-          data?.internship_id || "";
-        document.getElementById("mentor-intern-company").value =
-          data?.company_name || "";
-        document.getElementById("mentor-intern-role").value = data?.role || "";
-        document.getElementById("mentor-intern-location").value =
-          data?.location || "";
-        document.getElementById("mentor-intern-duration").value =
-          data?.duration || "";
-        document.getElementById("mentor-intern-type").value =
-          data?.type || "unpaid";
-        document.getElementById("mentor-intern-stipend").value =
-          data?.stipend || "";
-        document.getElementById("mentor-intern-desc").value =
-          data?.description || "";
-        document.getElementById("mentor-intern-requirements").value =
-          data?.requirements || "";
-        document.getElementById("mentor-intern-contact").value =
-          data?.apply_contact || "";
-        document.getElementById("mentor-intern-modal-title").textContent = data
-          ? "Edit Internship"
-          : "Add Internship";
+        document.getElementById("mentor-intern-edit-id").value       = data?.internship_id || "";
+        document.getElementById("mentor-intern-company").value       = data?.company_name  || "";
+        document.getElementById("mentor-intern-role").value          = data?.role          || "";
+        document.getElementById("mentor-intern-location").value      = data?.location      || "";
+        document.getElementById("mentor-intern-duration").value      = data?.duration      || "";
+        document.getElementById("mentor-intern-type").value          = data?.type          || "unpaid";
+        document.getElementById("mentor-intern-stipend").value       = data?.stipend       || "";
+        document.getElementById("mentor-intern-desc").value          = data?.description   || "";
+        document.getElementById("mentor-intern-requirements").value  = data?.requirements  || "";
+        document.getElementById("mentor-intern-contact").value       = data?.apply_contact || "";
+        document.getElementById("mentor-intern-modal-title").textContent = data ? "Edit Internship" : "Add Internship";
         openModal("mentor-internship-modal");
       }
 
       function editMentorInternship(id) {
-        const data = _mentorInternships.find((i) => i.internship_id === id);
+        const data = _mentorInternships.find(i => i.internship_id === id);
         if (data) openMentorInternModal(data);
       }
 
       async function submitMentorInternship() {
         const id = document.getElementById("mentor-intern-edit-id").value;
         const payload = {
-          company_name: document
-            .getElementById("mentor-intern-company")
-            .value.trim(),
-          role: document.getElementById("mentor-intern-role").value.trim(),
-          location: document
-            .getElementById("mentor-intern-location")
-            .value.trim(),
-          duration: document
-            .getElementById("mentor-intern-duration")
-            .value.trim(),
-          type: document.getElementById("mentor-intern-type").value,
-          stipend: document
-            .getElementById("mentor-intern-stipend")
-            .value.trim(),
-          description: document
-            .getElementById("mentor-intern-desc")
-            .value.trim(),
-          requirements: document
-            .getElementById("mentor-intern-requirements")
-            .value.trim(),
-          apply_contact: document
-            .getElementById("mentor-intern-contact")
-            .value.trim(),
-          is_active: true,
+          company_name:  document.getElementById("mentor-intern-company").value.trim(),
+          role:          document.getElementById("mentor-intern-role").value.trim(),
+          location:      document.getElementById("mentor-intern-location").value.trim(),
+          duration:      document.getElementById("mentor-intern-duration").value.trim(),
+          type:          document.getElementById("mentor-intern-type").value,
+          stipend:       document.getElementById("mentor-intern-stipend").value.trim(),
+          description:   document.getElementById("mentor-intern-desc").value.trim(),
+          requirements:  document.getElementById("mentor-intern-requirements").value.trim(),
+          apply_contact: document.getElementById("mentor-intern-contact").value.trim(),
+          is_active:     true,
         };
-        const required = [
-          "company_name",
-          "role",
-          "location",
-          "duration",
-          "description",
-          "apply_contact",
-        ];
+        const required = ["company_name","role","location","duration","description","apply_contact"];
         for (const f of required) {
-          if (!payload[f]) {
-            showToast("Please fill in: " + f.replace(/_/g, " "), "error");
-            return;
-          }
+          if (!payload[f]) { showToast("Please fill in: " + f.replace(/_/g," "), "error"); return; }
         }
         const btn = document.getElementById("mentor-intern-submit-btn");
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
         try {
-          const url = id
-            ? `${API_BASE}/api/internships/${id}`
-            : `${API_BASE}/api/internships`;
+          const url = id ? `${API_BASE}/api/internships/${id}` : `${API_BASE}/api/internships`;
           const method = id ? "PUT" : "POST";
-          const res = await fetch(url, {
-            method,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-          if (!res.ok) {
-            const e = await res.json();
-            throw new Error(e.error || "Save failed");
-          }
+          const res = await fetch(url, { method, headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload) });
+          if (!res.ok) { const e = await res.json(); throw new Error(e.error||"Save failed"); }
           const saved = await res.json();
           if (id) {
-            _mentorInternships = _mentorInternships.map((i) =>
-              i.internship_id == id ? saved : i,
-            );
+            _mentorInternships = _mentorInternships.map(i => i.internship_id == id ? saved : i);
           } else {
             _mentorInternships.unshift(saved);
           }
           renderMentorInternships();
           closeModal("mentor-internship-modal");
-          showToast(
-            id ? "Internship updated!" : "Internship added!",
-            "success",
-          );
+          showToast(id ? "Internship updated!" : "Internship added!", "success");
         } catch (err) {
           showToast("Error: " + err.message, "error");
         } finally {
@@ -2007,18 +1796,15 @@
       async function deleteMentorInternship(id) {
         if (!confirm("Delete this internship listing?")) return;
         try {
-          await fetch(`${API_BASE}/api/internships/${id}`, {
-            method: "DELETE",
-          });
-          _mentorInternships = _mentorInternships.filter(
-            (i) => i.internship_id !== id,
-          );
+          await fetch(`${API_BASE}/api/internships/${id}`, { method: "DELETE" });
+          _mentorInternships = _mentorInternships.filter(i => i.internship_id !== id);
           renderMentorInternships();
           showToast("Internship deleted.", "info");
         } catch (err) {
           showToast("Delete failed: " + err.message, "error");
         }
       }
-    </script>
+
+      </script>
   </body>
 </html>

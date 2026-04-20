@@ -1,11 +1,24 @@
 "use strict";
 
 const Groq = require("groq-sdk");
-const https = require("https");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 const env = require("../config/env");
 const logger = require("../utils/logger");
 
-// ── Groq models for text-based PDFs ──────────────────────────────────────────
+// ── Clients ───────────────────────────────────────────────────────────────────
+let _groq = null;
+function getGroq() {
+  if (!_groq) _groq = new Groq({ apiKey: env.GROQ_API_KEY });
+  return _groq;
+}
+
+let _gemini = null;
+function getGemini() {
+  if (!_gemini) _gemini = new GoogleGenerativeAI(env.GEMINI_API_KEY);
+  return _gemini;
+}
+
+// ── Model lists ───────────────────────────────────────────────────────────────
 const GROQ_MODELS = [
   "llama-3.3-70b-versatile",
   "llama-3.1-8b-instant",
@@ -13,11 +26,13 @@ const GROQ_MODELS = [
   "mixtral-8x7b-32768",
 ];
 
-let _groq = null;
-function getGroq() {
-  if (!_groq) _groq = new Groq({ apiKey: env.GROQ_API_KEY });
-  return _groq;
-}
+// Free-tier Gemini models with PDF/vision support
+const GEMINI_MODELS = [
+  "gemini-2.5-flash-preview-04-17",
+  "gemini-2.5-flash",
+  "gemini-1.5-flash-latest",
+  "gemini-1.5-flash",
+];
 
 // ── JSON extractor ────────────────────────────────────────────────────────────
 function extractJSON(raw) {
@@ -54,233 +69,151 @@ function extractJSON(raw) {
 }
 
 // ── Shared prompt ─────────────────────────────────────────────────────────────
-const SYSTEM_PROMPT =
+const SYSTEM_MSG =
   "You are a resume analysis expert. Always respond with raw JSON only — no markdown, no code fences, no explanations.";
 
-function buildTextPrompt(studentName, resumeText) {
+function buildPrompt(studentName, resumeText) {
+  const content = resumeText
+    ? `RESUME TEXT:\n---\n${resumeText}\n---`
+    : "The resume is provided as a PDF document. Read ALL visible text carefully.";
+
   return `You are a professional resume reviewer and ATS expert for Indian engineering and tech placements.
 
-Analyze the resume text below for the student named "${studentName || "the student"}".
+Analyze the resume of the student named "${studentName || "the student"}".
 
 STRICT RULES:
-1. If this is NOT a resume/CV (e.g. article, notes, assignment), output ONLY: {"not_a_resume":true,"reason":"what it actually is"}
+1. If this is NOT a resume/CV (e.g. article, notes, assignment, blank page), output ONLY: {"not_a_resume":true,"reason":"what it actually is"}
 2. If it IS a resume, output ONLY a raw JSON object. No markdown, no code fences, no text before or after.
 3. Reference actual content from this specific resume. Do NOT give generic advice.
 4. score and ats_score must be integers 0-100.
 
 Required JSON format:
-{"score":75,"ats_score":68,"summary":"3-5 sentences about this specific resume quality and career readiness.","strengths":["Specific strength from this resume","Specific strength from this resume","Specific strength from this resume"],"improvements":["Specific weakness + actionable fix","Specific weakness + actionable fix","Specific weakness + actionable fix"],"keywords_missing":["kw1","kw2","kw3","kw4","kw5"],"sections_feedback":{"contact":"Feedback on this contact section.","education":"Feedback on this education section.","skills":"Feedback on this skills section.","experience":"Feedback on this experience section.","projects":"Feedback on this projects section."}}
+{"score":75,"ats_score":68,"summary":"3-5 sentences about this specific resume.","strengths":["Strength 1","Strength 2","Strength 3"],"improvements":["Weakness + fix 1","Weakness + fix 2","Weakness + fix 3"],"keywords_missing":["kw1","kw2","kw3","kw4","kw5"],"sections_feedback":{"contact":"Feedback.","education":"Feedback.","skills":"Feedback.","experience":"Feedback.","projects":"Feedback."}}
 
-RESUME TEXT:
----
-${resumeText}
----
+${content}
 
 Output only the JSON. Nothing else.`;
 }
 
-function buildImagePrompt(studentName) {
-  return `You are a professional resume reviewer and ATS expert for Indian engineering and tech placements.
-
-The attached PDF is the resume of the student named "${studentName || "the student"}". Read ALL the text visible in this scanned/image PDF carefully.
-
-STRICT RULES:
-1. If this is NOT a resume/CV (e.g. article, notes, assignment, blank page), output ONLY: {"not_a_resume":true,"reason":"what it actually is"}
-2. If it IS a resume, output ONLY a raw JSON object. No markdown, no code fences, no text before or after.
-3. Reference actual content from the PDF you see. Do NOT give generic advice.
-4. score and ats_score must be integers 0-100.
-
-Required JSON format:
-{"score":75,"ats_score":68,"summary":"3-5 sentences about this specific resume quality and career readiness.","strengths":["Specific strength from this resume","Specific strength from this resume","Specific strength from this resume"],"improvements":["Specific weakness + actionable fix","Specific weakness + actionable fix","Specific weakness + actionable fix"],"keywords_missing":["kw1","kw2","kw3","kw4","kw5"],"sections_feedback":{"contact":"Feedback on this contact section.","education":"Feedback on this education section.","skills":"Feedback on this skills section.","experience":"Feedback on this experience section.","projects":"Feedback on this projects section."}}
-
-Output only the JSON. Nothing else.`;
+// ── Validate parsed result ────────────────────────────────────────────────────
+function validateParsed(parsed) {
+  if (!parsed) throw new Error("Could not parse JSON from AI response");
+  if (parsed.not_a_resume) {
+    const err = new Error(
+      parsed.reason || "This does not appear to be a resume or CV.",
+    );
+    err.code = "NOT_A_RESUME";
+    throw err;
+  }
+  if (typeof parsed.score !== "number")
+    throw new Error("AI response missing required score field");
+  return parsed;
 }
 
-// ── METHOD 1: Groq text analysis (text-based PDFs) ────────────────────────────
+// ── METHOD 1: Groq — text-based PDFs ─────────────────────────────────────────
 async function analyzeWithGroq(resumeText, studentName) {
-  const prompt = buildTextPrompt(
+  const prompt = buildPrompt(
     studentName,
     resumeText.trim().substring(0, 12000),
   );
 
-  for (const modelName of GROQ_MODELS) {
+  for (const model of GROQ_MODELS) {
     try {
       logger.info(
-        `[AI] Groq text → ${modelName} | ${resumeText.trim().length} chars | ${studentName}`,
+        `[AI] Groq → ${model} | ${resumeText.trim().length} chars | ${studentName}`,
       );
       const chat = await getGroq().chat.completions.create({
-        model: modelName,
+        model,
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: SYSTEM_MSG },
           { role: "user", content: prompt },
         ],
         temperature: 0.1,
         max_tokens: 2000,
       });
-
       const raw = chat.choices[0]?.message?.content || "";
-      logger.info(`[AI] Groq response (first 300): ${raw.substring(0, 300)}`);
-
-      const parsed = extractJSON(raw);
-      if (!parsed) throw new Error("Could not parse JSON from Groq response");
-
-      if (parsed.not_a_resume) {
-        const err = new Error(
-          parsed.reason || "This does not appear to be a resume or CV.",
-        );
-        err.code = "NOT_A_RESUME";
-        throw err;
-      }
-      if (typeof parsed.score !== "number")
-        throw new Error("Missing score in Groq response");
-
-      logger.info(`[AI] Groq SUCCESS (${modelName}) — score: ${parsed.score}`);
-      return parsed;
+      logger.info(`[AI] Groq raw (300): ${raw.substring(0, 300)}`);
+      return validateParsed(extractJSON(raw));
     } catch (err) {
       if (err.code === "NOT_A_RESUME") throw err;
-      logger.warn(`[AI] Groq FAILED (${modelName}): ${err.message}`);
+      logger.warn(`[AI] Groq FAILED (${model}): ${err.message}`);
     }
   }
-  return null; // Signal caller to try next method
+  return null; // all Groq models exhausted
 }
 
-// ── METHOD 2: Anthropic Claude (image/scanned PDFs) ───────────────────────────
-// Claude accepts PDF as a base64 document natively — no image conversion needed.
-async function analyzeWithClaude(pdfBase64, studentName) {
-  if (!env.ANTHROPIC_API_KEY) {
-    logger.warn(
-      "[AI] ANTHROPIC_API_KEY not set — cannot analyse image-based PDF",
+// ── METHOD 2: Gemini — image/scanned PDFs ────────────────────────────────────
+async function analyzeWithGemini(pdfBase64, studentName) {
+  if (!env.GEMINI_API_KEY) {
+    logger.error(
+      "[AI] GEMINI_API_KEY is not set in .env — image-based PDF analysis requires it. Get free key: https://aistudio.google.com/app/apikey",
     );
     return null;
   }
 
-  const prompt = buildImagePrompt(studentName);
+  const prompt = buildPrompt(studentName, null); // no text — Gemini reads PDF visually
 
-  // Claude models to try for vision/PDF
-  const claudeModels = [
-    "claude-haiku-4-5-20251001", // Fastest, cheapest, handles PDFs well
-    "claude-sonnet-4-6", // More capable fallback
-  ];
-
-  for (const model of claudeModels) {
+  for (const modelName of GEMINI_MODELS) {
     try {
+      const sizeMB = ((pdfBase64.length * 0.75) / 1048576).toFixed(2);
       logger.info(
-        `[AI] Claude PDF vision → ${model} | PDF ${((pdfBase64.length * 0.75) / 1048576).toFixed(2)} MB | ${studentName}`,
+        `[AI] Gemini → ${modelName} | ${sizeMB} MB PDF | ${studentName}`,
       );
 
-      const body = JSON.stringify({
-        model,
-        max_tokens: 2000,
-        system: SYSTEM_PROMPT,
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "document",
-                source: {
-                  type: "base64",
-                  media_type: "application/pdf",
-                  data: pdfBase64,
-                },
-              },
-              { type: "text", text: prompt },
-            ],
-          },
-        ],
+      const model = getGemini().getGenerativeModel({
+        model: modelName,
+        generationConfig: { temperature: 0.1 },
       });
-
-      const raw = await new Promise((resolve, reject) => {
-        const req = https.request(
-          {
-            hostname: "api.anthropic.com",
-            path: "/v1/messages",
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "x-api-key": env.ANTHROPIC_API_KEY,
-              "anthropic-version": "2023-06-01",
-              "Content-Length": Buffer.byteLength(body),
-            },
-          },
-          (res) => {
-            let data = "";
-            res.on("data", (chunk) => (data += chunk));
-            res.on("end", () => resolve(data));
-          },
-        );
-        req.on("error", reject);
-        req.setTimeout(60000, () => {
-          req.destroy();
-          reject(new Error("Request timed out"));
-        });
-        req.write(body);
-        req.end();
-      });
-
-      const response = JSON.parse(raw);
-      if (response.error)
-        throw new Error(`Claude API error: ${response.error.message}`);
-
-      const text = response.content?.[0]?.text || "";
-      logger.info(
-        `[AI] Claude response (first 300): ${text.substring(0, 300)}`,
-      );
-
-      const parsed = extractJSON(text);
-      if (!parsed) throw new Error("Could not parse JSON from Claude response");
-
-      if (parsed.not_a_resume) {
-        const err = new Error(
-          parsed.reason || "This does not appear to be a resume or CV.",
-        );
-        err.code = "NOT_A_RESUME";
-        throw err;
-      }
-      if (typeof parsed.score !== "number")
-        throw new Error("Missing score in Claude response");
-
-      logger.info(`[AI] Claude SUCCESS (${model}) — score: ${parsed.score}`);
-      return parsed;
+      const result = await model.generateContent([
+        prompt,
+        { inlineData: { mimeType: "application/pdf", data: pdfBase64 } },
+      ]);
+      const raw = result.response.text();
+      logger.info(`[AI] Gemini raw (300): ${raw.substring(0, 300)}`);
+      return validateParsed(extractJSON(raw));
     } catch (err) {
       if (err.code === "NOT_A_RESUME") throw err;
-      logger.warn(`[AI] Claude FAILED (${model}): ${err.message}`);
+      logger.warn(`[AI] Gemini FAILED (${modelName}): ${err.message}`);
     }
   }
-  return null;
+  return null; // all Gemini models exhausted
 }
 
 // ── Main entry point ──────────────────────────────────────────────────────────
 const analyzeResume = async (resumeText, studentName, pdfBase64) => {
-  if (!env.GROQ_API_KEY) return noKeyResponse();
+  if (!env.GROQ_API_KEY && !env.GEMINI_API_KEY) return noKeyResponse();
 
   const textIsUsable = resumeText && resumeText.trim().length > 100;
 
-  // ── PATH A: Text-based PDF → Groq ────────────────────────────────────────
   if (textIsUsable) {
-    logger.info(
-      `[AI] Text-based PDF detected (${resumeText.trim().length} chars) — using Groq`,
-    );
-    const result = await analyzeWithGroq(resumeText, studentName);
-    if (result) return result;
-    // Groq exhausted all models — fall through to Claude as backup
-    logger.warn("[AI] Groq exhausted — trying Claude as backup for text PDF");
-  }
+    // ── Text-based PDF: try Groq first ────────────────────────────────────
+    logger.info(`[AI] Text PDF (${resumeText.trim().length} chars) → Groq`);
+    const groqResult = await analyzeWithGroq(resumeText, studentName);
+    if (groqResult) return groqResult;
 
-  // ── PATH B: Image/scanned PDF → Claude ───────────────────────────────────
-  if (pdfBase64) {
+    // Groq failed on all models — fall back to Gemini with the text
+    logger.warn("[AI] Groq exhausted — falling back to Gemini with text");
+    if (env.GEMINI_API_KEY && pdfBase64) {
+      const geminiResult = await analyzeWithGemini(pdfBase64, studentName);
+      if (geminiResult) return geminiResult;
+    }
+  } else {
+    // ── Image/scanned PDF: use Gemini vision ──────────────────────────────
     logger.info(
-      `[AI] ${textIsUsable ? "Groq failed, trying" : "Image-based PDF detected — using"} Claude PDF vision`,
+      `[AI] Image PDF detected (text: ${(resumeText || "").trim().length} chars) → Gemini`,
     );
-    const result = await analyzeWithClaude(pdfBase64, studentName);
-    if (result) return result;
-
-    // If ANTHROPIC_API_KEY is missing, give a clear message
-    if (!env.ANTHROPIC_API_KEY) {
+    if (!env.GEMINI_API_KEY) {
+      logger.error(
+        "[AI] GEMINI_API_KEY missing — cannot analyse image-based PDF. Add it to .env file.",
+      );
       return genericFeedback(
         studentName,
-        "This appears to be a scanned/image PDF. To analyse image-based resumes, please add ANTHROPIC_API_KEY to your .env file. Get a free key at https://console.anthropic.com",
+        "This is a scanned/image-based PDF. GEMINI_API_KEY is not set in your .env file. Add: GEMINI_API_KEY=your_key (free at https://aistudio.google.com/app/apikey)",
       );
+    }
+    if (pdfBase64) {
+      const geminiResult = await analyzeWithGemini(pdfBase64, studentName);
+      if (geminiResult) return geminiResult;
     }
   }
 
@@ -290,26 +223,25 @@ const analyzeResume = async (resumeText, studentName, pdfBase64) => {
 
 // ── Mentor suggestion ─────────────────────────────────────────────────────────
 const generateMentorSuggestion = async (mentorName, studentName, focusArea) => {
-  if (!env.GROQ_API_KEY)
-    return "AI suggestion unavailable — GROQ_API_KEY not configured.";
-
   const prompt =
     `Help mentor "${mentorName || "Mentor"}" write professional feedback for student "${studentName || "Student"}". ` +
     `Focus: ${focusArea || "overall resume quality and career readiness"}. ` +
     `Write 3-5 sentences in first person as the mentor. No greetings or sign-offs.`;
 
-  for (const modelName of GROQ_MODELS) {
-    try {
-      const chat = await getGroq().chat.completions.create({
-        model: modelName,
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.4,
-        max_tokens: 300,
-      });
-      const text = chat.choices[0]?.message?.content?.trim() || "";
-      if (text) return text;
-    } catch (err) {
-      logger.warn(`[AI] Mentor suggest FAILED (${modelName}): ${err.message}`);
+  if (env.GROQ_API_KEY) {
+    for (const model of GROQ_MODELS) {
+      try {
+        const chat = await getGroq().chat.completions.create({
+          model,
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.4,
+          max_tokens: 300,
+        });
+        const text = chat.choices[0]?.message?.content?.trim() || "";
+        if (text) return text;
+      } catch (err) {
+        logger.warn(`[AI] Mentor Groq FAILED (${model}): ${err.message}`);
+      }
     }
   }
   return "Thank you for submitting your resume. I will review it carefully and provide detailed feedback soon.";
@@ -321,7 +253,7 @@ function noKeyResponse() {
     score: null,
     ats_score: null,
     summary:
-      "GROQ_API_KEY is not set in your .env file. Get a free key at https://console.groq.com",
+      "Neither GROQ_API_KEY nor GEMINI_API_KEY is set. Please add them to your .env file.",
     strengths: [],
     improvements: [],
     keywords_missing: [],
