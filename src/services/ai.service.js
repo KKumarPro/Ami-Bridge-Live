@@ -28,10 +28,10 @@ const GROQ_MODELS = [
 
 // Free-tier Gemini models with PDF/vision support
 const GEMINI_MODELS = [
-  "gemini-2.5-flash-preview-04-17",
-  "gemini-2.5-flash",
-  "gemini-1.5-flash-latest",
-  "gemini-1.5-flash",
+  "gemini-1.5-flash-latest", // Most reliable free-tier model for PDF vision
+  "gemini-1.5-flash", // Stable fallback
+  "gemini-1.5-pro", // Higher capability fallback
+  "gemini-2.0-flash", // Newer model if SDK supports it
 ];
 
 // ── JSON extractor ────────────────────────────────────────────────────────────
@@ -153,6 +153,8 @@ async function analyzeWithGemini(pdfBase64, studentName) {
 
   const prompt = buildPrompt(studentName, null); // no text — Gemini reads PDF visually
 
+  let lastGeminiError = null;
+
   for (const modelName of GEMINI_MODELS) {
     try {
       const sizeMB = ((pdfBase64.length * 0.75) / 1048576).toFixed(2);
@@ -173,10 +175,26 @@ async function analyzeWithGemini(pdfBase64, studentName) {
       return validateParsed(extractJSON(raw));
     } catch (err) {
       if (err.code === "NOT_A_RESUME") throw err;
+      lastGeminiError = err;
       logger.warn(`[AI] Gemini FAILED (${modelName}): ${err.message}`);
     }
   }
-  return null; // all Gemini models exhausted
+
+  // Surface the actual Gemini error so the user/admin can diagnose it
+  if (lastGeminiError) {
+    logger.error(
+      `[AI] All Gemini models failed. Last error: ${lastGeminiError.message}`,
+    );
+    // Throw a meaningful error instead of returning null silently
+    const surfacedErr = new Error(
+      `Gemini API failed for image PDF: ${lastGeminiError.message}. ` +
+        `Check your GEMINI_API_KEY is valid and the model quota is not exceeded.`,
+    );
+    surfacedErr.code = "GEMINI_FAILED";
+    throw surfacedErr;
+  }
+
+  return null;
 }
 
 // ── Main entry point ──────────────────────────────────────────────────────────
@@ -212,8 +230,19 @@ const analyzeResume = async (resumeText, studentName, pdfBase64) => {
       );
     }
     if (pdfBase64) {
-      const geminiResult = await analyzeWithGemini(pdfBase64, studentName);
-      if (geminiResult) return geminiResult;
+      try {
+        const geminiResult = await analyzeWithGemini(pdfBase64, studentName);
+        if (geminiResult) return geminiResult;
+      } catch (gemErr) {
+        if (gemErr.code === "NOT_A_RESUME") throw gemErr;
+        // Return a specific, actionable message for Gemini failures
+        logger.error(`[AI] Gemini image analysis failed: ${gemErr.message}`);
+        return genericFeedback(
+          studentName,
+          `Image PDF analysis failed. Error: ${gemErr.message} — ` +
+            `Ensure GEMINI_API_KEY is valid and has quota remaining at https://aistudio.google.com/app/apikey`,
+        );
+      }
     }
   }
 
