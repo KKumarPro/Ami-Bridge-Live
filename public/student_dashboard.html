@@ -2274,8 +2274,42 @@
         frame.src = "";
       }
 
-      // Legacy modal functions — kept for backward compatibility
       function viewResume(resumeId, name) {
+        // ── Always sync score card to the resume being viewed ──────────────
+        const scoreCard   = document.getElementById("ai-score-card");
+        const scoreDisp   = document.getElementById("ai-score-display");
+        const atsDisp     = document.getElementById("ai-ats-score");
+        const summaryDisp = document.getElementById("ai-summary-short");
+        const feedPanel   = document.getElementById("ai-feedback-panel");
+
+        // Look up this resume in local state for its cached score
+        const resume = state.resumes.find(r => r.resume_id === resumeId);
+
+        if (resume && resume.gemini_score != null) {
+          // Show the cached score for THIS resume
+          const score     = resume.gemini_score;
+          const scoreColor = score >= 75 ? "text-green-300"
+            : score >= 50 ? "text-yellow-300"
+            : "text-red-300";
+          scoreDisp.className   = "text-5xl font-black mb-1 " + scoreColor;
+          scoreDisp.textContent = score;
+          atsDisp.textContent   = "--";   // ATS only available after full analysis
+          summaryDisp.textContent = "Click Re-analyse to see full AI feedback.";
+          scoreCard.classList.remove("hidden");
+        } else {
+          // No score for this resume — hide the score card completely
+          scoreCard.classList.add("hidden");
+          scoreDisp.textContent = "--";
+          scoreDisp.className   = "text-5xl font-black mb-1 text-white";
+          atsDisp.textContent   = "--";
+          summaryDisp.textContent = "";
+        }
+
+        // Always hide the detailed feedback panel when switching resumes
+        // (it belongs to whichever resume was last deeply analyzed)
+        if (feedPanel) feedPanel.classList.add("hidden");
+
+        // Open the PDF viewer
         const url = `${API_BASE}/api/resume/${resumeId}/view`;
         openInlinePdf(url, name);
       }
@@ -2368,7 +2402,7 @@
 
           document.getElementById("ai-score-display").className = "text-5xl font-black mb-1 " + scoreColor;
           document.getElementById("ai-score-display").textContent = score ?? "--";
-          document.getElementById("ai-ats-score").textContent = atsScore ?? "--";
+          document.getElementById("ai-ats-score").textContent = atsScore != null ? atsScore : "--";
           document.getElementById("ai-summary-short").textContent = data.summary || "";
           scoreCard.classList.remove("hidden");
 
@@ -2507,7 +2541,14 @@
         localStorage.removeItem("ami_user");
         setTimeout(() => {
           document.body.innerHTML =
-            `<div class="h-screen w-full flex items-center justify-center bg-slate-50"><h1 class="text-2xl font-bold text-slate-500" style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;">Redirecting to Login...</h1></div>`;
+            `<div class="h-screen w-full flex items-center justify-center bg-slate-50">
+              <h1
+                class="text-2xl font-bold text-slate-500"
+                style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;"
+              >
+                Redirecting to Login...
+              </h1>
+            </div>`;
           setTimeout(() => {
             window.location.href = "index.html";
           }, 500);
