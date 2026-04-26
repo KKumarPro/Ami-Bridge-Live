@@ -1,4 +1,4 @@
-<!-- Student Dashboard -->
+<!-- Student Dashboard with all the updates done -->
 
 <!doctype html>
 <html lang="en">
@@ -498,8 +498,7 @@
 
       /* ══ AVATAR RING ══════════════════════════════════════════════ */
       .avatar-ring{
-        ring:2px solid rgba(255,255,255,0.8);
-        box-shadow:0 2px 8px rgba(0,0,0,0.15);
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.8), 0 2px 8px rgba(0,0,0,0.15);
       }
     </style>
 
@@ -601,35 +600,48 @@
 
     <!-- Main Content Area -->
     <main class="flex-1 flex flex-col h-screen overflow-hidden">
-      <!-- Top Header -->
-      <header
-        class="bg-white shadow-sm h-16 flex items-center justify-between px-8 z-10 shrink-0"
-      >
-        <h1 id="page-title" class= style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;">
+      <!-- ── TOP HEADER ──────────────────────────────────────────── -->
+      <header class="bg-white h-16 flex items-center justify-between px-6 z-10 shrink-0" style="border-bottom:1px solid #E2E8F0;position:relative;">
+        <h1 id="page-title" style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;color:#0F172A;letter-spacing:-0.3px;">
           Performance Analytics
         </h1>
-        <div class="flex items-center gap-4">
-          <div class="relative cursor-pointer group">
-            <i
-              class="fas fa-bell text-slate-500 text-base"
-            ></i>
-            <span class="notif-dot"></span>
+        <div class="flex items-center gap-3">
+          <!-- NOTIFICATION BELL -->
+          <div class="relative" id="notif-wrapper">
+            <button class="notif-btn" onclick="toggleNotifDropdown(event)" title="Notifications" id="notif-bell-btn">
+              <i class="fas fa-bell" style="font-size:15px;color:#64748B;"></i>
+              <span class="notif-dot" id="notif-indicator" style="display:none;"></span>
+            </button>
+            <!-- Dropdown -->
+            <div id="notif-dropdown" class="hidden" style="position:absolute;top:calc(100% + 10px);right:0;width:340px;background:#fff;border:1px solid #E2E8F0;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.13),0 2px 8px rgba(0,0,0,0.07);z-index:9999;overflow:hidden;">
+              <div style="padding:14px 18px 12px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:#0F172A;">Notifications</span>
+                  <span id="notif-badge" style="background:#2563EB;color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px;display:none;">0</span>
+                </div>
+                <button onclick="markAllRead()" style="font-size:11.5px;color:#2563EB;font-weight:600;background:none;border:none;cursor:pointer;padding:3px 8px;border-radius:6px;" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='none'">Mark all read</button>
+              </div>
+              <div id="notif-list" style="max-height:320px;overflow-y:auto;padding:8px 0;">
+                <div style="text-align:center;padding:28px 20px;color:#94A3B8;">
+                  <i class="fas fa-bell-slash" style="font-size:28px;margin-bottom:8px;display:block;opacity:0.4;"></i>
+                  <p style="font-size:13px;font-weight:500;">No notifications yet</p>
+                </div>
+              </div>
+              <div style="padding:10px 18px;border-top:1px solid #F1F5F9;text-align:center;">
+                <span style="font-size:12px;color:#94A3B8;">You're all caught up ✓</span>
+              </div>
+            </div>
           </div>
-          <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
+          <!-- DIVIDER -->
+          <div style="width:1px;height:28px;background:#E2E8F0;"></div>
+          <!-- USER CHIP -->
+          <div class="user-chip" onclick="navigate('profile')" title="Go to My Profile" style="cursor:pointer;">
+            <img id="header-avatar" src="https://api.dicebear.com/7.x/initials/svg?seed=User&amp;backgroundColor=2563EB&amp;textColor=ffffff" alt="Avatar" class="user-avatar" style="width:30px;height:30px;" />
             <div class="text-right hidden sm:block">
-              <p class="text-sm font-bold text-slate-700" id="header-user-name" class="text-sm font-semibold text-slate-800 display">
-                Loading...
-              </p>
-              <p class="text-xs text-slate-400" style="font-size:11px;">Student</p>
+              <p id="header-user-name" style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;color:#0F172A;line-height:1.2;">Loading...</p>
+              <p style="font-size:11px;color:#94A3B8;line-height:1;">Student</p>
             </div>
-            <div class="user-avatar">
-              <img
-                id="header-avatar"
-                src=""
-                alt="Avatar"
-                class="w-full h-full object-cover"
-              />
-            </div>
+            <i class="fas fa-chevron-right" style="font-size:10px;color:#CBD5E1;margin-left:2px;"></i>
           </div>
         </div>
       </header>
@@ -1520,6 +1532,7 @@
         renderResumes();
         renderHistory();
         renderFeedback();
+          _buildStudentNotifications();
         updateDashboardStats();
 
         // 5. Start at analytics
@@ -2487,6 +2500,10 @@
 
           panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
           showToast("Ami-Bridge AI analysis complete!", "success");
+          addNotification(
+            "Resume scored " + (parsedScore ?? "--") + "/100. View your detailed feedback below.",
+            "ai", "AI Analysis Complete"
+          );
         } catch (err) {
           feedbackContent.innerHTML = `
             <div class="p-6 text-center text-red-500">
@@ -2541,14 +2558,7 @@
         localStorage.removeItem("ami_user");
         setTimeout(() => {
           document.body.innerHTML =
-            `<div class="h-screen w-full flex items-center justify-center bg-slate-50">
-              <h1
-                class="text-2xl font-bold text-slate-500"
-                style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;"
-              >
-                Redirecting to Login...
-              </h1>
-            </div>`;
+            '<div class="h-screen w-full flex items-center justify-center bg-slate-50"><h1 class="text-2xl font-bold text-slate-500" style="font-family:\'Outfit\',sans-serif;letter-spacing:-0.3px;">Redirecting to Login...</h1></div>';
           setTimeout(() => {
             window.location.href = "index.html";
           }, 500);
@@ -2742,6 +2752,225 @@
           </div>`;
         }).join("");
       }
-</script>
+
+      // ════════════════════════════════════════════════════════════════
+      // NOTIFICATION SYSTEM
+      // ════════════════════════════════════════════════════════════════
+      const _notifState = { items: [], read: new Set() };
+
+      function addNotification(message, type = "info", title = "") {
+        const icons = {
+          info:    { icon: "fa-info-circle", color: "#3B82F6", bg: "#EFF6FF" },
+          success: { icon: "fa-check-circle", color: "#22C55E", bg: "#ECFDF5" },
+          warning: { icon: "fa-exclamation-triangle", color: "#F59E0B", bg: "#FFFBEB" },
+          error:   { icon: "fa-times-circle", color: "#EF4444", bg: "#FEF2F2" },
+          ai:      { icon: "fa-robot", color: "#8B5CF6", bg: "#F5F3FF" },
+        };
+        const meta = icons[type] || icons.info;
+        _notifState.items.unshift({
+          id: "event-" + Date.now(),
+          icon: meta.icon,
+          color: meta.color,
+          bg: meta.bg,
+          title: title || (type === "ai" ? "AI Analysis" : type.charAt(0).toUpperCase() + type.slice(1)),
+          body: message,
+          action: null,
+          time: new Date(),
+        });
+        _notifState.items = _notifState.items.slice(0, 20);
+        _renderNotifDropdown();
+      }
+
+      function _buildStudentNotifications() {
+        const items = [];
+        const now   = Date.now();
+
+        // 1. Unanalyzed resumes
+        (state.resumes || []).forEach(r => {
+          if (!r.gemini_score) {
+            items.push({
+              id:   "resume-unanalyzed-" + r.resume_id,
+              icon: "fa-robot",
+              color:"#8B5CF6",
+              bg:   "#F5F3FF",
+              title:"Resume needs AI check",
+              body: (r.resume_name || "Your resume") + " has not been analysed yet.",
+              action: () => { navigate("resume"); },
+              time:  r.upload_date ? new Date(r.upload_date) : new Date(now - 3600000),
+            });
+          }
+        });
+
+        // 2. Low score warning (< 50)
+        (state.resumes || []).forEach(r => {
+          if (r.gemini_score != null && r.gemini_score < 50) {
+            items.push({
+              id:   "resume-low-" + r.resume_id,
+              icon: "fa-triangle-exclamation",
+              color:"#DC2626",
+              bg:   "#FEF2F2",
+              title:"Low AI score detected",
+              body: (r.resume_name || "A resume") + " scored " + r.gemini_score + "/100. Improve it!",
+              action: () => { navigate("resume"); },
+              time:  new Date(now - 7200000),
+            });
+          }
+        });
+
+        // 3. New mentor feedback
+        (state.feedback || []).forEach((fb, i) => {
+          items.push({
+            id:   "feedback-" + i,
+            icon: "fa-comment-dots",
+            color:"#2563EB",
+            bg:   "#EFF6FF",
+            title:"Mentor feedback received",
+            body: (fb.mentor_name || "Your mentor") + " left feedback on your resume.",
+            action: () => { navigate("feedback"); },
+            time:  fb.created_at ? new Date(fb.created_at) : new Date(now - 86400000),
+          });
+        });
+
+        // 4. Available internships
+        const active = (state.internships || []).filter(i => i.is_active !== false);
+        if (active.length > 0) {
+          items.push({
+            id:   "internships-available",
+            icon: "fa-briefcase",
+            color:"#059669",
+            bg:   "#ECFDF5",
+            title: active.length + " internship" + (active.length > 1 ? "s" : "") + " available",
+            body: "Local companies are looking for interns. Check them out!",
+            action: () => { navigate("internships"); },
+            time: new Date(now - 43200000),
+          });
+        }
+
+        // 5. Practice encouragement if no attempts
+        if ((state.history || []).length === 0) {
+          items.push({
+            id:   "practice-start",
+            icon: "fa-laptop-code",
+            color:"#F59E0B",
+            bg:   "#FFFBEB",
+            title:"Start practising!",
+            body: "You haven't attempted any mock interviews yet. Practice makes perfect.",
+            action: () => { navigate("practice"); },
+            time: new Date(now - 172800000),
+          });
+        }
+
+        // Sort newest first, cap at 10
+        items.sort((a, b) => b.time - a.time);
+        _notifState.items = items.slice(0, 10);
+        _renderNotifDropdown();
+      }
+
+      function _renderNotifDropdown() {
+        const list    = document.getElementById("notif-list");
+        const badge   = document.getElementById("notif-badge");
+        const dot     = document.getElementById("notif-indicator");
+        const items   = _notifState.items;
+        const unread  = items.filter(i => !_notifState.read.has(i.id)).length;
+
+        // Update badge + dot
+        if (unread > 0) {
+          badge.textContent = unread;
+          badge.style.display = "inline-block";
+          dot.style.display   = "block";
+        } else {
+          badge.style.display = "none";
+          dot.style.display   = "none";
+        }
+
+        if (items.length === 0) {
+          list.innerHTML = `
+            <div style="text-align:center;padding:32px 20px;color:#94A3B8;">
+              <i class="fas fa-bell-slash" style="font-size:32px;margin-bottom:10px;display:block;opacity:0.35;"></i>
+              <p style="font-size:13px;font-weight:600;color:#64748B;">All caught up!</p>
+              <p style="font-size:12px;margin-top:4px;">No new notifications.</p>
+            </div>`;
+          return;
+        }
+
+        list.innerHTML = items.map(item => {
+          const isRead = _notifState.read.has(item.id);
+          const timeAgo = _timeAgo(item.time);
+          return `<div onclick="_handleNotifClick('${item.id}')" style="
+              padding:12px 18px;display:flex;gap:12px;align-items:flex-start;
+              cursor:pointer;transition:background 0.15s;
+              background:${isRead ? "transparent" : item.bg + "55"};
+              border-left:3px solid ${isRead ? "transparent" : item.color};
+            "
+            onmouseover="this.style.background='#F8FAFC'"
+            onmouseout="this.style.background='${isRead ? "transparent" : item.bg + "55"}'"
+          >
+            <div style="width:34px;height:34px;border-radius:10px;background:${item.bg};
+              display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="fas ${item.icon}" style="font-size:13px;color:${item.color};"></i>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+                <p style="font-size:13px;font-weight:${isRead ? "500" : "700"};color:#0F172A;line-height:1.3;">${item.title}</p>
+                ${!isRead ? `<span style="width:7px;height:7px;border-radius:50%;background:${item.color};flex-shrink:0;margin-top:4px;"></span>` : ""}
+              </div>
+              <p style="font-size:12px;color:#64748B;margin-top:2px;line-height:1.4;">${item.body}</p>
+              <p style="font-size:11px;color:#94A3B8;margin-top:4px;">${timeAgo}</p>
+            </div>
+          </div>`;
+        }).join("");
+      }
+
+      function _handleNotifClick(id) {
+        _notifState.read.add(id);
+        const item = _notifState.items.find(i => i.id === id);
+        if (item && item.action) item.action();
+        closeNotifDropdown();
+        _renderNotifDropdown();
+      }
+
+      function _timeAgo(date) {
+        const diff = Math.floor((Date.now() - date) / 1000);
+        if (diff < 60)    return "Just now";
+        if (diff < 3600)  return Math.floor(diff/60) + "m ago";
+        if (diff < 86400) return Math.floor(diff/3600) + "h ago";
+        return Math.floor(diff/86400) + "d ago";
+      }
+
+      function toggleNotifDropdown(e) {
+        e && e.stopPropagation();
+        const dd = document.getElementById("notif-dropdown");
+        const isHidden = dd.classList.contains("hidden");
+        dd.classList.toggle("hidden");
+        if (isHidden) {
+          // Mark open — schedule close on outside click
+          setTimeout(() => {
+            document.addEventListener("click", _notifOutsideClick, { once: true });
+          }, 10);
+        }
+      }
+
+      function closeNotifDropdown() {
+        document.getElementById("notif-dropdown").classList.add("hidden");
+      }
+
+      function _notifOutsideClick(e) {
+        const wrapper = document.getElementById("notif-wrapper");
+        if (wrapper && !wrapper.contains(e.target)) {
+          closeNotifDropdown();
+        } else {
+          // Click was inside — re-attach listener
+          setTimeout(() => {
+            document.addEventListener("click", _notifOutsideClick, { once: true });
+          }, 10);
+        }
+      }
+
+      function markAllRead() {
+        _notifState.items.forEach(i => _notifState.read.add(i.id));
+        _renderNotifDropdown();
+      }
+
+      </script>
   </body>
 </html>
