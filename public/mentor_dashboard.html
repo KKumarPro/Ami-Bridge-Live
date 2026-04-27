@@ -1,4 +1,4 @@
-<!-- Mentor Dashboard with all the updates done -->
+﻿<!-- Mentor Dashboard with all the updates done -->
 
 <!doctype html>
 <html lang="en">
@@ -21,7 +21,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
@@ -39,470 +39,7 @@
         },
       };
     </script>
-    <style>
-      /* ── RESET ───────────────────────────────────────────────────── */
-      *{margin:0;padding:0;box-sizing:border-box;}
-      body{font-family:"Inter",system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
-      h1,h2,h3,h4,h5,.display{font-family:"Space Grotesk",system-ui,sans-serif;}
-
-      /* ── SCROLLBAR ───────────────────────────────────────────────── */
-      ::-webkit-scrollbar{width:3px;height:3px;}
-      ::-webkit-scrollbar-track{background:transparent;}
-      ::-webkit-scrollbar-thumb{background:#10B98160;border-radius:99px;}
-      ::-webkit-scrollbar-thumb:hover{background:#10B981AA;}
-
-      /* ══ SIDEBAR ══════════════════════════════════════════════════ */
-      aside{
-        background:linear-gradient(195deg,
-          #021209 0%,
-          #041E14 45%,
-          #052B1C 100%)!important;
-        border-right:1px solid rgba(255,255,255,0.04)!important;
-        position:relative;overflow:hidden;
-      }
-      /* Grain overlay */
-      aside::before{
-        content:"";position:absolute;inset:0;z-index:0;
-        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-        pointer-events:none;opacity:0.6;
-      }
-      /* Decorative mesh gradient */
-      aside::after{
-        content:"";position:absolute;
-        top:0;left:0;right:0;bottom:0;z-index:0;
-        background:
-          radial-gradient(ellipse 80% 50% at 10% 10%,#05966922 0%,transparent 60%),
-          radial-gradient(ellipse 60% 40% at 90% 85%,#10B98118 0%,transparent 55%),
-          radial-gradient(ellipse 40% 30% at 50% 50%,#0596690A 0%,transparent 70%);
-        pointer-events:none;
-      }
-      aside>*{position:relative;z-index:1;}
-
-      /* Sidebar ring decoration */
-      .sb-ring{
-        position:absolute;bottom:-120px;right:-80px;z-index:0;
-        width:300px;height:300px;border-radius:50%;
-        border:1px solid #05966918;
-        pointer-events:none;
-      }
-      .sb-ring::before{
-        content:"";position:absolute;inset:30px;border-radius:50%;
-        border:1px solid #10B98110;
-      }
-
-      /* ── BRAND ───────────────────────────────────────────────────── */
-      .brand-wrap{
-        padding:18px 16px 14px;
-        border-bottom:1px solid rgba(255,255,255,0.05);
-        display:flex;align-items:center;gap:12px;
-      }
-      .brand-logo{
-        width:38px;height:38px;flex-shrink:0;
-        background:linear-gradient(135deg,#059669,#10B981);
-        border-radius:11px;
-        display:flex;align-items:center;justify-content:center;
-        font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:17px;color:#fff;
-        box-shadow:0 0 0 1px rgba(255,255,255,0.1) inset,0 6px 20px #05966950;
-        letter-spacing:-0.5px;
-      }
-      .brand-name{
-        font-family:"Space Grotesk",sans-serif;
-        font-weight:700;font-size:15.5px;color:#fff;
-        letter-spacing:-0.3px;line-height:1;
-      }
-      .brand-sub{
-        font-size:9px;font-weight:600;letter-spacing:2.5px;
-        color:#34D399;text-transform:uppercase;
-        margin-top:3px;opacity:0.9;
-      }
-
-      /* ── NAV SECTION LABELS ─────────────────────────────────────── */
-      .nav-section-label{
-        font-size:9px;font-weight:700;letter-spacing:2px;
-        color:rgba(255,255,255,0.2);text-transform:uppercase;
-        padding:16px 14px 5px;
-      }
-      .nav-divider{
-        height:1px;margin:6px 12px;
-        background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);
-      }
-
-      /* ── NAV ITEMS ───────────────────────────────────────────────── */
-      .nav-item{
-        width:100%;display:flex;align-items:center;gap:10px;
-        padding:9px 12px;border-radius:9px;
-        color:rgba(255,255,255,0.42);
-        font-size:13px;font-weight:500;
-        transition:all 0.18s;
-        position:relative;border:none;background:none;
-        cursor:pointer;text-align:left;
-        font-family:"Inter",sans-serif;
-      }
-      .nav-item i{
-        width:16px;text-align:center;font-size:13px;flex-shrink:0;
-        color:rgba(255,255,255,0.28);transition:color 0.18s;
-      }
-      .nav-item:hover{
-        background:rgba(255,255,255,0.065);
-        color:rgba(255,255,255,0.85);
-        transform:translateX(2px);
-      }
-      .nav-item:hover i{color:rgba(255,255,255,0.6);}
-      .nav-item.active{
-        background:linear-gradient(135deg,#0596692A,#10B98116);
-        color:#fff;
-        box-shadow:inset 0 0 0 1px #05966938,0 2px 8px #05966920;
-      }
-      .nav-item.active i{color:#10B981;}
-      .nav-item.active::before{
-        content:"";position:absolute;left:0;top:20%;bottom:20%;
-        width:2.5px;background:linear-gradient(#059669,#10B981);
-        border-radius:0 3px 3px 0;
-      }
-
-      /* ── LOGOUT ──────────────────────────────────────────────────── */
-      .logout-btn{
-        width:100%;display:flex;align-items:center;gap:10px;
-        padding:9px 12px;border-radius:9px;
-        color:rgba(248,113,113,0.55);font-size:13px;font-weight:500;
-        transition:all 0.18s;border:none;background:none;cursor:pointer;text-align:left;
-      }
-      .logout-btn:hover{background:rgba(239,68,68,0.1);color:#F87171;}
-      .logout-btn i{width:16px;text-align:center;font-size:13px;flex-shrink:0;}
-
-      /* ══ HEADER ═══════════════════════════════════════════════════ */
-      header{
-        background:rgba(255,255,255,0.98)!important;
-        backdrop-filter:blur(20px) saturate(180%)!important;
-        border-bottom:1px solid rgba(226,232,240,0.6)!important;
-        box-shadow:
-          0 1px 0 rgba(0,0,0,0.04),
-          0 1px 3px rgba(0,0,0,0.04),
-          0 4px 12px rgba(0,0,0,0.02)!important;
-        height:60px!important;z-index:50;position:sticky;top:0;
-      }
-      /* Accent line under header */
-      header::after{
-        content:"";position:absolute;bottom:0;left:0;right:0;height:2px;
-        background:linear-gradient(90deg,transparent 5%,#05966930 30%,#10B98130 70%,transparent 95%);
-      }
-      #page-title{
-        font-family:"Space Grotesk",sans-serif!important;
-        font-weight:700!important;font-size:17px!important;
-        color:#0F172A!important;letter-spacing:-0.4px;
-      }
-
-      /* User chip */
-      .user-chip{
-        display:flex;align-items:center;gap:10px;
-        padding:4px 12px 4px 4px;
-        background:#FAFBFF;border:1px solid #E2E8F0;
-        border-radius:99px;cursor:pointer;
-        transition:all 0.18s;
-        box-shadow:0 1px 3px rgba(0,0,0,0.04);
-      }
-      .user-chip:hover{
-        border-color:#05966940;
-        box-shadow:0 2px 10px #05966915;
-      }
-      .user-avatar{
-        width:30px;height:30px;border-radius:50%;
-        border:2px solid rgba(255,255,255,0.9);
-        box-shadow:0 1px 4px rgba(0,0,0,0.12);
-        object-fit:cover;
-      }
-
-      /* Notification */
-      .notif-btn{
-        width:36px;height:36px;border-radius:10px;
-        background:#F8FAFC;border:1px solid #E2E8F0;
-        display:flex;align-items:center;justify-content:center;
-        position:relative;cursor:pointer;transition:all 0.18s;
-      }
-      .notif-btn:hover{background:#EFF6FF;border-color:#05966935;}
-      .notif-btn i{font-size:14px;color:#64748B;}
-      .notif-dot{
-        position:absolute;top:7px;right:7px;
-        width:7px;height:7px;background:#EF4444;
-        border-radius:50%;border:1.5px solid #F8FAFC;
-        animation:ping 2s infinite;
-      }
-      @keyframes ping{
-        0%,100%{transform:scale(1);opacity:1;}
-        50%{transform:scale(1.5);opacity:0.6;}
-      }
-
-      /* ══ MAIN CONTENT ═════════════════════════════════════════════ */
-      .main-bg{
-        background:#F1F5F9;
-        background-image:
-          url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23CBD5E1' fill-opacity='0.15'%3E%3Cpath d='M0 0h80v80H0V0zm20 20v40h40V20H20zm20 35a15 15 0 1 1 0-30 15 15 0 0 1 0 30z' opacity='.5'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
-          radial-gradient(ellipse 70% 50% at 0% 0%,#05966907,transparent),
-          radial-gradient(ellipse 60% 40% at 100% 100%,#10B98105,transparent);
-      }
-
-      /* ══ CARDS ════════════════════════════════════════════════════ */
-      .panel-card{
-        background:#ffffff;
-        border-radius:16px;
-        border:1px solid rgba(226,232,240,0.8);
-        box-shadow:
-          0 0 0 1px rgba(255,255,255,0.7) inset,
-          0 1px 3px rgba(0,0,0,0.04),
-          0 4px 16px rgba(0,0,0,0.04);
-        transition:all 0.2s;
-        position:relative;overflow:hidden;
-      }
-      .panel-card:hover{
-        border-color:#05966920;
-        box-shadow:
-          0 0 0 1px rgba(255,255,255,0.8) inset,
-          0 2px 6px rgba(0,0,0,0.05),
-          0 8px 32px rgba(0,0,0,0.07),
-          0 0 0 3px #05966908;
-        transform:translateY(-1px);
-      }
-
-      /* ══ STAT CARDS ═══════════════════════════════════════════════ */
-      .stat-card{
-        background:#fff;border-radius:16px;padding:20px 22px;
-        border:1px solid rgba(226,232,240,0.8);
-        position:relative;overflow:hidden;
-        transition:all 0.2s;
-        box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.04);
-      }
-      .stat-card:hover{
-        transform:translateY(-2px);
-        box-shadow:0 4px 8px rgba(0,0,0,0.05),0 12px 32px rgba(0,0,0,0.08);
-        border-color:#05966925;
-      }
-      /* Top accent bar */
-      .stat-card::before{
-        content:"";position:absolute;top:0;left:0;right:0;height:3px;
-        background:linear-gradient(90deg,#059669,#10B981);
-      }
-      /* BG glow */
-      .stat-card::after{
-        content:"";position:absolute;top:-20px;right:-20px;
-        width:100px;height:100px;border-radius:50%;
-        background:radial-gradient(circle,#0596690C,transparent 70%);
-        pointer-events:none;
-      }
-      .stat-icon{
-        width:44px;height:44px;border-radius:12px;flex-shrink:0;
-        display:flex;align-items:center;justify-content:center;
-        font-size:18px;
-        background:linear-gradient(135deg,#05966915,#10B9810A);
-        border:1px solid #05966915;
-        box-shadow:0 2px 8px #05966915;
-        color:#059669;
-      }
-      .stat-value{
-        font-family:"Space Grotesk",sans-serif;
-        font-weight:700;font-size:28px;color:#0F172A;
-        line-height:1;letter-spacing:-1px;
-      }
-      .stat-label{
-        font-size:11px;font-weight:600;color:#94A3B8;
-        text-transform:uppercase;letter-spacing:1px;margin-top:4px;
-      }
-
-      /* ══ WELCOME BANNER ═══════════════════════════════════════════ */
-      .welcome-banner{
-        background:linear-gradient(135deg,#059669 0%,#10B981 100%);
-        border-radius:20px;padding:28px 32px;
-        position:relative;overflow:hidden;
-        box-shadow:0 8px 32px #05966940,0 0 0 1px rgba(255,255,255,0.12) inset;
-      }
-      .welcome-banner::before{
-        content:"";position:absolute;top:-60px;right:40px;
-        width:220px;height:220px;border-radius:50%;
-        background:radial-gradient(circle,rgba(255,255,255,0.14),transparent 65%);
-      }
-      .welcome-banner::after{
-        content:"";position:absolute;bottom:-80px;right:-30px;
-        width:250px;height:250px;border-radius:50%;
-        background:radial-gradient(circle,rgba(255,255,255,0.07),transparent 65%);
-      }
-
-      /* ══ BUTTONS ══════════════════════════════════════════════════ */
-      .btn-primary{
-        background:linear-gradient(135deg,#059669,#10B981);
-        color:#fff;border:none;border-radius:10px;
-        padding:9px 18px;font-weight:600;font-size:13px;
-        cursor:pointer;transition:all 0.18s;
-        box-shadow:0 3px 10px #05966935;
-        display:inline-flex;align-items:center;gap:7px;
-        position:relative;overflow:hidden;
-        font-family:"Inter",sans-serif;letter-spacing:-0.1px;
-      }
-      .btn-primary::before{
-        content:"";position:absolute;top:0;left:-100%;
-        width:60%;height:100%;
-        background:linear-gradient(90deg,transparent,rgba(255,255,255,0.22),transparent);
-        transform:skewX(-15deg);transition:left 0.5s;
-      }
-      .btn-primary:hover::before{left:160%;}
-      .btn-primary:hover{
-        transform:translateY(-1px);
-        box-shadow:0 6px 20px #05966950;
-        filter:brightness(1.05);
-      }
-      .btn-primary:active{transform:translateY(0);filter:brightness(0.97);}
-
-      .btn-secondary{
-        background:#fff;color:#374151;
-        border:1px solid #E2E8F0;border-radius:10px;
-        padding:8px 16px;font-weight:500;font-size:13px;
-        cursor:pointer;transition:all 0.18s;
-        display:inline-flex;align-items:center;gap:7px;
-        box-shadow:0 1px 3px rgba(0,0,0,0.04);
-        font-family:"Inter",sans-serif;
-      }
-      .btn-secondary:hover{
-        background:#F8FAFC;border-color:#05966930;
-        color:#059669;box-shadow:0 2px 8px #05966915;
-      }
-
-      /* ══ TABLE ════════════════════════════════════════════════════ */
-      table{border-collapse:separate;border-spacing:0;width:100%;}
-      thead th{
-        background:#F8FAFC;
-        font-size:10.5px;font-weight:700;color:#6B7280;
-        text-transform:uppercase;letter-spacing:1px;
-        padding:12px 20px;
-        border-bottom:1px solid #E2E8F0;
-      }
-      thead th:first-child{border-radius:12px 0 0 0;}
-      thead th:last-child{border-radius:0 12px 0 0;}
-      tbody tr{transition:background 0.12s;}
-      tbody tr:hover{background:#F8FAFF;}
-      tbody td{
-        padding:13px 20px;font-size:13.5px;color:#374151;
-        border-bottom:1px solid #F1F5F9;
-      }
-      tbody tr:last-child td{border-bottom:none;}
-
-      /* ══ BADGES ═══════════════════════════════════════════════════ */
-      .badge{
-        display:inline-flex;align-items:center;
-        padding:2px 9px;border-radius:99px;
-        font-size:10.5px;font-weight:700;letter-spacing:0.3px;
-      }
-      .badge-blue{background:#05966912;color:#059669;border:1px solid #05966920;}
-      .badge-green{background:#DCFCE7;color:#15803D;border:1px solid #BBF7D0;}
-      .badge-red{background:#FEE2E2;color:#DC2626;border:1px solid #FECACA;}
-      .badge-amber{background:#FEF3C7;color:#B45309;border:1px solid #FDE68A;}
-      .badge-purple{background:#F3E8FF;color:#7C3AED;border:1px solid #DDD6FE;}
-      .badge-emerald{background:#D1FAE5;color:#065F46;border:1px solid #A7F3D0;}
-
-      /* ══ MODALS ═══════════════════════════════════════════════════ */
-      .modal-backdrop{
-        background:rgba(2,8,23,0.7);
-        backdrop-filter:blur(10px) saturate(150%);
-      }
-      .modal-inner{
-        background:#fff;border-radius:20px;overflow:hidden;
-        border:1px solid rgba(226,232,240,0.6);
-        box-shadow:0 24px 80px rgba(0,0,0,0.2),0 0 0 1px rgba(255,255,255,0.06);
-      }
-      .modal-header{
-        padding:20px 24px;border-bottom:1px solid #F1F5F9;
-        background:linear-gradient(135deg,#FAFBFF,#F5F7FF);
-        display:flex;justify-content:space-between;align-items:center;
-      }
-
-      /* ══ INPUTS ═══════════════════════════════════════════════════ */
-      input,select,textarea{
-        font-family:"Inter",sans-serif!important;
-        font-size:13.5px!important;
-        border:1px solid #E2E8F0!important;
-        border-radius:9px!important;
-        background:#FAFBFF!important;
-        color:#0F172A!important;
-        transition:all 0.15s!important;
-      }
-      input:focus,select:focus,textarea:focus{
-        outline:none!important;
-        border-color:#059669!important;
-        background:#fff!important;
-        box-shadow:0 0 0 3px #05966918!important;
-      }
-
-      /* ══ ANIMATIONS ═══════════════════════════════════════════════ */
-      .fade-in{animation:fadeUp 0.35s cubic-bezier(0.16,1,0.3,1) both;}
-      @keyframes fadeUp{
-        from{opacity:0;transform:translateY(16px);}
-        to{opacity:1;transform:translateY(0);}
-      }
-      .fade-in>*:nth-child(1){animation-delay:0.04s;}
-      .fade-in>*:nth-child(2){animation-delay:0.08s;}
-      .fade-in>*:nth-child(3){animation-delay:0.12s;}
-      .fade-in>*:nth-child(4){animation-delay:0.16s;}
-
-      /* Shimmer */
-      .shimmer{
-        background:linear-gradient(90deg,#F1F5F9 25%,#E2E8F0 50%,#F1F5F9 75%);
-        background-size:200% 100%;animation:shimmer 1.5s infinite;
-      }
-      @keyframes shimmer{
-        0%{background-position:200% 0;}
-        100%{background-position:-200% 0;}
-      }
-
-      /* ══ SCORE CARD ═══════════════════════════════════════════════ */
-      #ai-score-card{
-        background:linear-gradient(135deg,#059669 0%,#10B981 100%)!important;
-        border-radius:18px!important;
-        box-shadow:0 8px 32px #05966945!important;
-        border:1px solid rgba(255,255,255,0.18)!important;
-      }
-
-      /* ══ SECTION HEADERS ══════════════════════════════════════════ */
-      .section-icon{
-        width:40px;height:40px;border-radius:12px;flex-shrink:0;
-        background:linear-gradient(135deg,#05966918,#10B98110);
-        border:1px solid #05966918;
-        display:flex;align-items:center;justify-content:center;
-        font-size:15px;color:#059669;
-        box-shadow:0 2px 8px #05966915;
-      }
-
-      /* ══ INTERNSHIP CARDS ═════════════════════════════════════════ */
-      .intern-card{
-        background:#fff;border:1px solid #E2E8F0;border-radius:16px;
-        padding:20px;display:flex;flex-direction:column;gap:13px;
-        transition:all 0.2s;
-        box-shadow:0 1px 3px rgba(0,0,0,0.04);
-      }
-      .intern-card:hover{
-        transform:translateY(-3px);
-        box-shadow:0 8px 32px rgba(0,0,0,0.1);
-        border-color:#05966928;
-      }
-      .intern-badge-paid{background:#D1FAE5;color:#065F46;border:1px solid #A7F3D0;}
-      .intern-badge-unpaid{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;}
-      .intern-badge{padding:2px 9px;border-radius:99px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
-      .intern-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:12px;color:#64748B;}
-      .intern-meta span{display:flex;align-items:center;gap:4px;}
-      .intern-req{background:#05966906;border:1px solid #05966910;border-radius:10px;padding:9px 12px;font-size:12px;color:#475569;}
-
-      /* ══ TOAST ════════════════════════════════════════════════════ */
-      #toast-container>div{
-        border-radius:12px!important;
-        box-shadow:0 8px 32px rgba(0,0,0,0.18),0 0 0 1px rgba(255,255,255,0.1) inset!important;
-        font-weight:600!important;font-size:13.5px!important;
-        font-family:"Inter",sans-serif!important;
-        padding:12px 18px!important;
-      }
-
-      /* ══ AVATAR RING ══════════════════════════════════════════════ */
-      .avatar-ring{
-        box-shadow: 0 0 0 2px rgba(255,255,255,0.8), 0 2px 8px rgba(0,0,0,0.15);
-      }
-    </style>
-
-
+    <link rel="stylesheet" href="styles.css" />
 </head>
   <body
     class="flex h-screen overflow-hidden bg-slate-100"
@@ -600,48 +137,48 @@
 
     <!-- Main Content Area -->
     <main class="flex-1 flex flex-col h-screen overflow-hidden">
-      <!-- ── TOP HEADER ──────────────────────────────────────────── -->
-      <header class="bg-white h-16 flex items-center justify-between px-6 z-10 shrink-0" style="border-bottom:1px solid #E2E8F0;position:relative;">
-        <h1 id="page-title" style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;color:#0F172A;letter-spacing:-0.3px;">
+      <!-- â”€â”€ TOP HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+      <header class="bg-white h-16 flex items-center justify-between px-6 z-10 shrink-0 extracted-style-184">
+        <h1 id="page-title" class="extracted-style-185">
           Assigned Students
         </h1>
         <div class="flex items-center gap-3">
           <!-- NOTIFICATION BELL -->
           <div class="relative" id="notif-wrapper">
             <button class="notif-btn" onclick="toggleNotifDropdown(event)" title="Notifications" id="notif-bell-btn">
-              <i class="fas fa-bell" style="font-size:15px;color:#64748B;"></i>
-              <span class="notif-dot" id="notif-indicator" style="display:none;"></span>
+              <i class="fas fa-bell extracted-style-186"></i>
+              <span class="notif-dot extracted-style-187" id="notif-indicator"></span>
             </button>
             <!-- Dropdown -->
-            <div id="notif-dropdown" class="hidden" style="position:absolute;top:calc(100% + 10px);right:0;width:340px;background:#fff;border:1px solid #E2E8F0;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.13),0 2px 8px rgba(0,0,0,0.07);z-index:9999;overflow:hidden;">
-              <div style="padding:14px 18px 12px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between;">
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:#0F172A;">Notifications</span>
-                  <span id="notif-badge" style="background:#059669;color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px;display:none;">0</span>
+            <div id="notif-dropdown" class="hidden extracted-style-188">
+              <div class="extracted-style-189">
+                <div class="extracted-style-190">
+                  <span class="extracted-style-191">Notifications</span>
+                  <span id="notif-badge" class="extracted-style-217">0</span>
                 </div>
-                <button onclick="markAllRead()" style="font-size:11.5px;color:#059669;font-weight:600;background:none;border:none;cursor:pointer;padding:3px 8px;border-radius:6px;" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='none'">Mark all read</button>
+                <button onclick="markAllRead()" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='none'" class="extracted-style-218">Mark all read</button>
               </div>
-              <div id="notif-list" style="max-height:320px;overflow-y:auto;padding:8px 0;">
-                <div style="text-align:center;padding:28px 20px;color:#94A3B8;">
-                  <i class="fas fa-bell-slash" style="font-size:28px;margin-bottom:8px;display:block;opacity:0.4;"></i>
-                  <p style="font-size:13px;font-weight:500;">No notifications yet</p>
+              <div id="notif-list" class="extracted-style-194">
+                <div class="extracted-style-195">
+                  <i class="fas fa-bell-slash extracted-style-196"></i>
+                  <p class="extracted-style-197">No notifications yet</p>
                 </div>
               </div>
-              <div style="padding:10px 18px;border-top:1px solid #F1F5F9;text-align:center;">
-                <span style="font-size:12px;color:#94A3B8;">You're all caught up ✓</span>
+              <div class="extracted-style-198">
+                <span class="extracted-style-199">You're all caught up âœ“</span>
               </div>
             </div>
           </div>
           <!-- DIVIDER -->
-          <div style="width:1px;height:28px;background:#E2E8F0;"></div>
+          <div class="extracted-style-200"></div>
           <!-- USER CHIP -->
-          <div class="user-chip" onclick="navigate('assigned')" title="Profile" style="cursor:pointer;">
-            <img id="header-avatar" src="https://api.dicebear.com/7.x/initials/svg?seed=User&amp;backgroundColor=059669&amp;textColor=ffffff" alt="Avatar" class="user-avatar" style="width:30px;height:30px;" />
+          <div class="user-chip extracted-style-201" onclick="navigate('assigned')" title="Profile">
+            <img id="header-avatar" src="https://api.dicebear.com/7.x/initials/svg?seed=User&amp;backgroundColor=059669&amp;textColor=ffffff" alt="Avatar" class="user-avatar extracted-style-202" />
             <div class="text-right hidden sm:block">
-              <p id="header-user-name" style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;color:#0F172A;line-height:1.2;">Loading...</p>
-              <p style="font-size:11px;color:#94A3B8;line-height:1;">Mentor</p>
+              <p id="header-user-name" class="extracted-style-203">Loading...</p>
+              <p class="extracted-style-204">Mentor</p>
             </div>
-            <i class="fas fa-chevron-right" style="font-size:10px;color:#CBD5E1;margin-left:2px;"></i>
+            <i class="fas fa-chevron-right extracted-style-205"></i>
           </div>
         </div>
       </header>
@@ -655,7 +192,7 @@
         >
           <div class="mb-6 flex justify-between items-end">
             <div>
-              <h2 class= style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;">Your Mentees</h2>
+              <h2 class="extracted-heading-outfit">Your Mentees</h2>
               <p class="text-slate-500 mt-1">
                 Students currently assigned to you for guidance.
               </p>
@@ -718,7 +255,7 @@
                     Total Attempts
                   </p>
                   <p
-                    class= style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;"
+                    class="extracted-heading-outfit"
                     id="perf-total-attempts"
                   >
                     0
@@ -738,7 +275,7 @@
                     Average Accuracy
                   </p>
                   <p
-                    class= style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;"
+                    class="extracted-heading-outfit"
                     id="perf-avg-accuracy"
                   >
                     0%
@@ -758,7 +295,7 @@
                     Highest Score
                   </p>
                   <p
-                    class= style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;"
+                    class="extracted-heading-outfit"
                     id="perf-high-score"
                   >
                     0
@@ -819,7 +356,7 @@
             >
               <i class="fas fa-user-graduate"></i>
             </div>
-            <h3 class= style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-xl font-bold text-slate-700">Select a Student</h3>
+            <h3 class="extracted-heading-outfit">Select a Student</h3>
             <p class="text-slate-500 mt-2">
               Choose a student from the dropdown above to view their performance
               analytics.
@@ -954,7 +491,7 @@
           <!-- Header row -->
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 class= style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800 flex items-center gap-2">
+              <h2 class="extracted-heading-outfit">
                 <span class="w-9 h-9 rounded-xl bg-purple-100 flex items-center justify-center shrink-0">
                   <i class="fas fa-briefcase text-purple-600 text-base"></i>
                 </span>
@@ -1042,7 +579,7 @@
             </div>
             <div>
               <label class="block text-sm font-semibold text-slate-700 mb-1">Stipend (if paid)</label>
-              <input type="text" id="mentor-intern-stipend" placeholder="e.g. ₹5,000/month"
+              <input type="text" id="mentor-intern-stipend" placeholder="e.g. â‚¹5,000/month"
                 class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-primary outline-none text-sm"/>
             </div>
             <div class="col-span-2">
@@ -1242,7 +779,7 @@
         ocrSection.innerHTML = `
         <div class="mb-6 flex items-center justify-between">
           <div>
-            <h2 class= style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;">Ami-Bridge AI Resume OCR</h2>
+            <h2 class="extracted-heading-outfit">Ami-Bridge AI Resume OCR</h2>
             <p class="text-slate-500 mt-1">Extract structured data from all your students' resumes using Ami-Bridge AI.</p>
           </div>
           <button onclick="loadOCRData()" id="ocr-run-btn"
@@ -1266,14 +803,14 @@
           "section-container hidden fade-in max-w-3xl mx-auto";
         bulkSection.innerHTML = `
         <div class="mb-6">
-          <h2 class= style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;">Bulk Register Students</h2>
+          <h2 class="extracted-heading-outfit">Bulk Register Students</h2>
           <p class="text-slate-500 mt-1">Upload a CSV file to register multiple students at once.</p>
         </div>
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-5">
           <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-700">
             <p class="font-bold mb-1"><i class="fas fa-info-circle mr-1"></i> CSV Format Required</p>
             <p>Your CSV must have these columns: <code class="bg-blue-100 px-1 rounded">name, email, password</code></p>
-            <p class="mt-1">Optional: <code class="bg-blue-100 px-1 rounded">mentor_email</code> — auto-assigns the student to that mentor.</p>
+            <p class="mt-1">Optional: <code class="bg-blue-100 px-1 rounded">mentor_email</code> â€” auto-assigns the student to that mentor.</p>
             <a href="#" onclick="downloadSampleCSV(event)" class="text-blue-600 underline font-medium mt-2 inline-block">Download Sample CSV</a>
           </div>
           <div id="csv-drop-zone"
@@ -1819,8 +1356,8 @@
                 (d) => `<tr class="hover:bg-slate-50">
               <td class="px-4 py-3 font-semibold text-slate-800 text-sm">${d.student_name}</td>
               <td class="px-4 py-3 text-xs text-slate-500">${d.student_email}</td>
-              <td class="px-4 py-3 text-xs text-slate-600">${d.education || "—"}</td>
-              <td class="px-4 py-3 text-xs text-slate-600">${Array.isArray(d.skills) ? d.skills.slice(0, 4).join(", ") : d.skills || "—"}</td>
+              <td class="px-4 py-3 text-xs text-slate-600">${d.education || "â€”"}</td>
+              <td class="px-4 py-3 text-xs text-slate-600">${Array.isArray(d.skills) ? d.skills.slice(0, 4).join(", ") : d.skills || "â€”"}</td>
               <td class="px-4 py-3 text-center">${d.gemini_score != null ? `<span class="px-2 py-1 rounded-full text-xs font-bold ${d.gemini_score >= 70 ? "bg-green-100 text-green-700" : d.gemini_score >= 50 ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"}">${d.gemini_score}/100</span>` : "<span class='text-slate-400 text-xs'>N/A</span>"}</td>
               <td class="px-4 py-3 text-center"><button onclick="viewResumeInline(${d.resume_id}, '${(d.resume_name || "").replace(/'/g, "\\'")}')" class="px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded text-xs transition"><i class="fas fa-eye"></i></button></td>
             </tr>`,
@@ -1912,8 +1449,8 @@
             <div class="bg-green-50 rounded-xl p-3"><p class="text-2xl font-black text-green-700">${data.created}</p><p class="text-xs text-green-600">Created</p></div>
             <div class="bg-yellow-50 rounded-xl p-3"><p class="text-2xl font-black text-yellow-700">${data.skipped}</p><p class="text-xs text-yellow-600">Skipped</p></div>
             <div class="bg-red-50 rounded-xl p-3"><p class="text-2xl font-black text-red-700">${data.failed}</p><p class="text-xs text-red-600">Failed</p></div>
-          </div>${sl ? `<div class="bg-green-50 rounded-xl p-3 text-xs"><p class="font-bold text-green-700 mb-1">✅ Created</p><ul>${sl}</ul></div>` : ""}
-          ${kl ? `<div class="bg-yellow-50 rounded-xl p-3 text-xs mt-2"><p class="font-bold text-yellow-700 mb-1">⚠️ Skipped</p><ul>${kl}</ul></div>` : ""}`;
+          </div>${sl ? `<div class="bg-green-50 rounded-xl p-3 text-xs"><p class="font-bold text-green-700 mb-1">âœ… Created</p><ul>${sl}</ul></div>` : ""}
+          ${kl ? `<div class="bg-yellow-50 rounded-xl p-3 text-xs mt-2"><p class="font-bold text-yellow-700 mb-1">âš ï¸ Skipped</p><ul>${kl}</ul></div>` : ""}`;
           showToast(`${data.created} students registered!`, "success");
         } catch (err) {
           div.innerHTML = `<div class="p-4 bg-red-50 rounded-xl text-red-700 text-sm">${err.message}</div>`;
@@ -2058,8 +1595,8 @@
           },
         });
       }
-    
-      // ── LOCAL INTERNSHIPS ─────────────────────────────────────────────────
+
+      // â”€â”€ LOCAL INTERNSHIPS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       let _mentorInternships = [];
 
       async function loadMentorInternships() {
@@ -2223,9 +1760,9 @@
         }
       }
 
-      // ════════════════════════════════════════════════════════════════
+      // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
       // NOTIFICATION SYSTEM
-      // ════════════════════════════════════════════════════════════════
+      // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
       const _notifState = { items: [], read: new Set() };
 
       function addNotification(message, type = "info", title = "") {

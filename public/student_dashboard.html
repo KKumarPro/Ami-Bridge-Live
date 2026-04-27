@@ -1,4 +1,4 @@
-<!-- Student Dashboard with all the updates done -->
+﻿<!-- Student Dashboard with all the updates done -->
 
 <!doctype html>
 <html lang="en">
@@ -21,7 +21,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
@@ -39,470 +39,8 @@
         },
       };
     </script>
-    <style>
-      /* ── RESET ───────────────────────────────────────────────────── */
-      *{margin:0;padding:0;box-sizing:border-box;}
-      body{font-family:"Inter",system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
-      h1,h2,h3,h4,h5,.display{font-family:"Space Grotesk",system-ui,sans-serif;}
-
-      /* ── SCROLLBAR ───────────────────────────────────────────────── */
-      ::-webkit-scrollbar{width:3px;height:3px;}
-      ::-webkit-scrollbar-track{background:transparent;}
-      ::-webkit-scrollbar-thumb{background:#3B82F660;border-radius:99px;}
-      ::-webkit-scrollbar-thumb:hover{background:#3B82F6AA;}
-
-      /* ══ SIDEBAR ══════════════════════════════════════════════════ */
-      aside{
-        background:linear-gradient(195deg,
-          #040D1F 0%,
-          #071633 45%,
-          #0A1F4A 100%)!important;
-        border-right:1px solid rgba(255,255,255,0.04)!important;
-        position:relative;overflow:hidden;
-      }
-      /* Grain overlay */
-      aside::before{
-        content:"";position:absolute;inset:0;z-index:0;
-        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-        pointer-events:none;opacity:0.6;
-      }
-      /* Decorative mesh gradient */
-      aside::after{
-        content:"";position:absolute;
-        top:0;left:0;right:0;bottom:0;z-index:0;
-        background:
-          radial-gradient(ellipse 80% 50% at 10% 10%,#2563EB22 0%,transparent 60%),
-          radial-gradient(ellipse 60% 40% at 90% 85%,#0EA5E918 0%,transparent 55%),
-          radial-gradient(ellipse 40% 30% at 50% 50%,#2563EB0A 0%,transparent 70%);
-        pointer-events:none;
-      }
-      aside>*{position:relative;z-index:1;}
-
-      /* Sidebar ring decoration */
-      .sb-ring{
-        position:absolute;bottom:-120px;right:-80px;z-index:0;
-        width:300px;height:300px;border-radius:50%;
-        border:1px solid #2563EB18;
-        pointer-events:none;
-      }
-      .sb-ring::before{
-        content:"";position:absolute;inset:30px;border-radius:50%;
-        border:1px solid #0EA5E910;
-      }
-
-      /* ── BRAND ───────────────────────────────────────────────────── */
-      .brand-wrap{
-        padding:18px 16px 14px;
-        border-bottom:1px solid rgba(255,255,255,0.05);
-        display:flex;align-items:center;gap:12px;
-      }
-      .brand-logo{
-        width:38px;height:38px;flex-shrink:0;
-        background:linear-gradient(135deg,#2563EB,#0EA5E9);
-        border-radius:11px;
-        display:flex;align-items:center;justify-content:center;
-        font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:17px;color:#fff;
-        box-shadow:0 0 0 1px rgba(255,255,255,0.1) inset,0 6px 20px #2563EB50;
-        letter-spacing:-0.5px;
-      }
-      .brand-name{
-        font-family:"Space Grotesk",sans-serif;
-        font-weight:700;font-size:15.5px;color:#fff;
-        letter-spacing:-0.3px;line-height:1;
-      }
-      .brand-sub{
-        font-size:9px;font-weight:600;letter-spacing:2.5px;
-        color:#60A5FA;text-transform:uppercase;
-        margin-top:3px;opacity:0.9;
-      }
-
-      /* ── NAV SECTION LABELS ─────────────────────────────────────── */
-      .nav-section-label{
-        font-size:9px;font-weight:700;letter-spacing:2px;
-        color:rgba(255,255,255,0.2);text-transform:uppercase;
-        padding:16px 14px 5px;
-      }
-      .nav-divider{
-        height:1px;margin:6px 12px;
-        background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);
-      }
-
-      /* ── NAV ITEMS ───────────────────────────────────────────────── */
-      .nav-item{
-        width:100%;display:flex;align-items:center;gap:10px;
-        padding:9px 12px;border-radius:9px;
-        color:rgba(255,255,255,0.42);
-        font-size:13px;font-weight:500;
-        transition:all 0.18s;
-        position:relative;border:none;background:none;
-        cursor:pointer;text-align:left;
-        font-family:"Inter",sans-serif;
-      }
-      .nav-item i{
-        width:16px;text-align:center;font-size:13px;flex-shrink:0;
-        color:rgba(255,255,255,0.28);transition:color 0.18s;
-      }
-      .nav-item:hover{
-        background:rgba(255,255,255,0.065);
-        color:rgba(255,255,255,0.85);
-        transform:translateX(2px);
-      }
-      .nav-item:hover i{color:rgba(255,255,255,0.6);}
-      .nav-item.active{
-        background:linear-gradient(135deg,#2563EB2A,#0EA5E916);
-        color:#fff;
-        box-shadow:inset 0 0 0 1px #2563EB38,0 2px 8px #2563EB20;
-      }
-      .nav-item.active i{color:#0EA5E9;}
-      .nav-item.active::before{
-        content:"";position:absolute;left:0;top:20%;bottom:20%;
-        width:2.5px;background:linear-gradient(#2563EB,#0EA5E9);
-        border-radius:0 3px 3px 0;
-      }
-
-      /* ── LOGOUT ──────────────────────────────────────────────────── */
-      .logout-btn{
-        width:100%;display:flex;align-items:center;gap:10px;
-        padding:9px 12px;border-radius:9px;
-        color:rgba(248,113,113,0.55);font-size:13px;font-weight:500;
-        transition:all 0.18s;border:none;background:none;cursor:pointer;text-align:left;
-      }
-      .logout-btn:hover{background:rgba(239,68,68,0.1);color:#F87171;}
-      .logout-btn i{width:16px;text-align:center;font-size:13px;flex-shrink:0;}
-
-      /* ══ HEADER ═══════════════════════════════════════════════════ */
-      header{
-        background:rgba(255,255,255,0.98)!important;
-        backdrop-filter:blur(20px) saturate(180%)!important;
-        border-bottom:1px solid rgba(226,232,240,0.6)!important;
-        box-shadow:
-          0 1px 0 rgba(0,0,0,0.04),
-          0 1px 3px rgba(0,0,0,0.04),
-          0 4px 12px rgba(0,0,0,0.02)!important;
-        height:60px!important;z-index:50;position:sticky;top:0;
-      }
-      /* Accent line under header */
-      header::after{
-        content:"";position:absolute;bottom:0;left:0;right:0;height:2px;
-        background:linear-gradient(90deg,transparent 5%,#2563EB30 30%,#0EA5E930 70%,transparent 95%);
-      }
-      #page-title{
-        font-family:"Space Grotesk",sans-serif!important;
-        font-weight:700!important;font-size:17px!important;
-        color:#0F172A!important;letter-spacing:-0.4px;
-      }
-
-      /* User chip */
-      .user-chip{
-        display:flex;align-items:center;gap:10px;
-        padding:4px 12px 4px 4px;
-        background:#FAFBFF;border:1px solid #E2E8F0;
-        border-radius:99px;cursor:pointer;
-        transition:all 0.18s;
-        box-shadow:0 1px 3px rgba(0,0,0,0.04);
-      }
-      .user-chip:hover{
-        border-color:#2563EB40;
-        box-shadow:0 2px 10px #2563EB15;
-      }
-      .user-avatar{
-        width:30px;height:30px;border-radius:50%;
-        border:2px solid rgba(255,255,255,0.9);
-        box-shadow:0 1px 4px rgba(0,0,0,0.12);
-        object-fit:cover;
-      }
-
-      /* Notification */
-      .notif-btn{
-        width:36px;height:36px;border-radius:10px;
-        background:#F8FAFC;border:1px solid #E2E8F0;
-        display:flex;align-items:center;justify-content:center;
-        position:relative;cursor:pointer;transition:all 0.18s;
-      }
-      .notif-btn:hover{background:#EFF6FF;border-color:#2563EB35;}
-      .notif-btn i{font-size:14px;color:#64748B;}
-      .notif-dot{
-        position:absolute;top:7px;right:7px;
-        width:7px;height:7px;background:#EF4444;
-        border-radius:50%;border:1.5px solid #F8FAFC;
-        animation:ping 2s infinite;
-      }
-      @keyframes ping{
-        0%,100%{transform:scale(1);opacity:1;}
-        50%{transform:scale(1.5);opacity:0.6;}
-      }
-
-      /* ══ MAIN CONTENT ═════════════════════════════════════════════ */
-      .main-bg{
-        background:#F1F5F9;
-        background-image:
-          url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23CBD5E1' fill-opacity='0.15'%3E%3Cpath d='M0 0h80v80H0V0zm20 20v40h40V20H20zm20 35a15 15 0 1 1 0-30 15 15 0 0 1 0 30z' opacity='.5'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
-          radial-gradient(ellipse 70% 50% at 0% 0%,#2563EB07,transparent),
-          radial-gradient(ellipse 60% 40% at 100% 100%,#0EA5E905,transparent);
-      }
-
-      /* ══ CARDS ════════════════════════════════════════════════════ */
-      .panel-card{
-        background:#ffffff;
-        border-radius:16px;
-        border:1px solid rgba(226,232,240,0.8);
-        box-shadow:
-          0 0 0 1px rgba(255,255,255,0.7) inset,
-          0 1px 3px rgba(0,0,0,0.04),
-          0 4px 16px rgba(0,0,0,0.04);
-        transition:all 0.2s;
-        position:relative;overflow:hidden;
-      }
-      .panel-card:hover{
-        border-color:#2563EB20;
-        box-shadow:
-          0 0 0 1px rgba(255,255,255,0.8) inset,
-          0 2px 6px rgba(0,0,0,0.05),
-          0 8px 32px rgba(0,0,0,0.07),
-          0 0 0 3px #2563EB08;
-        transform:translateY(-1px);
-      }
-
-      /* ══ STAT CARDS ═══════════════════════════════════════════════ */
-      .stat-card{
-        background:#fff;border-radius:16px;padding:20px 22px;
-        border:1px solid rgba(226,232,240,0.8);
-        position:relative;overflow:hidden;
-        transition:all 0.2s;
-        box-shadow:0 1px 3px rgba(0,0,0,0.04),0 4px 12px rgba(0,0,0,0.04);
-      }
-      .stat-card:hover{
-        transform:translateY(-2px);
-        box-shadow:0 4px 8px rgba(0,0,0,0.05),0 12px 32px rgba(0,0,0,0.08);
-        border-color:#2563EB25;
-      }
-      /* Top accent bar */
-      .stat-card::before{
-        content:"";position:absolute;top:0;left:0;right:0;height:3px;
-        background:linear-gradient(90deg,#2563EB,#0EA5E9);
-      }
-      /* BG glow */
-      .stat-card::after{
-        content:"";position:absolute;top:-20px;right:-20px;
-        width:100px;height:100px;border-radius:50%;
-        background:radial-gradient(circle,#2563EB0C,transparent 70%);
-        pointer-events:none;
-      }
-      .stat-icon{
-        width:44px;height:44px;border-radius:12px;flex-shrink:0;
-        display:flex;align-items:center;justify-content:center;
-        font-size:18px;
-        background:linear-gradient(135deg,#2563EB15,#0EA5E90A);
-        border:1px solid #2563EB15;
-        box-shadow:0 2px 8px #2563EB15;
-        color:#2563EB;
-      }
-      .stat-value{
-        font-family:"Space Grotesk",sans-serif;
-        font-weight:700;font-size:28px;color:#0F172A;
-        line-height:1;letter-spacing:-1px;
-      }
-      .stat-label{
-        font-size:11px;font-weight:600;color:#94A3B8;
-        text-transform:uppercase;letter-spacing:1px;margin-top:4px;
-      }
-
-      /* ══ WELCOME BANNER ═══════════════════════════════════════════ */
-      .welcome-banner{
-        background:linear-gradient(135deg,#2563EB 0%,#0EA5E9 100%);
-        border-radius:20px;padding:28px 32px;
-        position:relative;overflow:hidden;
-        box-shadow:0 8px 32px #2563EB40,0 0 0 1px rgba(255,255,255,0.12) inset;
-      }
-      .welcome-banner::before{
-        content:"";position:absolute;top:-60px;right:40px;
-        width:220px;height:220px;border-radius:50%;
-        background:radial-gradient(circle,rgba(255,255,255,0.14),transparent 65%);
-      }
-      .welcome-banner::after{
-        content:"";position:absolute;bottom:-80px;right:-30px;
-        width:250px;height:250px;border-radius:50%;
-        background:radial-gradient(circle,rgba(255,255,255,0.07),transparent 65%);
-      }
-
-      /* ══ BUTTONS ══════════════════════════════════════════════════ */
-      .btn-primary{
-        background:linear-gradient(135deg,#2563EB,#0EA5E9);
-        color:#fff;border:none;border-radius:10px;
-        padding:9px 18px;font-weight:600;font-size:13px;
-        cursor:pointer;transition:all 0.18s;
-        box-shadow:0 3px 10px #2563EB35;
-        display:inline-flex;align-items:center;gap:7px;
-        position:relative;overflow:hidden;
-        font-family:"Inter",sans-serif;letter-spacing:-0.1px;
-      }
-      .btn-primary::before{
-        content:"";position:absolute;top:0;left:-100%;
-        width:60%;height:100%;
-        background:linear-gradient(90deg,transparent,rgba(255,255,255,0.22),transparent);
-        transform:skewX(-15deg);transition:left 0.5s;
-      }
-      .btn-primary:hover::before{left:160%;}
-      .btn-primary:hover{
-        transform:translateY(-1px);
-        box-shadow:0 6px 20px #2563EB50;
-        filter:brightness(1.05);
-      }
-      .btn-primary:active{transform:translateY(0);filter:brightness(0.97);}
-
-      .btn-secondary{
-        background:#fff;color:#374151;
-        border:1px solid #E2E8F0;border-radius:10px;
-        padding:8px 16px;font-weight:500;font-size:13px;
-        cursor:pointer;transition:all 0.18s;
-        display:inline-flex;align-items:center;gap:7px;
-        box-shadow:0 1px 3px rgba(0,0,0,0.04);
-        font-family:"Inter",sans-serif;
-      }
-      .btn-secondary:hover{
-        background:#F8FAFC;border-color:#2563EB30;
-        color:#2563EB;box-shadow:0 2px 8px #2563EB15;
-      }
-
-      /* ══ TABLE ════════════════════════════════════════════════════ */
-      table{border-collapse:separate;border-spacing:0;width:100%;}
-      thead th{
-        background:#F8FAFC;
-        font-size:10.5px;font-weight:700;color:#6B7280;
-        text-transform:uppercase;letter-spacing:1px;
-        padding:12px 20px;
-        border-bottom:1px solid #E2E8F0;
-      }
-      thead th:first-child{border-radius:12px 0 0 0;}
-      thead th:last-child{border-radius:0 12px 0 0;}
-      tbody tr{transition:background 0.12s;}
-      tbody tr:hover{background:#F8FAFF;}
-      tbody td{
-        padding:13px 20px;font-size:13.5px;color:#374151;
-        border-bottom:1px solid #F1F5F9;
-      }
-      tbody tr:last-child td{border-bottom:none;}
-
-      /* ══ BADGES ═══════════════════════════════════════════════════ */
-      .badge{
-        display:inline-flex;align-items:center;
-        padding:2px 9px;border-radius:99px;
-        font-size:10.5px;font-weight:700;letter-spacing:0.3px;
-      }
-      .badge-blue{background:#2563EB12;color:#2563EB;border:1px solid #2563EB20;}
-      .badge-green{background:#DCFCE7;color:#15803D;border:1px solid #BBF7D0;}
-      .badge-red{background:#FEE2E2;color:#DC2626;border:1px solid #FECACA;}
-      .badge-amber{background:#FEF3C7;color:#B45309;border:1px solid #FDE68A;}
-      .badge-purple{background:#F3E8FF;color:#7C3AED;border:1px solid #DDD6FE;}
-      .badge-emerald{background:#D1FAE5;color:#065F46;border:1px solid #A7F3D0;}
-
-      /* ══ MODALS ═══════════════════════════════════════════════════ */
-      .modal-backdrop{
-        background:rgba(2,8,23,0.7);
-        backdrop-filter:blur(10px) saturate(150%);
-      }
-      .modal-inner{
-        background:#fff;border-radius:20px;overflow:hidden;
-        border:1px solid rgba(226,232,240,0.6);
-        box-shadow:0 24px 80px rgba(0,0,0,0.2),0 0 0 1px rgba(255,255,255,0.06);
-      }
-      .modal-header{
-        padding:20px 24px;border-bottom:1px solid #F1F5F9;
-        background:linear-gradient(135deg,#FAFBFF,#F5F7FF);
-        display:flex;justify-content:space-between;align-items:center;
-      }
-
-      /* ══ INPUTS ═══════════════════════════════════════════════════ */
-      input,select,textarea{
-        font-family:"Inter",sans-serif!important;
-        font-size:13.5px!important;
-        border:1px solid #E2E8F0!important;
-        border-radius:9px!important;
-        background:#FAFBFF!important;
-        color:#0F172A!important;
-        transition:all 0.15s!important;
-      }
-      input:focus,select:focus,textarea:focus{
-        outline:none!important;
-        border-color:#2563EB!important;
-        background:#fff!important;
-        box-shadow:0 0 0 3px #2563EB18!important;
-      }
-
-      /* ══ ANIMATIONS ═══════════════════════════════════════════════ */
-      .fade-in{animation:fadeUp 0.35s cubic-bezier(0.16,1,0.3,1) both;}
-      @keyframes fadeUp{
-        from{opacity:0;transform:translateY(16px);}
-        to{opacity:1;transform:translateY(0);}
-      }
-      .fade-in>*:nth-child(1){animation-delay:0.04s;}
-      .fade-in>*:nth-child(2){animation-delay:0.08s;}
-      .fade-in>*:nth-child(3){animation-delay:0.12s;}
-      .fade-in>*:nth-child(4){animation-delay:0.16s;}
-
-      /* Shimmer */
-      .shimmer{
-        background:linear-gradient(90deg,#F1F5F9 25%,#E2E8F0 50%,#F1F5F9 75%);
-        background-size:200% 100%;animation:shimmer 1.5s infinite;
-      }
-      @keyframes shimmer{
-        0%{background-position:200% 0;}
-        100%{background-position:-200% 0;}
-      }
-
-      /* ══ SCORE CARD ═══════════════════════════════════════════════ */
-      #ai-score-card{
-        background:linear-gradient(135deg,#2563EB 0%,#0EA5E9 100%)!important;
-        border-radius:18px!important;
-        box-shadow:0 8px 32px #2563EB45!important;
-        border:1px solid rgba(255,255,255,0.18)!important;
-      }
-
-      /* ══ SECTION HEADERS ══════════════════════════════════════════ */
-      .section-icon{
-        width:40px;height:40px;border-radius:12px;flex-shrink:0;
-        background:linear-gradient(135deg,#2563EB18,#0EA5E910);
-        border:1px solid #2563EB18;
-        display:flex;align-items:center;justify-content:center;
-        font-size:15px;color:#2563EB;
-        box-shadow:0 2px 8px #2563EB15;
-      }
-
-      /* ══ INTERNSHIP CARDS ═════════════════════════════════════════ */
-      .intern-card{
-        background:#fff;border:1px solid #E2E8F0;border-radius:16px;
-        padding:20px;display:flex;flex-direction:column;gap:13px;
-        transition:all 0.2s;
-        box-shadow:0 1px 3px rgba(0,0,0,0.04);
-      }
-      .intern-card:hover{
-        transform:translateY(-3px);
-        box-shadow:0 8px 32px rgba(0,0,0,0.1);
-        border-color:#2563EB28;
-      }
-      .intern-badge-paid{background:#D1FAE5;color:#065F46;border:1px solid #A7F3D0;}
-      .intern-badge-unpaid{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;}
-      .intern-badge{padding:2px 9px;border-radius:99px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
-      .intern-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:12px;color:#64748B;}
-      .intern-meta span{display:flex;align-items:center;gap:4px;}
-      .intern-req{background:#2563EB06;border:1px solid #2563EB10;border-radius:10px;padding:9px 12px;font-size:12px;color:#475569;}
-
-      /* ══ TOAST ════════════════════════════════════════════════════ */
-      #toast-container>div{
-        border-radius:12px!important;
-        box-shadow:0 8px 32px rgba(0,0,0,0.18),0 0 0 1px rgba(255,255,255,0.1) inset!important;
-        font-weight:600!important;font-size:13.5px!important;
-        font-family:"Inter",sans-serif!important;
-        padding:12px 18px!important;
-      }
-
-      /* ══ AVATAR RING ══════════════════════════════════════════════ */
-      .avatar-ring{
-        box-shadow: 0 0 0 2px rgba(255,255,255,0.8), 0 2px 8px rgba(0,0,0,0.15);
-      }
-    </style>
-
-
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Additional theme-specific styles can be added here if needed -->
 </head>
   <body
     class="flex h-screen overflow-hidden bg-slate-100"
@@ -600,48 +138,48 @@
 
     <!-- Main Content Area -->
     <main class="flex-1 flex flex-col h-screen overflow-hidden">
-      <!-- ── TOP HEADER ──────────────────────────────────────────── -->
-      <header class="bg-white h-16 flex items-center justify-between px-6 z-10 shrink-0" style="border-bottom:1px solid #E2E8F0;position:relative;">
-        <h1 id="page-title" style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;color:#0F172A;letter-spacing:-0.3px;">
+      <!-- â”€â”€ TOP HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+      <header class="bg-white h-16 flex items-center justify-between px-6 z-10 shrink-0 extracted-style-184">
+        <h1 id="page-title" class="extracted-style-185">
           Performance Analytics
         </h1>
         <div class="flex items-center gap-3">
           <!-- NOTIFICATION BELL -->
           <div class="relative" id="notif-wrapper">
             <button class="notif-btn" onclick="toggleNotifDropdown(event)" title="Notifications" id="notif-bell-btn">
-              <i class="fas fa-bell" style="font-size:15px;color:#64748B;"></i>
-              <span class="notif-dot" id="notif-indicator" style="display:none;"></span>
+              <i class="fas fa-bell extracted-style-186"></i>
+              <span class="notif-dot extracted-style-187" id="notif-indicator"></span>
             </button>
             <!-- Dropdown -->
-            <div id="notif-dropdown" class="hidden" style="position:absolute;top:calc(100% + 10px);right:0;width:340px;background:#fff;border:1px solid #E2E8F0;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.13),0 2px 8px rgba(0,0,0,0.07);z-index:9999;overflow:hidden;">
-              <div style="padding:14px 18px 12px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between;">
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:#0F172A;">Notifications</span>
-                  <span id="notif-badge" style="background:#2563EB;color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px;display:none;">0</span>
+            <div id="notif-dropdown" class="hidden extracted-style-188">
+              <div class="extracted-style-189">
+                <div class="extracted-style-190">
+                  <span class="extracted-style-191">Notifications</span>
+                  <span id="notif-badge" class="extracted-style-192">0</span>
                 </div>
-                <button onclick="markAllRead()" style="font-size:11.5px;color:#2563EB;font-weight:600;background:none;border:none;cursor:pointer;padding:3px 8px;border-radius:6px;" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='none'">Mark all read</button>
+                <button onclick="markAllRead()" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='none'" class="extracted-style-193">Mark all read</button>
               </div>
-              <div id="notif-list" style="max-height:320px;overflow-y:auto;padding:8px 0;">
-                <div style="text-align:center;padding:28px 20px;color:#94A3B8;">
-                  <i class="fas fa-bell-slash" style="font-size:28px;margin-bottom:8px;display:block;opacity:0.4;"></i>
-                  <p style="font-size:13px;font-weight:500;">No notifications yet</p>
+              <div id="notif-list" class="extracted-style-194">
+                <div class="extracted-style-195">
+                  <i class="fas fa-bell-slash extracted-style-196"></i>
+                  <p class="extracted-style-197">No notifications yet</p>
                 </div>
               </div>
-              <div style="padding:10px 18px;border-top:1px solid #F1F5F9;text-align:center;">
-                <span style="font-size:12px;color:#94A3B8;">You're all caught up ✓</span>
+              <div class="extracted-style-198">
+                <span class="extracted-style-199">You're all caught up âœ“</span>
               </div>
             </div>
           </div>
           <!-- DIVIDER -->
-          <div style="width:1px;height:28px;background:#E2E8F0;"></div>
+          <div class="extracted-style-200"></div>
           <!-- USER CHIP -->
-          <div class="user-chip" onclick="navigate('profile')" title="Go to My Profile" style="cursor:pointer;">
-            <img id="header-avatar" src="https://api.dicebear.com/7.x/initials/svg?seed=User&amp;backgroundColor=2563EB&amp;textColor=ffffff" alt="Avatar" class="user-avatar" style="width:30px;height:30px;" />
+          <div class="user-chip extracted-style-201" onclick="navigate('profile')" title="Go to My Profile">
+            <img id="header-avatar" src="https://api.dicebear.com/7.x/initials/svg?seed=User&amp;backgroundColor=2563EB&amp;textColor=ffffff" alt="Avatar" class="user-avatar extracted-style-202" />
             <div class="text-right hidden sm:block">
-              <p id="header-user-name" style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;color:#0F172A;line-height:1.2;">Loading...</p>
-              <p style="font-size:11px;color:#94A3B8;line-height:1;">Student</p>
+              <p id="header-user-name" class="extracted-style-203">Loading...</p>
+              <p class="extracted-style-204">Student</p>
             </div>
-            <i class="fas fa-chevron-right" style="font-size:10px;color:#CBD5E1;margin-left:2px;"></i>
+            <i class="fas fa-chevron-right extracted-style-205"></i>
           </div>
         </div>
       </header>
@@ -655,89 +193,45 @@
         >
           <!-- Welcome Banner -->
           <div class="welcome-banner">
-            <div style="position: relative; z-index: 1">
+            <div class="extracted-style-206">
               <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  gap: 12px;
-                  margin-bottom: 8px;
-                "
-              >
+
+               class="extracted-style-207">
                 <div
-                  style="
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 50%;
-                    background: rgba(255, 255, 255, 0.2);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 22px;
-                  "
-                >
+
+                 class="extracted-style-208">
                   <i class="fas fa-user-graduate"></i>
                 </div>
                 <div>
                   <p
-                    style="
-                      font-size: 13px;
-                      opacity: 0.8;
-                      font-weight: 500;
-                      letter-spacing: 0.5px;
-                    "
-                  >
+
+                   class="extracted-style-209">
                     WELCOME BACK
                   </p>
                   <h2
-                    style="
-                      font-size: 22px;
-                      font-weight: 800;
-                      letter-spacing: -0.5px;
-                    "
+
                     id="welcome-name"
-                  >
+                   class="extracted-style-210">
                     Student
                   </h2>
                 </div>
               </div>
-              <p style="font-size: 14px; opacity: 0.85; max-width: 480px">
+              <p class="extracted-style-211">
                 Practice mock interviews, upload your resume, and track your
-                progress — all in one place.
+                progress â€” all in one place.
               </p>
               <div
-                style="
-                  display: flex;
-                  gap: 16px;
-                  margin-top: 16px;
-                  flex-wrap: wrap;
-                "
-              >
+
+               class="extracted-style-212">
                 <div
-                  style="
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                    font-size: 13px;
-                    background: rgba(255, 255, 255, 0.15);
-                    padding: 6px 14px;
-                    border-radius: 20px;
-                  "
-                >
+
+                 class="extracted-style-213">
                   <span class="pulse-dot"></span>
                   <span>Ready to Practice</span>
                 </div>
                 <div
-                  style="
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                    font-size: 13px;
-                    background: rgba(255, 255, 255, 0.15);
-                    padding: 6px 14px;
-                    border-radius: 20px;
-                  "
-                >
+
+                 class="extracted-style-213">
                   <i class="fas fa-rocket"></i>
                   <span>Keep it up!</span>
                 </div>
@@ -745,17 +239,7 @@
             </div>
             <img
               src="https://illustrations.popsy.co/blue/studying.svg"
-              alt=""
-              style="
-                position: absolute;
-                right: 28px;
-                bottom: 0;
-                height: 155px;
-                opacity: 0.55;
-                z-index: 0;
-                pointer-events: none;
-              "
-            />
+              alt="" class="extracted-style-214" />
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -766,7 +250,7 @@
               <div>
                 <p class="text-sm text-slate-500 font-medium">Total Attempts</p>
                 <p
-                  class= style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;"
+                  class="extracted-heading-outfit"
                   id="stat-total-attempts"
                 >
                   0
@@ -784,7 +268,7 @@
                   Average Accuracy
                 </p>
                 <p
-                  class= style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;"
+                  class="extracted-heading-outfit"
                   id="stat-avg-accuracy"
                 >
                   0%
@@ -800,7 +284,7 @@
               <div>
                 <p class="text-sm text-slate-500 font-medium">Highest Score</p>
                 <p
-                  class= style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;"
+                  class="extracted-heading-outfit"
                   id="stat-high-score"
                 >
                   0
@@ -834,7 +318,7 @@
           <div id="practice-dashboard">
             <div class="mb-6 flex justify-between items-end">
               <div>
-                <h2 class= style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;">
+                <h2 class="extracted-heading-outfit">
                   Select a Company
                 </h2>
                 <p class="text-slate-500 mt-1">
@@ -863,7 +347,7 @@
               <div>
                 <h3
                   id="test-company-name"
-                  class= style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-primary"
+                  class="extracted-heading-outfit"
                 >
                   Company
                 </h3>
@@ -873,7 +357,7 @@
                 <span class="text-sm font-semibold text-slate-500"
                   >Question</span
                 >
-                <div class= style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-xl font-bold">
+                <div class="extracted-heading-outfit">
                   <span id="current-q-num">1</span> /
                   <span id="total-q-num">5</span>
                 </div>
@@ -926,7 +410,7 @@
             >
               <i class="fas fa-check"></i>
             </div>
-            <h2 class= style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-3xl font-bold text-slate-800 mb-2">
+            <h2 class="extracted-heading-outfit">
               Assessment Complete!
             </h2>
             <p class="text-slate-500 mb-8">
@@ -1012,7 +496,7 @@
                   >
                     Click or drag &amp; drop
                   </p>
-                  <p class="text-xs text-slate-400 mt-1">PDF only · Max 5MB · AI checks automatically on upload</p>
+                  <p class="text-xs text-slate-400 mt-1">PDF only Â· Max 5MB Â· AI checks automatically on upload</p>
                   <input
                     type="file"
                     id="file-upload"
@@ -1036,8 +520,8 @@
                   <div class="w-full bg-slate-200 rounded-full h-2">
                     <div
                       id="upload-bar"
-                      class="bg-blue-500 h-2 rounded-full transition-all duration-200"
-                      style="width: 0%"
+                      class="bg-blue-500 h-2 rounded-full transition-all duration-200 extracted-style-215"
+
                     ></div>
                   </div>
                   <p
@@ -1141,8 +625,8 @@
                     </button>
                   </div>
                 </div>
-                <!-- PDF renders here — no download prompt, browser shows it natively -->
-                <div class="w-full" style="height: 680px">
+                <!-- PDF renders here â€” no download prompt, browser shows it natively -->
+                <div class="w-full extracted-style-216">
                   <iframe
                     id="inline-pdf-frame"
                     src=""
@@ -1224,7 +708,7 @@
           class="section-container hidden fade-in max-w-4xl mx-auto"
         >
           <div class="mb-6">
-            <h2 class= style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;">Mentor Feedback</h2>
+            <h2 class="extracted-heading-outfit">Mentor Feedback</h2>
             <p class="text-slate-500 mt-1">
               Review personalized advice from your assigned mentors.
             </p>
@@ -1267,7 +751,7 @@
                   <div class="pb-1">
                     <h2
                       id="profile-name-display"
-                      class= style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;"
+                      class="extracted-heading-outfit"
                     >
                       Loading...
                     </h2>
@@ -1376,13 +860,13 @@
           <!-- Header -->
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 class= style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800 flex items-center gap-2">
+              <h2 class="extracted-heading-outfit">
                 <span class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
                   <i class="fas fa-briefcase text-primary text-base"></i>
                 </span>
                 Local Internships
               </h2>
-              <p class="text-slate-500 text-sm mt-1">Offline opportunities from local companies — both paid and unpaid.</p>
+              <p class="text-slate-500 text-sm mt-1">Offline opportunities from local companies â€” both paid and unpaid.</p>
             </div>
             <!-- Filters -->
             <div class="flex items-center gap-2 flex-shrink-0">
@@ -1967,7 +1451,7 @@
       }
 
       function processResumeFile(file) {
-        // Validate type — PDF only
+        // Validate type â€” PDF only
         const isValidType =
           file.type === "application/pdf" ||
           file.name.toLowerCase().endsWith(".pdf");
@@ -2023,11 +1507,11 @@
               return;
             }
 
-            // ── Auto AI analysis immediately after upload ─────────────────
+            // â”€â”€ Auto AI analysis immediately after upload â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             // Switch progress bar to AI-checking state
             bar.classList.remove("bg-blue-500");
             bar.classList.add("bg-purple-500");
-            statusTxt.textContent = "🤖 Ami-Bridge AI is checking your resume...";
+            statusTxt.textContent = "ðŸ¤– Ami-Bridge AI is checking your resume...";
 
             // Show AI panel loading state immediately
             const panel = document.getElementById("ai-feedback-panel");
@@ -2046,23 +1530,23 @@
                 { method: "POST" }
               );
 
-              // ── NOT A RESUME: delete it silently and reject ──────────────
+              // â”€â”€ NOT A RESUME: delete it silently and reject â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
               if (analysisRes.status === 422) {
                 const errData = await analysisRes.json();
 
-                // Delete the uploaded file from DB — it's not a resume
+                // Delete the uploaded file from DB â€” it's not a resume
                 await fetch(`${API_BASE}/api/resume/${newResume.resume_id}`, { method: "DELETE" });
 
                 // Show rejection in progress bar area
                 bar.classList.remove("bg-purple-500");
                 bar.classList.add("bg-red-500");
-                statusTxt.textContent = "❌ Not a resume — file removed.";
+                statusTxt.textContent = "âŒ Not a resume â€” file removed.";
 
                 // Show rejection in AI panel
                 feedbackContent.innerHTML = `
                   <div class="p-6 bg-red-50 border border-red-200 rounded-xl text-center">
                     <i class="fas fa-file-circle-xmark text-red-500 text-4xl mb-3 block"></i>
-                    <p class="font-bold text-red-800 text-base mb-2">Not a Resume — File Rejected</p>
+                    <p class="font-bold text-red-800 text-base mb-2">Not a Resume â€” File Rejected</p>
                     <p class="text-sm text-red-700 mb-1">${errData.message || "The uploaded PDF is not a resume or CV."}</p>
                     <p class="text-xs text-red-500 mt-3">The file has been automatically removed. Please upload your actual resume/CV.</p>
                   </div>`;
@@ -2074,7 +1558,7 @@
                 return;
               }
 
-              // ── AI unavailable: keep file, show retry ────────────────────
+              // â”€â”€ AI unavailable: keep file, show retry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
               if (!analysisRes.ok) {
                 const err = await analysisRes.json();
                 throw new Error(err.error || "AI analysis failed");
@@ -2088,7 +1572,7 @@
                 renderResumes();
                 bar.classList.remove("bg-purple-500");
                 bar.classList.add("bg-amber-500");
-                statusTxt.textContent = "⚠️ Ami-Bridge AI busy — use AI Check to retry.";
+                statusTxt.textContent = "âš ï¸ Ami-Bridge AI busy â€” use AI Check to retry.";
                 feedbackContent.innerHTML = `
                   <div class="p-6 bg-slate-50 border border-slate-200 rounded-xl text-center">
                     <i class="fas fa-clock text-slate-400 text-4xl mb-3 block"></i>
@@ -2099,19 +1583,19 @@
                       <i class="fas fa-redo mr-1"></i> Try AI Check Again
                     </button>
                   </div>`;
-                showToast("Resume saved. Ami-Bridge AI is busy — click 'Try Again' to retry.", "info");
+                showToast("Resume saved. Ami-Bridge AI is busy â€” click 'Try Again' to retry.", "info");
                 setTimeout(() => { prog.classList.add("hidden"); bar.style.width = "0%"; }, 3000);
                 return;
               }
 
-              // ── SUCCESS: valid resume, show full results ─────────────────
+              // â”€â”€ SUCCESS: valid resume, show full results â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
               newResume.gemini_score = data.score;
               state.resumes.unshift(newResume);
               renderResumes();
 
               bar.classList.remove("bg-purple-500");
               bar.classList.add("bg-green-500");
-              statusTxt.textContent = "✅ Resume verified & scored!";
+              statusTxt.textContent = "âœ… Resume verified & scored!";
 
               // Show success banner
               document.getElementById("upload-success-name").textContent = file.name;
@@ -2206,12 +1690,12 @@
               setTimeout(() => { prog.classList.add("hidden"); bar.style.width = "0%"; }, 3000);
 
             } catch (aiErr) {
-              // AI errored but file is uploaded — keep it, let user retry manually
+              // AI errored but file is uploaded â€” keep it, let user retry manually
               state.resumes.unshift(newResume);
               renderResumes();
               bar.classList.remove("bg-purple-500");
               bar.classList.add("bg-amber-500");
-              statusTxt.textContent = "⚠️ Ami-Bridge AI check failed — use AI Check button to retry.";
+              statusTxt.textContent = "âš ï¸ Ami-Bridge AI check failed â€” use AI Check button to retry.";
               feedbackContent.innerHTML = `
                 <div class="p-6 text-center text-red-500">
                   <i class="fas fa-exclamation-triangle text-3xl mb-2 block"></i>
@@ -2233,7 +1717,7 @@
         });
 
         xhr.addEventListener("error", () => {
-          showUploadError("Network error — make sure the server is running on port 5000.");
+          showUploadError("Network error â€” make sure the server is running on port 5000.");
         });
         xhr.addEventListener("timeout", () => {
           showUploadError("Upload timed out. Try a smaller file.");
@@ -2251,7 +1735,7 @@
         bar.classList.remove("bg-blue-500");
         bar.classList.add("bg-red-500");
         bar.style.width = "100%";
-        statusTxt.textContent = "❌ " + msg;
+        statusTxt.textContent = "âŒ " + msg;
         showToast(msg, "error");
         setTimeout(() => {
           prog.classList.add("hidden");
@@ -2288,7 +1772,7 @@
       }
 
       function viewResume(resumeId, name) {
-        // ── Always sync score card to the resume being viewed ──────────────
+        // â”€â”€ Always sync score card to the resume being viewed â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
         const scoreCard   = document.getElementById("ai-score-card");
         const scoreDisp   = document.getElementById("ai-score-display");
         const atsDisp     = document.getElementById("ai-ats-score");
@@ -2310,7 +1794,7 @@
           summaryDisp.textContent = "Click Re-analyse to see full AI feedback.";
           scoreCard.classList.remove("hidden");
         } else {
-          // No score for this resume — hide the score card completely
+          // No score for this resume â€” hide the score card completely
           scoreCard.classList.add("hidden");
           scoreDisp.textContent = "--";
           scoreDisp.className   = "text-5xl font-black mb-1 text-white";
@@ -2334,7 +1818,7 @@
       async function analyzeResume(resumeId) {
         showToast("Analyzing resume with AI... This may take a moment.", "info");
 
-        // ── Reset score card immediately so stale data from previous resume is cleared ──
+        // â”€â”€ Reset score card immediately so stale data from previous resume is cleared â”€â”€
         const scoreCard = document.getElementById("ai-score-card");
         scoreCard.classList.add("hidden");
         document.getElementById("ai-score-display").textContent = "--";
@@ -2359,7 +1843,7 @@
             { method: "POST" },
           );
 
-          // Handle NOT_A_RESUME — document is not a resume
+          // Handle NOT_A_RESUME â€” document is not a resume
           if (res.status === 422) {
             const errData = await res.json();
             feedbackContent.innerHTML = `
@@ -2369,7 +1853,7 @@
                 <p class="text-sm text-amber-700">${errData.message || "The uploaded PDF does not appear to be a resume or CV."}</p>
                 <p class="text-xs text-amber-600 mt-3">Please upload your actual resume/CV in PDF format.</p>
               </div>`;
-            showToast("Document rejected — does not appear to be a resume.", "error");
+            showToast("Document rejected â€” does not appear to be a resume.", "error");
             return;
           }
 
@@ -2397,7 +1881,7 @@
                   </button>
                 </div>
               </div>`;
-            showToast(isImageErr ? "Image PDF analysis failed — check server logs." : "AI service busy — please try again.", "error");
+            showToast(isImageErr ? "Image PDF analysis failed â€” check server logs." : "AI service busy â€” please try again.", "error");
             return;
           }
 
@@ -2405,7 +1889,7 @@
           const r = state.resumes.find((r) => r.resume_id === resumeId);
           if (r) { r.gemini_score = data.score; renderResumes(); }
 
-          // ── Score card ────────────────────────────────────────────────────
+          // â”€â”€ Score card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           const score = data.score ?? null;
           const atsScore = data.ats_score ?? null;
           const scoreColor = score == null ? "text-white"
@@ -2419,7 +1903,7 @@
           document.getElementById("ai-summary-short").textContent = data.summary || "";
           scoreCard.classList.remove("hidden");
 
-          // ── Feedback panel ────────────────────────────────────────────────
+          // â”€â”€ Feedback panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           const strengths = (data.strengths || []).map((s) =>
             `<li class="flex gap-2 items-start">
               <i class="fas fa-check-circle text-green-500 mt-0.5 shrink-0"></i>
@@ -2671,8 +2155,8 @@
           },
         });
       }
-    
-      // ── LOCAL INTERNSHIPS ─────────────────────────────────────────────────
+
+      // â”€â”€ LOCAL INTERNSHIPS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       function renderInternships() {
         const grid    = document.getElementById("internship-grid");
         const statsBar= document.getElementById("intern-stats-bar");
@@ -2704,7 +2188,7 @@
                   <i class="fas fa-briefcase text-3xl text-slate-300"></i>
                 </div>
                 <p class="font-semibold text-slate-600">No internships found</p>
-                <p class="text-slate-400 text-sm mt-1">Check back later — mentors and admins add listings regularly.</p>
+                <p class="text-slate-400 text-sm mt-1">Check back later â€” mentors and admins add listings regularly.</p>
               </div>
             </div>`;
           return;
@@ -2747,15 +2231,15 @@
               class="intern-apply-btn ${applyHover}"
               style="${applyColor}border:none;cursor:pointer;">
               <i class="fas fa-paper-plane"></i>
-              Apply Now &nbsp;·&nbsp; ${i.apply_contact}
+              Apply Now &nbsp;Â·&nbsp; ${i.apply_contact}
             </a>
           </div>`;
         }).join("");
       }
 
-      // ════════════════════════════════════════════════════════════════
+      // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
       // NOTIFICATION SYSTEM
-      // ════════════════════════════════════════════════════════════════
+      // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
       const _notifState = { items: [], read: new Set() };
 
       function addNotification(message, type = "info", title = "") {
@@ -2943,7 +2427,7 @@
         const isHidden = dd.classList.contains("hidden");
         dd.classList.toggle("hidden");
         if (isHidden) {
-          // Mark open — schedule close on outside click
+          // Mark open â€” schedule close on outside click
           setTimeout(() => {
             document.addEventListener("click", _notifOutsideClick, { once: true });
           }, 10);
@@ -2959,7 +2443,7 @@
         if (wrapper && !wrapper.contains(e.target)) {
           closeNotifDropdown();
         } else {
-          // Click was inside — re-attach listener
+          // Click was inside â€” re-attach listener
           setTimeout(() => {
             document.addEventListener("click", _notifOutsideClick, { once: true });
           }, 10);
