@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ami-Bridge | Bridge Campus to Corporate</title>
+    <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -2636,7 +2637,7 @@
     <!-- ══════════════════════════════════════════════════════
      AUTH MODAL
 ══════════════════════════════════════════════════════ -->
-    <div id="auth-modal" onclick="if (event.target === this) closeAuth();">
+    <div id="auth-modal" onclick="closeAuthOnBackdropClick(event)">
       <div id="auth-box">
         <div class="auth-header">
           <div
@@ -2884,6 +2885,12 @@
         modal.style.pointerEvents = "none";
         box.style.transform = "scale(.95)";
         document.body.style.overflow = "";
+      }
+      function closeAuthOnBackdropClick(event) {
+        // Only close if clicking directly on the modal backdrop, not on the auth-box
+        if (event.target === modal) {
+          closeAuth();
+        }
       }
       function toggleAuth(type) {
         if (type === "login") {
