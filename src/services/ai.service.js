@@ -191,6 +191,41 @@ function normalizeGeminiError(err) {
     };
   }
 
+  const isInvalidKey =
+    lower.includes("api_key_invalid") ||
+    lower.includes("api key not valid") ||
+    lower.includes("invalid api key");
+  if (isInvalidKey) {
+    return {
+      code: "GEMINI_KEY_INVALID",
+      message:
+        "Gemini API key is invalid or not active for Generative Language API. Update GEMINI_API_KEY and redeploy/restart the server.",
+    };
+  }
+
+  const isPermission =
+    lower.includes("permission_denied") ||
+    lower.includes("403") ||
+    lower.includes("forbidden");
+  if (isPermission) {
+    return {
+      code: "GEMINI_PERMISSION",
+      message:
+        "Gemini request was denied (403). Check API key restrictions and ensure Generative Language API access is enabled.",
+    };
+  }
+
+  const isModelIssue =
+    lower.includes("model") &&
+    (lower.includes("not found") || lower.includes("not supported"));
+  if (isModelIssue) {
+    return {
+      code: "GEMINI_MODEL",
+      message:
+        "Gemini model access/config issue. Try again later or switch to a supported Gemini model for your key/project.",
+    };
+  }
+
   return {
     code: "GEMINI_FAILED",
     message:
