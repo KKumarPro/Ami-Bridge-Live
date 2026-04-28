@@ -113,6 +113,8 @@ SCORING LOGIC (STRICT):
 
 REQUIRED OUTPUT FORMAT:
 {
+"document_type":"resume",
+"not_resume_reason":"",
 "score":75,
 "ats_score":68,
 "summary":"3-5 sharp sentences evaluating THIS resume specifically. Mention role fit, major gaps, and hiring chances.",
@@ -154,9 +156,29 @@ FINAL WARNING:
 // ── Validate parsed result ────────────────────────────────────────────────────
 function validateParsed(parsed) {
   if (!parsed) throw new Error("Could not parse JSON from AI response");
-  if (parsed.not_a_resume) {
+  const docType = String(parsed.document_type || "").toLowerCase().trim();
+  const nonResumeSignals = [
+    String(parsed.summary || ""),
+    String(parsed.reason || ""),
+    String(parsed.not_resume_reason || ""),
+    docType,
+  ].join(" ");
+
+  const explicitNonResume =
+    docType === "not_resume" ||
+    docType === "non_resume" ||
+    docType === "other" ||
+    /\bnot\s+a?\s*resume\b/i.test(nonResumeSignals) ||
+    /\bnon[-\s]?resume\b/i.test(nonResumeSignals) ||
+    /\b(this|document|submission|file)\s+(is|looks|appears)\b[\s\S]{0,60}\b(assignment|homework|lab report|project report|question paper|notes?|invoice|receipt|article|research paper)\b/i.test(
+      nonResumeSignals,
+    );
+
+  if (parsed.not_a_resume || explicitNonResume) {
     const err = new Error(
-      parsed.reason || "This does not appear to be a resume or CV.",
+      parsed.reason ||
+        parsed.not_resume_reason ||
+        "This does not appear to be a resume or CV.",
     );
     err.code = "NOT_A_RESUME";
     throw err;
