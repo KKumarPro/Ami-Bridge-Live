@@ -28,9 +28,14 @@ const GROQ_MODELS = [
 
 // Free-tier Gemini models with PDF/vision support
 const GEMINI_MODELS = [
-  "gemini-1.5-flash-latest", // Most reliable free-tier model for PDF vision
-  "gemini-1.5-flash", // Stable fallback
-  "gemini-1.5-pro", // Higher capability fallback
+  // Prefer current model families first
+  "gemini-flash-latest",
+  "gemini-2.5-flash",
+  "gemini-2.5-flash-lite",
+  // Legacy fallbacks for older projects/keys
+  "gemini-1.5-flash-latest",
+  "gemini-1.5-flash",
+  "gemini-1.5-pro",
 ];
 
 // ── JSON extractor ────────────────────────────────────────────────────────────
