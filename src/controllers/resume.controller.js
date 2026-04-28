@@ -10,12 +10,12 @@ const upload = async (req, res, next) => {
   try {
     if (!req.file) return R.badRequest(res, "No file uploaded");
 
-    // The upload service now handles AI processing instantly
+    // Upload is intentionally save-only; AI runs via /resume/:id/analyze
     const resume = await resumeService.uploadResume(req.file, req.params.id);
 
     return R.created(res, resume);
   } catch (err) {
-    // Catch the AI rejection if the user uploads a random PDF
+    // Kept for backward compatibility if service throws domain-specific errors
     if (err.code === "NOT_A_RESUME") {
       return res.status(422).json({
         error: "NOT_A_RESUME",

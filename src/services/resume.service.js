@@ -16,15 +16,9 @@ const uploadResume = async (file, studentId) => {
   const userResult = await UserModel.findById(studentId);
   const studentName = userResult.rows.length > 0 ? userResult.rows[0].name : "Student";
 
-  // 3. Extract Text from the PDF buffer instantly
-  const resumeText = await extractTextFromPDF(file.buffer);
-
-  // 4. Run AI Analysis BEFORE saving to the database
-  // If the AI detects it's a random file, it throws a 'NOT_A_RESUME' error here.
-  // Execution stops, meaning the file is never saved to the DB.
-  const analysis = await analyzeResume(resumeText, studentName, base64);
-
-  // 5. If the code reaches here, it IS a valid resume. Save it to the DB.
+  // 3. Save first, analyze after upload from the dedicated endpoint.
+  // This keeps upload fast and prevents client-side upload timeouts
+  // for scanned/image-based PDFs that need slower vision models.
   const result = await ResumeModel.create(
     studentId,
     file.originalname,
@@ -34,18 +28,10 @@ const uploadResume = async (file, studentId) => {
   );
   const resumeId = result.rows[0].resume_id;
 
-  // 6. Save the AI feedback and score instantly
-  await ResumeModel.saveAIFeedback(
-    resumeId,
-    JSON.stringify(analysis),
-    analysis.score,
-  );
-
-  // Return the combined resume data with the new AI score
+  // Return newly created resume with null score (pending analysis).
   return {
     ...result.rows[0],
-    gemini_score: analysis.score,
-    analysis
+    gemini_score: null,
   };
 };
 

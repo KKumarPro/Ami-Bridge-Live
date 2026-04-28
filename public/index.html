@@ -1414,6 +1414,9 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
       }
       .lane-steps::before {
         content: "";
@@ -1431,6 +1434,10 @@
         align-items: flex-start;
         gap: 14px;
         padding: 4px 0;
+        list-style: none;
+      }
+      .lane-steps li::marker {
+        content: "";
       }
       .step-n {
         flex: none;
@@ -1472,7 +1479,7 @@
         font-size: 13.5px;
         color: var(--fg);
       }
-      .lane-steps span {
+      .lane-steps li > div > span {
         display: block;
         font-size: 12px;
         color: var(--fg-mute);
@@ -1933,6 +1940,7 @@
       <div class="nav-actions">
         <!-- Theme toggle -->
         <button
+          type="button"
           class="theme-toggle"
           id="theme-toggle-btn"
           title="Toggle theme"
@@ -1947,6 +1955,7 @@
           </div>
         </button>
         <button
+          type="button"
           class="btn btn-ghost btn-sm"
           onclick="openAuth('login')"
           style="border-radius: 10px; padding: 8px 16px; font-size: 13.5px"
@@ -1954,6 +1963,7 @@
           Sign in
         </button>
         <button
+          type="button"
           class="btn btn-primary btn-sm"
           onclick="openAuth('signup')"
           style="border-radius: 10px; padding: 8px 16px; font-size: 13.5px"
@@ -1984,10 +1994,10 @@
             internship opportunities all in one place.
           </p>
           <div class="hero-cta">
-            <button class="btn btn-primary btn-lg" onclick="openAuth('signup')">
+            <button type="button" class="btn btn-primary btn-lg" onclick="openAuth('signup')">
               <i class="fas fa-rocket"></i> Start for free
             </button>
-            <button class="btn btn-ghost btn-lg" onclick="openAuth('login')">
+            <button type="button" class="btn btn-ghost btn-lg" onclick="openAuth('login')">
               <i class="fas fa-sign-in-alt"></i> Sign in
             </button>
           </div>
@@ -2346,7 +2356,7 @@
             <li><span class="bullet"></span>Local internship applications</li>
             <li><span class="bullet"></span>Mentor feedback view</li>
           </ul>
-          <button class="role-cta" onclick="openAuth('signup')">
+          <button type="button" class="role-cta" onclick="openAuth('signup')">
             Get started
             <i class="fas fa-arrow-right" style="font-size: 12px"></i>
           </button>
@@ -2372,7 +2382,7 @@
             <li><span class="bullet"></span>Post local internships</li>
             <li><span class="bullet"></span>Performance analytics</li>
           </ul>
-          <button class="role-cta" onclick="openAuth('signup')">
+          <button type="button" class="role-cta" onclick="openAuth('signup')">
             Join as mentor
             <i class="fas fa-arrow-right" style="font-size: 12px"></i>
           </button>
@@ -2399,7 +2409,7 @@
             <li><span class="bullet"></span>Bulk CSV registration</li>
             <li><span class="bullet"></span>Platform analytics</li>
           </ul>
-          <button class="role-cta" onclick="openAuth('login')">
+          <button type="button" class="role-cta" onclick="openAuth('login')">
             Admin access
             <i class="fas fa-arrow-right" style="font-size: 12px"></i>
           </button>
@@ -2426,41 +2436,36 @@
             <li>
               <span class="step-n">1</span>
               <div>
-                <strong>Create account</strong
-                ><span>Sign up as a student and complete your profile.</span>
+                <strong>Create account</strong>
+                <span>Sign up as a student and complete your profile.</span>
               </div>
             </li>
             <li>
               <span class="step-n">2</span>
               <div>
-                <strong>Upload resume</strong
-                ><span
-                  >AI instantly scores your PDF and flags improvements.</span
-                >
+                <strong>Upload resume</strong>
+                <span>AI instantly scores your PDF and flags improvements.</span>
               </div>
             </li>
             <li>
               <span class="step-n">3</span>
               <div>
-                <strong>Practice interviews</strong
-                ><span>Work through company-specific question banks.</span>
+                <strong>Practice interviews</strong>
+                <span>Work through company-specific question banks.</span>
               </div>
             </li>
             <li>
               <span class="step-n">4</span>
               <div>
-                <strong>Apply to internships</strong
-                ><span
-                  >Browse and apply to local listings from companies near
-                  you.</span
-                >
+                <strong>Apply to internships</strong>
+                <span>Browse and apply to local listings from companies near you.</span>
               </div>
             </li>
             <li>
               <span class="step-n">5</span>
               <div>
-                <strong>Get placed</strong
-                ><span>Armed with a great resume and mentor backing.</span>
+                <strong>Get placed</strong>
+                <span>Armed with a great resume and mentor backing.</span>
               </div>
             </li>
           </ul>
@@ -2474,49 +2479,36 @@
             <li>
               <span class="step-n">1</span>
               <div>
-                <strong>Join platform</strong
-                ><span
-                  >Register as a mentor and get assigned students by an
-                  admin.</span
-                >
+                <strong>Join platform</strong>
+                <span>Register as a mentor and get assigned students by an admin.</span>
               </div>
             </li>
             <li>
               <span class="step-n">2</span>
               <div>
-                <strong>Review resumes</strong
-                ><span
-                  >Access student PDFs with AI OCR — even scanned files.</span
-                >
+                <strong>Review resumes</strong>
+                <span>Access student PDFs with AI OCR — even scanned files.</span>
               </div>
             </li>
             <li>
               <span class="step-n">3</span>
               <div>
-                <strong>Give feedback</strong
-                ><span
-                  >Use the AI draft assistant to write detailed, personalised
-                  feedback.</span
-                >
+                <strong>Give feedback</strong>
+                <span>Use the AI draft assistant to write detailed, personalised feedback.</span>
               </div>
             </li>
             <li>
               <span class="step-n">4</span>
               <div>
-                <strong>Post internships</strong
-                ><span
-                  >Add local company listings for your students to apply
-                  to.</span
-                >
+                <strong>Post internships</strong>
+                <span>Add local company listings for your students to apply to.</span>
               </div>
             </li>
             <li>
               <span class="step-n">5</span>
               <div>
-                <strong>Track progress</strong
-                ><span
-                  >Monitor each student's score improvement and readiness.</span
-                >
+                <strong>Track progress</strong>
+                <span>Monitor each student's score improvement and readiness.</span>
               </div>
             </li>
           </ul>
@@ -2530,41 +2522,36 @@
             <li>
               <span class="step-n">1</span>
               <div>
-                <strong>Set up platform</strong
-                ><span
-                  >Configure your institution's companies and Q&amp;A
-                  bank.</span
-                >
+                <strong>Set up platform</strong>
+                <span>Configure your institution's companies and Q&amp;A bank.</span>
               </div>
             </li>
             <li>
               <span class="step-n">2</span>
               <div>
-                <strong>Register students</strong
-                ><span>Bulk-upload entire batches via CSV in seconds.</span>
+                <strong>Register students</strong>
+                <span>Bulk-upload entire batches via CSV in seconds.</span>
               </div>
             </li>
             <li>
               <span class="step-n">3</span>
               <div>
-                <strong>Assign mentors</strong
-                ><span>Pair each student with the most suitable mentor.</span>
+                <strong>Assign mentors</strong>
+                <span>Pair each student with the most suitable mentor.</span>
               </div>
             </li>
             <li>
               <span class="step-n">4</span>
               <div>
-                <strong>Monitor analytics</strong
-                ><span>Track placement readiness across the full cohort.</span>
+                <strong>Monitor analytics</strong>
+                <span>Track placement readiness across the full cohort.</span>
               </div>
             </li>
             <li>
               <span class="step-n">5</span>
               <div>
-                <strong>Drive outcomes</strong
-                ><span
-                  >Use data to intervene early and maximise placements.</span
-                >
+                <strong>Drive outcomes</strong>
+                <span>Use data to intervene early and maximise placements.</span>
               </div>
             </li>
           </ul>
@@ -2585,10 +2572,10 @@
           </p>
         </div>
         <div class="cta-actions">
-          <button class="btn btn-primary btn-lg" onclick="openAuth('signup')">
+          <button type="button" class="btn btn-primary btn-lg" onclick="openAuth('signup')">
             <i class="fas fa-rocket"></i> Start free today
           </button>
-          <button class="btn btn-ghost btn-lg" onclick="openAuth('login')">
+          <button type="button" class="btn btn-ghost btn-lg" onclick="openAuth('login')">
             <i class="fas fa-sign-in-alt"></i> Sign in
           </button>
         </div>
@@ -2650,13 +2637,14 @@
           >
             Ami-Bridge
           </div>
-          <button class="auth-close" onclick="closeAuth()">
+          <button type="button" class="auth-close" onclick="closeAuth()">
             <i class="fas fa-times"></i>
           </button>
         </div>
         <div class="auth-body">
           <div class="auth-tabs">
             <button
+              type="button"
               class="auth-tab is-active"
               id="tab-login"
               onclick="toggleAuth('login')"
@@ -2664,6 +2652,7 @@
               Sign in
             </button>
             <button
+              type="button"
               class="auth-tab"
               id="tab-signup"
               onclick="toggleAuth('signup')"
@@ -2701,6 +2690,7 @@
               <p class="auth-swap">
                 No account?
                 <button
+                  type="button"
                   class="auth-link"
                   onclick="toggleAuth('signup')"
                   style="
@@ -2763,6 +2753,7 @@
               <p class="auth-swap">
                 Already have an account?
                 <button
+                  type="button"
                   class="auth-link"
                   onclick="toggleAuth('login')"
                   style="

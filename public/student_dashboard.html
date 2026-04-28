@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <script>tailwind.config={theme:{extend:{}}};</script>
   <style>
     /* ── THEME TOKENS ─────────────────────────────────── */
@@ -328,6 +329,34 @@
     [data-role="admin"] .dash-banner{background:radial-gradient(circle at 0% 0%,rgba(168,85,247,.22),transparent 60%),radial-gradient(circle at 100% 100%,rgba(244,63,94,.16),transparent 60%),var(--surface);}
     .dash-banner h2{font-family:var(--font-display);font-weight:700;font-size:18px;letter-spacing:-.01em;}
     .dash-banner p{color:var(--fg-soft);font-size:13.5px;margin-top:4px;}
+    /* ── ANALYTICS STATS ─────────────────────────────────── */
+    .stat-card{
+      display:flex;align-items:center;gap:14px;
+      min-height:90px;padding:16px 18px;
+      border-radius:var(--r-md);
+      background:linear-gradient(180deg,var(--surface-2),var(--surface));
+      border:1px solid var(--border);
+      transition:border-color .2s var(--ease),transform .2s var(--ease);
+    }
+    .stat-card:hover{border-color:var(--border-strong);transform:translateY(-1px);}
+    .stat-icon{
+      flex:none;width:48px;height:48px;border-radius:999px;
+      display:grid;place-items:center;font-size:18px;
+      border:1px solid transparent;
+    }
+    .stat-icon-blue{background:rgba(37,99,235,.18);color:#BFDBFE;border-color:rgba(37,99,235,.35);}
+    .stat-icon-green{background:rgba(16,185,129,.18);color:#A7F3D0;border-color:rgba(16,185,129,.35);}
+    .stat-icon-violet{background:rgba(168,85,247,.18);color:#DDD6FE;border-color:rgba(168,85,247,.35);}
+    .stat-label{font-size:12.5px;color:var(--fg-soft);font-weight:600;line-height:1.2;}
+    .stat-value{
+      margin-top:3px;
+      font-family:var(--font-display);
+      font-size:30px;font-weight:700;
+      letter-spacing:-.02em;color:var(--fg);
+      line-height:1;
+    }
+    .chart-card{min-height:320px;}
+    .chart-card canvas{width:100%!important;height:230px!important;}
     /* ── BUTTONS ───────────────────────────────────────── */
     .btn{
       display:inline-flex;align-items:center;gap:8px;
@@ -440,6 +469,25 @@
     .intern-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--fg-mute);}
     .intern-meta span{display:flex;align-items:center;gap:4px;}
     .intern-req{background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:9px 12px;font-size:12px;color:var(--fg-soft);}
+    .intern-apply-btn{
+      width:100%;
+      margin-top:2px;
+      padding:10px 12px;
+      border-radius:10px;
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      font-size:13.5px;font-weight:700;
+      letter-spacing:-.01em;
+      text-decoration:none;
+      transition:transform .16s var(--ease),filter .16s var(--ease),box-shadow .16s var(--ease);
+      box-shadow:0 10px 20px -12px rgba(0,0,0,.55);
+    }
+    .intern-apply-btn:hover{transform:translateY(-1px);filter:brightness(1.06);}
+    .intern-apply-btn:active{transform:translateY(0);}
+    .intern-apply-email{font-size:11px;opacity:.78;font-weight:600;max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .intern-apply-btn.disabled{
+      opacity:.6;cursor:not-allowed;filter:grayscale(.08);
+      pointer-events:auto;
+    }
     /* ── LIST ROWS ─────────────────────────────────────── */
     .list-row{
       display:flex;align-items:center;gap:12px;
@@ -788,52 +836,34 @@
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div class="stat-card stagger-1">
-              <div class="stat-icon bg-blue-50 text-blue-600">
+              <div class="stat-icon stat-icon-blue">
                 <i class="fas fa-tasks"></i>
               </div>
               <div>
-                <p class="text-sm text-slate-500 font-medium">Total Attempts</p>
-                <p
-                  class="text-2xl font-bold text-slate-800"
-                  style="font-family:'Space Grotesk',sans-serif;letter-spacing:-0.3px;"
-                  id="stat-total-attempts"
-                >
+                <p class="stat-label">Total Attempts</p>
+                <p class="stat-value" id="stat-total-attempts">
                   0
                 </p>
               </div>
             </div>
             <div class="stat-card">
-              <div
-                class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xl"
-              >
+              <div class="stat-icon stat-icon-green">
                 <i class="fas fa-bullseye"></i>
               </div>
               <div>
-                <p class="text-sm text-slate-500 font-medium">
-                  Average Accuracy
-                </p>
-                <p
-                  class="text-2xl font-bold text-slate-800"
-                  style="font-family:'Space Grotesk',sans-serif;letter-spacing:-0.3px;"
-                  id="stat-avg-accuracy"
-                >
+                <p class="stat-label">Average Accuracy</p>
+                <p class="stat-value" id="stat-avg-accuracy">
                   0%
                 </p>
               </div>
             </div>
             <div class="stat-card">
-              <div
-                class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xl"
-              >
+              <div class="stat-icon stat-icon-violet">
                 <i class="fas fa-trophy"></i>
               </div>
               <div>
-                <p class="text-sm text-slate-500 font-medium">Highest Score</p>
-                <p
-                  class="text-2xl font-bold text-slate-800"
-                  style="font-family:'Space Grotesk',sans-serif;letter-spacing:-0.3px;"
-                  id="stat-high-score"
-                >
+                <p class="stat-label">Highest Score</p>
+                <p class="stat-value" id="stat-high-score">
                   0
                 </p>
               </div>
@@ -841,16 +871,18 @@
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="panel-card p-6">
-              <h3 class="text-lg font-bold text-slate-800 mb-4">
+            <div class="panel-card p-6 chart-card">
+              <h3 style="font-size:22px;font-weight:700;color:var(--fg);letter-spacing:-.01em;margin-bottom:4px;">
                 Performance Trend
               </h3>
+              <p style="font-size:12.5px;color:var(--fg-mute);margin-bottom:14px;">Your attempt accuracy over time</p>
               <canvas id="trendChart" height="200"></canvas>
             </div>
-            <div class="panel-card p-6">
-              <h3 class="text-lg font-bold text-slate-800 mb-4">
+            <div class="panel-card p-6 chart-card">
+              <h3 style="font-size:22px;font-weight:700;color:var(--fg);letter-spacing:-.01em;margin-bottom:4px;">
                 Attempts by Company
               </h3>
+              <p style="font-size:12.5px;color:var(--fg-mute);margin-bottom:14px;">Distribution of attempts across companies</p>
               <canvas id="companyChart" height="200"></canvas>
             </div>
           </div>
@@ -865,7 +897,7 @@
           <div id="practice-dashboard">
             <div class="mb-6 flex justify-between items-end">
               <div>
-                <h2 style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;">
+                <h2 style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;font-size:30px;font-weight:700;color:var(--fg);">
                   Select a Company
                 </h2>
                 <p class="text-fg-mute mt-1">
@@ -894,7 +926,7 @@
               <div>
                 <h3
                   id="test-company-name"
-                  style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-primary"
+                  style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;font-size:30px;font-weight:700;color:var(--c-blue-1);"
                 >
                   Company
                 </h3>
@@ -904,7 +936,7 @@
                 <span class="text-sm font-semibold text-slate-500"
                   >Question</span
                 >
-                <div style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-xl font-bold">
+                <div style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;font-size:20px;font-weight:700;color:var(--fg);">
                   <span id="current-q-num">1</span> /
                   <span id="total-q-num">5</span>
                 </div>
@@ -2268,10 +2300,11 @@
           showUploadError("Network error — make sure the server is running on port 5000.");
         });
         xhr.addEventListener("timeout", () => {
-          showUploadError("Upload timed out. Try a smaller file.");
+          showUploadError("Upload timed out. Please retry (network/server may be slow).");
         });
 
-        xhr.timeout = 30000;
+        // Allow slower networks/dev machines; AI analysis runs after upload anyway.
+        xhr.timeout = 120000;
         xhr.open("POST", `${API_BASE}/api/student/${state.currentUser.id}/resumes`);
         xhr.send(formData);
       }
@@ -2601,6 +2634,13 @@
       let companyChartInstance = null;
 
       function initCharts() {
+        if (typeof Chart === "undefined") {
+          console.error("Chart.js failed to load.");
+          return;
+        }
+        const axisColor = "rgba(166,174,200,.75)";
+        const gridColor = "rgba(255,255,255,.08)";
+
         // Prevent drawing charts if history is empty
         if (state.history.length === 0) {
           const noDataCanvas1 = document
@@ -2668,7 +2708,21 @@
           },
           options: {
             responsive: true,
-            scales: { y: { beginAtZero: true, max: 100 } },
+            plugins: {
+              legend: { labels: { color: axisColor } },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+                ticks: { color: axisColor },
+                grid: { color: gridColor },
+              },
+              x: {
+                ticks: { color: axisColor, maxRotation: 0, autoSkip: true },
+                grid: { color: "rgba(255,255,255,.04)" },
+              },
+            },
           },
         });
 
@@ -2698,12 +2752,39 @@
           options: {
             responsive: true,
             plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { stepSize: 1, color: axisColor },
+                grid: { color: gridColor },
+              },
+              x: {
+                ticks: { color: axisColor },
+                grid: { color: "rgba(255,255,255,.04)" },
+              },
+            },
           },
         });
       }
     
       // ── LOCAL INTERNSHIPS ─────────────────────────────────────────────────
+      function buildInternshipMailto(internship) {
+        const email = String(internship.apply_contact || "").trim();
+        if (!email) return "";
+        const subject = encodeURIComponent(`Application for ${internship.role} Internship`);
+        const applicant = (state.currentUser && state.currentUser.name) ? state.currentUser.name : "Student";
+        const body = encodeURIComponent(
+          `Hello ${internship.company_name} team,\n\nI would like to apply for the ${internship.role} internship.\n\nRegards,\n${applicant}`
+        );
+        return `mailto:${email}?subject=${subject}&body=${body}`;
+      }
+
+      function handleInternshipApply(event, hasEmail) {
+        if (hasEmail) return;
+        event.preventDefault();
+        showToast("Application email is missing for this listing.", "error");
+      }
+
       function renderInternships() {
         const grid    = document.getElementById("internship-grid");
         const statsBar= document.getElementById("intern-stats-bar");
@@ -2748,7 +2829,9 @@
           const applyColor = isPaid
             ? "background:#166534;color:#fff;"
             : "background:#854d0e;color:#fff;";
-          const applyHover = isPaid ? "hover:bg-green-900" : "hover:bg-yellow-900";
+          const mailto     = buildInternshipMailto(i);
+          const hasEmail   = Boolean(mailto);
+          const emailText  = (i.apply_contact || "").trim() || "No email";
 
           return `<div class="intern-card">
             <!-- Top: role + badge -->
@@ -2774,13 +2857,13 @@
             ${i.requirements ? `<div class="intern-req"><strong>Requirements</strong>${i.requirements}</div>` : ""}
 
             <!-- Apply CTA -->
-            <a href="mailto:${i.apply_contact}"
-              class="intern-apply-btn ${applyHover}"
-              style="${applyColor}border:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+            <a href="${hasEmail ? mailto : "#"}"
+              class="intern-apply-btn ${hasEmail ? "" : "disabled"}"
+              onclick="handleInternshipApply(event, ${hasEmail})"
+              style="${applyColor}">
               <i class="fas fa-envelope"></i>
-              <span>Send Email</span>
-              <span class="text-xs opacity-75">·</span>
-              <span class="text-xs opacity-75">${i.apply_contact}</span>
+              <span>${hasEmail ? "Send Application Email" : "Email Unavailable"}</span>
+              <span class="intern-apply-email">${emailText}</span>
             </a>
           </div>`;
         }).join("");

@@ -31,7 +31,6 @@ const GEMINI_MODELS = [
   "gemini-1.5-flash-latest", // Most reliable free-tier model for PDF vision
   "gemini-1.5-flash", // Stable fallback
   "gemini-1.5-pro", // Higher capability fallback
-  "gemini-2.0-flash", // Newer model if SDK supports it
 ];
 
 // ── JSON extractor ────────────────────────────────────────────────────────────
@@ -162,6 +161,43 @@ function validateParsed(parsed) {
   return parsed;
 }
 
+function getRetrySecondsFromError(message) {
+  if (!message) return null;
+  const m1 = String(message).match(/retry in\s+([\d.]+)s/i);
+  if (m1 && m1[1]) return Math.max(1, Math.ceil(Number(m1[1])));
+  const m2 = String(message).match(/"retryDelay":"(\d+)s"/i);
+  if (m2 && m2[1]) return Math.max(1, Number(m2[1]));
+  return null;
+}
+
+function normalizeGeminiError(err) {
+  const raw = String(err?.message || err || "");
+  const lower = raw.toLowerCase();
+  const isQuota =
+    lower.includes("429") ||
+    lower.includes("quota exceeded") ||
+    lower.includes("rate limit");
+
+  if (isQuota) {
+    const retrySeconds = getRetrySecondsFromError(raw);
+    return {
+      code: "GEMINI_QUOTA",
+      message:
+        "Gemini quota/rate-limit reached for scanned PDF analysis." +
+        (retrySeconds
+          ? ` Please retry in about ${retrySeconds}s.`
+          : " Please retry after a short wait.") +
+        " If this keeps happening, add billing or increase quota in Google AI Studio.",
+    };
+  }
+
+  return {
+    code: "GEMINI_FAILED",
+    message:
+      "Gemini could not analyze this scanned PDF right now. Check GEMINI_API_KEY and model availability, then retry.",
+  };
+}
+
 // ── METHOD 1: Groq — text-based PDFs ─────────────────────────────────────────
 async function analyzeWithGroq(resumeText, studentName) {
   const prompt = buildPrompt(
@@ -237,12 +273,9 @@ async function analyzeWithGemini(pdfBase64, studentName) {
     logger.error(
       `[AI] All Gemini models failed. Last error: ${lastGeminiError.message}`,
     );
-    // Throw a meaningful error instead of returning null silently
-    const surfacedErr = new Error(
-      `Gemini API failed for image PDF: ${lastGeminiError.message}. ` +
-        `Check your GEMINI_API_KEY is valid and the model quota is not exceeded.`,
-    );
-    surfacedErr.code = "GEMINI_FAILED";
+    const normalized = normalizeGeminiError(lastGeminiError);
+    const surfacedErr = new Error(normalized.message);
+    surfacedErr.code = normalized.code;
     throw surfacedErr;
   }
 
@@ -264,8 +297,16 @@ const analyzeResume = async (resumeText, studentName, pdfBase64) => {
     // Groq failed on all models — fall back to Gemini with the text
     logger.warn("[AI] Groq exhausted — falling back to Gemini with text");
     if (env.GEMINI_API_KEY && pdfBase64) {
-      const geminiResult = await analyzeWithGemini(pdfBase64, studentName);
-      if (geminiResult) return geminiResult;
+      try {
+        const geminiResult = await analyzeWithGemini(pdfBase64, studentName);
+        if (geminiResult) return geminiResult;
+      } catch (gemErr) {
+        if (gemErr.code === "NOT_A_RESUME") throw gemErr;
+        logger.error(
+          `[AI] Gemini text-fallback failed (${gemErr.code || "GEMINI_FAILED"}): ${gemErr.message}`,
+        );
+        return genericFeedback(studentName, gemErr.message);
+      }
     }
   } else {
     // ── Image/scanned PDF: use Gemini vision ──────────────────────────────
@@ -287,13 +328,11 @@ const analyzeResume = async (resumeText, studentName, pdfBase64) => {
         if (geminiResult) return geminiResult;
       } catch (gemErr) {
         if (gemErr.code === "NOT_A_RESUME") throw gemErr;
-        // Return a specific, actionable message for Gemini failures
-        logger.error(`[AI] Gemini image analysis failed: ${gemErr.message}`);
-        return genericFeedback(
-          studentName,
-          `Image PDF analysis failed. Error: ${gemErr.message} — ` +
-            `Ensure GEMINI_API_KEY is valid and has quota remaining at https://aistudio.google.com/app/apikey`,
+        // Return a concise actionable message for Gemini failures
+        logger.error(
+          `[AI] Gemini image analysis failed (${gemErr.code || "GEMINI_FAILED"}): ${gemErr.message}`,
         );
+        return genericFeedback(studentName, gemErr.message);
       }
     }
   }
@@ -358,3 +397,4 @@ function genericFeedback(studentName, reason) {
 }
 
 module.exports = { analyzeResume, generateMentorSuggestion };
+
