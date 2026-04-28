@@ -1,68 +1,549 @@
-﻿<!-- Student Dashboard with all the updates done -->
-
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ami-Bridge | Student Dashboard</title>
-    <!-- Tailwind CSS for styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js for Performance Analytics -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- FontAwesome for Icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <link rel="icon" href="logo.png" type="image/logo.png" />
-
-        <!-- Google Fonts: Plus Jakarta Sans + Outfit -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: { sans: ["Inter","system-ui","sans-serif"], display: ["Space+Grotesk","sans-serif"] },
-            colors: {
-              primary: "#2563EB", primaryHover: "#1D4ED8",
-              accent: "#0EA5E9", dark: "#020817", darkPanel: "#0F172A",
-              danger: "#EF4444", success: "#22C55E",
-            },
-          },
-        },
-      };
-    </script>
-    <link rel="stylesheet" href="styles.css" />
-    <!-- Additional theme-specific styles can be added here if needed -->
+﻿<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-role="student">
+<script>(function(){var t=localStorage.getItem("ami-theme")||"dark";document.documentElement.setAttribute("data-theme",t);})();</script>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ami-Bridge | Student Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{}}};</script>
+  <style>
+    /* ── THEME TOKENS ─────────────────────────────────── */
+    :root {
+      --c-blue-1:#0EA5E9; --c-blue-2:#2563EB;
+      --c-violet-1:#A855F7; --c-violet-2:#7C3AED;
+      --c-emerald-1:#10B981; --c-emerald-2:#059669;
+      --c-amber:#F59E0B; --c-rose:#F43F5E;
+      --font-sans:'Inter',system-ui,sans-serif;
+      --font-display:'Space Grotesk','Inter',system-ui,sans-serif;
+      --font-mono:'JetBrains Mono',ui-monospace,monospace;
+      --ease:cubic-bezier(.2,.8,.2,1);
+      --ease-out:cubic-bezier(.16,1,.3,1);
+      --r-sm:8px; --r-md:14px; --r-lg:22px; --r-xl:32px;
+    }
+    :root,[data-theme="dark"] {
+      --bg:#020817; --bg-2:#060B22;
+      --surface:rgba(18,22,44,.55);
+      --surface-2:rgba(28,32,58,.65);
+      --surface-solid:#0F1330;
+      --border:rgba(255,255,255,.08);
+      --border-strong:rgba(255,255,255,.14);
+      --fg:#E7ECF7; --fg-soft:#A6AEC8; --fg-mute:#707895;
+      --shadow-lg:0 30px 80px -30px rgba(0,0,0,.8),0 12px 32px -16px rgba(0,0,0,.6);
+      --shadow-md:0 14px 36px -18px rgba(0,0,0,.55);
+      --noise-opacity:.045; --grid-color:rgba(255,255,255,.035);
+      --glass-tint:rgba(255,255,255,.04); --ring:rgba(110,140,255,.25);
+      color-scheme:dark;
+    }
+    [data-theme="light"] {
+      --bg:#F1F5F9; --bg-2:#E2E8F0;
+      --surface:rgba(255,255,255,.78);
+      --surface-2:rgba(255,255,255,.92);
+      --surface-solid:#FFFFFF;
+      --border:rgba(2,8,23,.08); --border-strong:rgba(2,8,23,.15);
+      --fg:#020817; --fg-soft:#475569; --fg-mute:#64748B;
+      --shadow-lg:0 30px 80px -30px rgba(15,23,42,.25),0 12px 32px -16px rgba(15,23,42,.14);
+      --shadow-md:0 14px 36px -18px rgba(15,23,42,.14);
+      --noise-opacity:.03; --grid-color:rgba(2,8,23,.055);
+      --glass-tint:rgba(255,255,255,.55); --ring:rgba(37,99,235,.22);
+      color-scheme:light;
+    }
+    /* ── RESET ─────────────────────────────────────────── */
+    *,*::before,*::after{box-sizing:border-box;}
+    *{margin:0;padding:0;}
+    html,body{height:100%;}
+    body{
+      font-family:var(--font-sans);
+      background:var(--bg); color:var(--fg);
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+      overflow-x:hidden; line-height:1.55;
+      letter-spacing:-.005em;
+      transition:background-color .5s var(--ease),color .5s var(--ease);
+    }
+    a{color:inherit;text-decoration:none;}
+    button{font:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+    ul,ol{list-style:none;}
+    ::selection{background:rgba(124,58,237,.35);color:#fff;}
+    /* ── BG LAYERS ─────────────────────────────────────── */
+    .bg-mesh{position:fixed;inset:0;z-index:-3;pointer-events:none;filter:blur(80px) saturate(140%);opacity:.9;}
+    [data-theme="light"] .bg-mesh{opacity:.55;filter:blur(90px) saturate(120%);}
+    .mesh{position:absolute;border-radius:50%;width:55vmax;height:55vmax;transition:transform 1.2s var(--ease),background .6s var(--ease);will-change:transform;}
+    .mesh-1{top:-25vmax;left:-15vmax;background:radial-gradient(closest-side,rgba(37,99,235,.55),transparent 70%);}
+    .mesh-2{top:20vmax;right:-25vmax;background:radial-gradient(closest-side,rgba(168,85,247,.45),transparent 70%);}
+    .mesh-3{bottom:-25vmax;left:25vmax;background:radial-gradient(closest-side,rgba(16,185,129,.35),transparent 70%);}
+    [data-role="mentor"] .mesh-1{background:radial-gradient(closest-side,rgba(16,185,129,.50),transparent 70%);}
+    [data-role="mentor"] .mesh-2{background:radial-gradient(closest-side,rgba(37,99,235,.35),transparent 70%);}
+    [data-role="admin"] .mesh-1{background:radial-gradient(closest-side,rgba(168,85,247,.55),transparent 70%);}
+    [data-role="admin"] .mesh-2{background:radial-gradient(closest-side,rgba(244,63,94,.25),transparent 70%);}
+    .bg-grid{
+      position:fixed;inset:0;z-index:-2;pointer-events:none;
+      background-image:linear-gradient(to right,var(--grid-color) 1px,transparent 1px),linear-gradient(to bottom,var(--grid-color) 1px,transparent 1px);
+      background-size:56px 56px;
+      mask-image:radial-gradient(ellipse at center,#000 35%,transparent 75%);
+      -webkit-mask-image:radial-gradient(ellipse at center,#000 35%,transparent 75%);
+    }
+    .bg-noise{
+      position:fixed;inset:0;z-index:-1;pointer-events:none;
+      opacity:var(--noise-opacity);
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      mix-blend-mode:overlay;
+    }
+    .cursor-glow{
+      position:fixed;left:0;top:0;width:480px;height:480px;border-radius:50%;
+      pointer-events:none;z-index:0;
+      background:radial-gradient(closest-side,rgba(37,99,235,.18),transparent 70%);
+      transform:translate3d(-50%,-50%,0);
+      transition:opacity .4s ease,background .5s var(--ease);
+      opacity:0; mix-blend-mode:screen;
+    }
+    [data-theme="light"] .cursor-glow{background:radial-gradient(closest-side,rgba(37,99,235,.14),transparent 70%);mix-blend-mode:multiply;}
+    [data-role="mentor"] .cursor-glow{background:radial-gradient(closest-side,rgba(16,185,129,.18),transparent 70%);}
+    [data-role="admin"] .cursor-glow{background:radial-gradient(closest-side,rgba(168,85,247,.20),transparent 70%);}
+    @media(hover:hover) and (pointer:fine){.cursor-glow{opacity:1;}}
+    /* ── DASH SHELL ────────────────────────────────────── */
+    .dash-shell{display:grid;grid-template-columns:256px 1fr;min-height:100vh;}
+    .dash-side{
+      position:sticky;top:0;height:100vh;
+      padding:22px 16px;
+      border-right:1px solid var(--border);
+      background:var(--bg-2);
+      display:flex;flex-direction:column;gap:2px;
+      overflow-y:auto; overflow-x:hidden;
+    }
+    [data-theme="light"] .dash-side{background:var(--surface);}
+    .dash-brand{display:flex;align-items:center;gap:10px;padding:6px 8px 16px;margin-bottom:8px;border-bottom:1px solid var(--border);}
+    .brand-mark{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:36px;height:36px;border-radius:10px;
+      background:linear-gradient(135deg,var(--c-blue-2),var(--c-violet-2));
+      color:#fff; box-shadow:0 8px 24px -10px rgba(37,99,235,.65);
+      font-family:var(--font-display);font-weight:700;font-size:16px;
+      flex-shrink:0;
+    }
+    [data-role="mentor"] .brand-mark{background:linear-gradient(135deg,var(--c-emerald-2),var(--c-blue-2));}
+    [data-role="admin"] .brand-mark{background:linear-gradient(135deg,var(--c-violet-2),var(--c-rose));}
+    .brand-text{display:flex;flex-direction:column;line-height:1.15;}
+    .brand-name{font-family:var(--font-display);font-weight:700;font-size:15px;letter-spacing:-.01em;}
+    .brand-tag{font-size:10px;color:var(--fg-mute);letter-spacing:.04em;text-transform:uppercase;margin-top:1px;}
+    /* Nav */
+    .dash-nav-section{
+      font-size:10px;font-weight:600;color:var(--fg-mute);
+      letter-spacing:.1em;text-transform:uppercase;
+      padding:16px 12px 5px;
+    }
+    .nav-item{
+      display:flex;align-items:center;gap:10px;
+      padding:9px 12px; border-radius:10px;
+      font-size:13.5px;font-weight:500;
+      color:var(--fg-soft);
+      transition:background .18s var(--ease),color .18s var(--ease),transform .18s var(--ease);
+      cursor:pointer; width:100%; text-align:left; border:none; background:none;
+      position:relative;
+    }
+    .nav-item i{flex:none;width:16px;text-align:center;font-size:13px;opacity:.7;transition:opacity .18s;}
+    .nav-item:hover{background:var(--surface-2);color:var(--fg);transform:translateX(2px);}
+    .nav-item:hover i{opacity:1;}
+    .nav-item.active{
+      background:var(--surface-2);color:var(--fg);
+      box-shadow:inset 2px 0 0 var(--c-blue-2);
+    }
+    [data-role="mentor"] .nav-item.active{box-shadow:inset 2px 0 0 var(--c-emerald-2);}
+    [data-role="admin"] .nav-item.active{box-shadow:inset 2px 0 0 var(--c-violet-2);}
+    .nav-item.active i{opacity:1;}
+    /* Sidebar footer */
+    .dash-side-foot{
+      margin-top:auto;padding:10px;
+      display:flex;align-items:center;gap:10px;
+      border-radius:12px;
+      background:var(--surface);border:1px solid var(--border);
+    }
+    .dash-avatar{
+      flex:none;width:36px;height:36px;border-radius:50%;
+      display:grid;place-items:center;
+      font-family:var(--font-display);font-weight:700;font-size:13px;
+      color:#fff;background:linear-gradient(135deg,var(--c-blue-2),var(--c-violet-2));
+      overflow:hidden;
+    }
+    [data-role="mentor"] .dash-avatar{background:linear-gradient(135deg,var(--c-emerald-2),var(--c-blue-2));}
+    [data-role="admin"] .dash-avatar{background:linear-gradient(135deg,var(--c-violet-2),var(--c-rose));}
+    .who{display:flex;flex-direction:column;min-width:0;flex:1;}
+    .who-name{font-size:13px;font-weight:600;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .who-role{font-size:10px;color:var(--fg-mute);text-transform:uppercase;letter-spacing:.06em;}
+    .signout-btn{
+      flex:none;width:32px;height:32px;border-radius:8px;
+      display:grid;place-items:center;color:var(--fg-mute);
+      transition:color .2s,background .2s;
+    }
+    .signout-btn:hover{color:var(--c-rose);background:rgba(244,63,94,.08);}
+    /* ── DASH MAIN ────────────────────────────────────── */
+    .dash-main{
+      display:flex;flex-direction:column;
+      min-width:0;min-height:100vh;
+      background:var(--bg);
+    }
+    /* Top bar */
+    .dash-topbar{
+      position:sticky;top:0;z-index:40;
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
+      padding:14px 28px;
+      background:linear-gradient(180deg,var(--glass-tint),transparent);
+      backdrop-filter:blur(18px) saturate(160%);
+      -webkit-backdrop-filter:blur(18px) saturate(160%);
+      border-bottom:1px solid var(--border);
+      transition:border-color .3s var(--ease);
+    }
+    .dash-topbar.scrolled{border-bottom-color:var(--border-strong);background:var(--surface);}
+    #page-title{
+      font-family:var(--font-display);font-weight:700;
+      font-size:17px;letter-spacing:-.02em;color:var(--fg);
+    }
+    /* Icon buttons */
+    .icon-btn{
+      width:36px;height:36px;border-radius:10px;
+      display:grid;place-items:center;
+      background:var(--surface);border:1px solid var(--border);
+      color:var(--fg-soft);position:relative;
+      transition:color .2s,border-color .2s;
+    }
+    .icon-btn:hover{color:var(--fg);border-color:var(--border-strong);}
+    .dot-notif{
+      position:absolute;top:7px;right:8px;
+      width:8px;height:8px;border-radius:50%;
+      background:var(--c-rose);
+      box-shadow:0 0 0 2px var(--bg-2);
+    }
+    /* Notif badge */
+    #notif-badge{
+      position:absolute;top:-4px;right:-4px;
+      min-width:18px;height:18px;border-radius:999px;
+      background:var(--c-rose);color:#fff;
+      font-size:10px;font-weight:700;
+      display:none;align-items:center;justify-content:center;
+      padding:0 4px;font-family:var(--font-mono);
+      box-shadow:0 0 0 2px var(--bg-2);
+    }
+    /* User chip */
+    .user-chip{
+      display:flex;align-items:center;gap:9px;
+      padding:4px 12px 4px 4px;
+      background:var(--surface);border:1px solid var(--border);
+      border-radius:999px;cursor:pointer;
+      transition:border-color .18s,background .18s;
+    }
+    .user-chip:hover{border-color:var(--border-strong);background:var(--surface-2);}
+    .user-avatar{
+      width:28px;height:28px;border-radius:50%;
+      border:1px solid var(--border-strong);
+      object-fit:cover; overflow:hidden;
+    }
+    /* Theme toggle */
+    .theme-toggle{
+      position:relative;display:inline-flex;align-items:center;
+      height:36px;padding:0;background:transparent;border:0;cursor:pointer;
+    }
+    .toggle-track{
+      position:relative;display:inline-flex;align-items:center;justify-content:space-between;
+      width:60px;height:30px;padding:0 8px;border-radius:999px;
+      background:var(--surface-2);border:1px solid var(--border);
+      transition:background .3s var(--ease),border-color .3s var(--ease);
+    }
+    .theme-toggle:hover .toggle-track{border-color:var(--border-strong);}
+    .toggle-icon{position:relative;z-index:2;pointer-events:none;transition:color .3s,opacity .3s;}
+    .icon-sun{color:var(--c-amber);}
+    .icon-moon{color:var(--c-violet-1);}
+    [data-theme="dark"] .icon-sun{color:var(--fg-mute);opacity:.6;}
+    [data-theme="light"] .icon-moon{color:var(--fg-mute);opacity:.6;}
+    .toggle-thumb{
+      position:absolute;top:50%;left:3px;width:24px;height:24px;border-radius:50%;z-index:1;
+      transform:translate(0,-50%);
+      background:linear-gradient(135deg,#1E1B4B,#312E81);
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:0 4px 14px -4px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.1);
+      transition:transform .45s var(--ease),background .35s var(--ease),box-shadow .35s var(--ease);
+    }
+    [data-theme="light"] .toggle-thumb{
+      transform:translate(30px,-50%);
+      background:linear-gradient(135deg,#FFFFFF,#FEF3C7);
+      border-color:rgba(245,158,11,.35);
+      box-shadow:0 6px 18px -6px rgba(245,158,11,.55),inset 0 1px 0 rgba(255,255,255,.6);
+    }
+    /* ── SCROLLABLE CONTENT ───────────────────────────── */
+    .dash-content{
+      flex:1;overflow-y:auto;padding:28px;
+      display:flex;flex-direction:column;gap:24px;
+    }
+    ::-webkit-scrollbar{width:3px;height:3px;}
+    ::-webkit-scrollbar-track{background:transparent;}
+    ::-webkit-scrollbar-thumb{background:rgba(110,140,255,.3);border-radius:99px;}
+    /* ── GLASS CARDS ───────────────────────────────────── */
+    .glass{
+      background:linear-gradient(180deg,var(--surface-2),var(--surface));
+      backdrop-filter:blur(22px) saturate(160%);
+      -webkit-backdrop-filter:blur(22px) saturate(160%);
+      border:1px solid var(--border);
+    }
+    .panel-card{
+      padding:22px;border-radius:var(--r-md);
+      background:var(--surface);border:1px solid var(--border);
+      position:relative;overflow:hidden;
+    }
+    .panel-card.glass{background:linear-gradient(180deg,var(--surface-2),var(--surface));}
+    /* ── KPI CARDS ─────────────────────────────────────── */
+    .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;}
+    .kpi-card{
+      position:relative;padding:20px;border-radius:var(--r-md);
+      background:var(--surface);border:1px solid var(--border);
+      overflow:hidden;
+      transition:border-color .25s var(--ease),transform .25s var(--ease);
+    }
+    .kpi-card:hover{border-color:var(--border-strong);transform:translateY(-2px);}
+    .kpi-card::before{
+      content:"";position:absolute;inset:0;
+      background:radial-gradient(140px 80px at 90% 0%,rgba(37,99,235,.18),transparent 70%);
+      opacity:0;transition:opacity .3s var(--ease);pointer-events:none;
+    }
+    .kpi-card:hover::before{opacity:1;}
+    [data-role="mentor"] .kpi-card::before{background:radial-gradient(140px 80px at 90% 0%,rgba(16,185,129,.18),transparent 70%);}
+    [data-role="admin"] .kpi-card::before{background:radial-gradient(140px 80px at 90% 0%,rgba(168,85,247,.2),transparent 70%);}
+    .kpi-label{font-size:11.5px;font-weight:600;color:var(--fg-mute);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+    .kpi-icon{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--surface-2);color:var(--c-blue-1);}
+    [data-role="mentor"] .kpi-icon{color:var(--c-emerald-1);}
+    [data-role="admin"] .kpi-icon{color:var(--c-violet-1);}
+    .kpi-value{font-family:var(--font-display);font-weight:700;font-size:clamp(26px,3vw,32px);letter-spacing:-.02em;margin-top:10px;display:flex;align-items:baseline;gap:8px;}
+    .kpi-unit{font-size:13px;color:var(--fg-mute);font-weight:500;font-family:var(--font-sans);letter-spacing:0;}
+    /* ── DASH BANNER ───────────────────────────────────── */
+    .dash-banner{
+      position:relative;padding:22px 26px;border-radius:var(--r-md);
+      background:radial-gradient(circle at 0% 0%,rgba(37,99,235,.18),transparent 60%),radial-gradient(circle at 100% 100%,rgba(168,85,247,.16),transparent 60%),var(--surface);
+      border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:space-between;gap:16px;overflow:hidden;
+    }
+    [data-role="mentor"] .dash-banner{background:radial-gradient(circle at 0% 0%,rgba(16,185,129,.2),transparent 60%),radial-gradient(circle at 100% 100%,rgba(37,99,235,.16),transparent 60%),var(--surface);}
+    [data-role="admin"] .dash-banner{background:radial-gradient(circle at 0% 0%,rgba(168,85,247,.22),transparent 60%),radial-gradient(circle at 100% 100%,rgba(244,63,94,.16),transparent 60%),var(--surface);}
+    .dash-banner h2{font-family:var(--font-display);font-weight:700;font-size:18px;letter-spacing:-.01em;}
+    .dash-banner p{color:var(--fg-soft);font-size:13.5px;margin-top:4px;}
+    /* ── BUTTONS ───────────────────────────────────────── */
+    .btn{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:10px 18px;border-radius:12px;
+      font-size:13.5px;font-weight:600;letter-spacing:-.005em;
+      position:relative;overflow:hidden;
+      transition:transform .25s var(--ease),box-shadow .25s var(--ease),background .25s var(--ease);
+      isolation:isolate;
+    }
+    .btn-primary{
+      color:#fff;
+      background:linear-gradient(135deg,var(--c-blue-2),var(--c-violet-2));
+      box-shadow:0 12px 28px -12px rgba(37,99,235,.7),inset 0 1px 0 rgba(255,255,255,.18);
+    }
+    [data-role="mentor"] .btn-primary{background:linear-gradient(135deg,var(--c-emerald-2),var(--c-blue-2));box-shadow:0 12px 28px -12px rgba(16,185,129,.65),inset 0 1px 0 rgba(255,255,255,.18);}
+    [data-role="admin"] .btn-primary{background:linear-gradient(135deg,var(--c-violet-2),var(--c-rose));box-shadow:0 12px 28px -12px rgba(168,85,247,.65),inset 0 1px 0 rgba(255,255,255,.18);}
+    .btn-primary:hover{transform:translateY(-1px);box-shadow:0 18px 36px -14px rgba(124,58,237,.65),inset 0 1px 0 rgba(255,255,255,.22);}
+    .btn-primary::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.32) 50%,transparent 100%);transform:translateX(-120%);transition:transform .9s var(--ease);}
+    .btn-primary:hover::after{transform:translateX(120%);}
+    .btn-ghost{color:var(--fg);background:var(--surface-2);border:1px solid var(--border);}
+    .btn-ghost:hover{border-color:var(--border-strong);transform:translateY(-1px);}
+    .btn-sm{padding:7px 14px;font-size:12.5px;border-radius:9px;}
+    .btn-danger{color:#fff;background:linear-gradient(135deg,#DC2626,var(--c-rose));box-shadow:0 8px 20px -10px rgba(244,63,94,.6);}
+    .btn-danger:hover{transform:translateY(-1px);}
+    /* ── BADGES / CHIPS ─────────────────────────────────── */
+    .chip{font-family:var(--font-mono);font-size:11px;padding:3px 9px;border-radius:999px;border:1px solid var(--border);}
+    .chip-blue{color:#93C5FD;background:rgba(37,99,235,.15);border-color:rgba(37,99,235,.3);}
+    .chip-violet{color:#DDD6FE;background:rgba(168,85,247,.15);border-color:rgba(168,85,247,.3);}
+    .chip-emerald{color:#6EE7B7;background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.3);}
+    .chip-amber{color:#FCD34D;background:rgba(245,158,11,.15);border-color:rgba(245,158,11,.3);}
+    .chip-rose{color:#FCA5A5;background:rgba(244,63,94,.15);border-color:rgba(244,63,94,.3);}
+    [data-theme="light"] .chip-blue{color:#1D4ED8;background:rgba(37,99,235,.08);}
+    [data-theme="light"] .chip-violet{color:#6D28D9;background:rgba(168,85,247,.08);}
+    [data-theme="light"] .chip-emerald{color:#047857;background:rgba(16,185,129,.08);}
+    [data-theme="light"] .chip-amber{color:#B45309;background:rgba(245,158,11,.1);}
+    .score-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:600;background:var(--surface-2);border:1px solid var(--border);}
+    .score-pill.good{color:var(--c-emerald-1);background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.3);}
+    .score-pill.mid{color:var(--c-amber);background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.3);}
+    .score-pill.low{color:var(--c-rose);background:rgba(244,63,94,.12);border-color:rgba(244,63,94,.3);}
+    /* ── TABLE ─────────────────────────────────────────── */
+    table{border-collapse:separate;border-spacing:0;width:100%;}
+    thead th{
+      background:var(--surface-2);
+      font-size:10.5px;font-weight:700;color:var(--fg-mute);
+      text-transform:uppercase;letter-spacing:.08em;
+      padding:11px 18px;border-bottom:1px solid var(--border);
+    }
+    tbody tr{transition:background .12s;}
+    tbody tr:hover{background:var(--surface-2);}
+    tbody td{padding:12px 18px;font-size:13.5px;color:var(--fg-soft);border-bottom:1px solid var(--border);}
+    tbody tr:last-child td{border-bottom:none;}
+    /* ── MODALS ────────────────────────────────────────── */
+    .modal-backdrop{
+      background:rgba(2,8,23,.75);
+      backdrop-filter:blur(12px) saturate(150%);
+      -webkit-backdrop-filter:blur(12px) saturate(150%);
+    }
+    .modal-inner{
+      background:linear-gradient(180deg,var(--surface-2),var(--surface));
+      border:1px solid var(--border-strong);
+      border-radius:var(--r-lg);overflow:hidden;
+      box-shadow:var(--shadow-lg);
+    }
+    .modal-header{
+      padding:18px 22px;border-bottom:1px solid var(--border);
+      background:linear-gradient(180deg,var(--glass-tint),transparent);
+      display:flex;justify-content:space-between;align-items:center;
+    }
+    /* ── INPUTS ────────────────────────────────────────── */
+    input,select,textarea{
+      font-family:var(--font-sans)!important;
+      background:var(--bg-2)!important;
+      color:var(--fg)!important;
+      border:1px solid var(--border)!important;
+      border-radius:10px!important;
+      font-size:13.5px!important;
+      transition:border-color .2s var(--ease),box-shadow .2s var(--ease)!important;
+    }
+    [data-theme="light"] input,[data-theme="light"] select,[data-theme="light"] textarea{background:#fff!important;}
+    input::placeholder,textarea::placeholder{color:var(--fg-mute)!important;}
+    input:focus,select:focus,textarea:focus{
+      outline:none!important;
+      border-color:var(--c-blue-2)!important;
+      box-shadow:0 0 0 4px var(--ring)!important;
+    }
+    [data-role="mentor"] input:focus,[data-role="mentor"] select:focus,[data-role="mentor"] textarea:focus{border-color:var(--c-emerald-2)!important;box-shadow:0 0 0 4px rgba(16,185,129,.18)!important;}
+    [data-role="admin"] input:focus,[data-role="admin"] select:focus,[data-role="admin"] textarea:focus{border-color:var(--c-violet-2)!important;box-shadow:0 0 0 4px rgba(168,85,247,.22)!important;}
+    /* ── GRADIENT TEXT ─────────────────────────────────── */
+    .grad{background-clip:text;-webkit-background-clip:text;color:transparent;-webkit-text-fill-color:transparent;background-size:200% 100%;animation:hue 9s linear infinite;}
+    .grad-blue{background-image:linear-gradient(90deg,#38BDF8,#2563EB,#38BDF8);}
+    .grad-violet{background-image:linear-gradient(90deg,#C084FC,#7C3AED,#C084FC);}
+    .grad-emerald{background-image:linear-gradient(90deg,#34D399,#059669,#34D399);}
+    @keyframes hue{0%{background-position:0% 50%;}100%{background-position:200% 50%;}}
+    /* ── ANIMATIONS ────────────────────────────────────── */
+    .fade-in{animation:fadeUp .35s cubic-bezier(.16,1,.3,1) both;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+    .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease-out),transform .7s var(--ease-out);}
+    .reveal.in{opacity:1;transform:translateY(0);}
+    /* ── INTERNSHIP CARDS ──────────────────────────────── */
+    .intern-card{
+      background:var(--surface);border:1px solid var(--border);
+      border-radius:var(--r-md);padding:18px;
+      display:flex;flex-direction:column;gap:12px;
+      transition:border-color .2s var(--ease),transform .2s var(--ease);
+    }
+    .intern-card:hover{border-color:var(--border-strong);transform:translateY(-2px);}
+    .intern-badge-paid{color:#6EE7B7;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);}
+    .intern-badge-unpaid{color:#FCD34D;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);}
+    .intern-badge{padding:2px 9px;border-radius:999px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+    .intern-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--fg-mute);}
+    .intern-meta span{display:flex;align-items:center;gap:4px;}
+    .intern-req{background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:9px 12px;font-size:12px;color:var(--fg-soft);}
+    /* ── LIST ROWS ─────────────────────────────────────── */
+    .list-row{
+      display:flex;align-items:center;gap:12px;
+      padding:12px 0;border-bottom:1px solid var(--border);
+      font-size:14px;
+    }
+    .list-row:last-child{border-bottom:0;}
+    .list-row .title{font-weight:600;color:var(--fg);}
+    .list-row .sub{font-size:12px;color:var(--fg-mute);margin-top:2px;}
+    /* ── ACTIVITY ──────────────────────────────────────── */
+    .activity-dot{
+      width:10px;height:10px;border-radius:50%;flex-shrink:0;
+      background:var(--c-blue-2);
+      box-shadow:0 0 0 3px var(--surface),0 0 10px rgba(37,99,235,.6);
+    }
+    [data-role="mentor"] .activity-dot{background:var(--c-emerald-2);box-shadow:0 0 0 3px var(--surface),0 0 10px rgba(16,185,129,.6);}
+    [data-role="admin"] .activity-dot{background:var(--c-violet-2);box-shadow:0 0 0 3px var(--surface),0 0 10px rgba(168,85,247,.6);}
+    /* ── TOAST ─────────────────────────────────────────── */
+    #toast-container>div{
+      border-radius:14px!important;
+      backdrop-filter:blur(14px);
+      background:var(--surface)!important;
+      border:1px solid var(--border-strong)!important;
+      box-shadow:var(--shadow-md)!important;
+      font-family:var(--font-sans)!important;
+      font-size:13.5px!important;
+      font-weight:600!important;
+      color:var(--fg)!important;
+    }
+    /* ── AI SCORE CARD ─────────────────────────────────── */
+    #ai-score-card{
+      background:linear-gradient(135deg,var(--c-blue-2),var(--c-violet-2))!important;
+      border-radius:var(--r-md)!important;
+      border:1px solid rgba(255,255,255,.15)!important;
+      box-shadow:0 12px 40px rgba(37,99,235,.4)!important;
+    }
+    [data-role="student"] #ai-score-card{background:linear-gradient(135deg,var(--c-blue-2),var(--c-violet-2))!important;}
+    /* ── SECTION ICON ───────────────────────────────────── */
+    .section-icon{
+      width:38px;height:38px;border-radius:11px;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;
+      font-size:15px;
+      background:var(--surface-2);border:1px solid var(--border);
+      color:var(--c-blue-1);
+    }
+    [data-role="mentor"] .section-icon{color:var(--c-emerald-1);}
+    [data-role="admin"] .section-icon{color:var(--c-violet-1);}
+    /* ── NOTIF DROPDOWN ─────────────────────────────────── */
+    #notif-dropdown{
+      background:var(--surface-solid);
+      border:1px solid var(--border-strong);
+      border-radius:var(--r-md);
+      box-shadow:var(--shadow-lg);
+      color:var(--fg);
+    }
+    /* ── PULSE ─────────────────────────────────────────── */
+    .pulse{width:8px;height:8px;border-radius:50%;background:var(--c-emerald-1);box-shadow:0 0 0 0 rgba(16,185,129,.6);animation:pulse-anim 2s infinite;}
+    @keyframes pulse-anim{0%{box-shadow:0 0 0 0 rgba(16,185,129,.55);}70%{box-shadow:0 0 0 10px rgba(16,185,129,0);}100%{box-shadow:0 0 0 0 rgba(16,185,129,0);}}
+  
+    /* Override Tailwind text colors with theme-aware vars */
+    .text-slate-900,.text-slate-800 { color: var(--fg) !important; }
+    .text-slate-700,.text-slate-600 { color: var(--fg-soft) !important; }
+    .text-slate-500,.text-slate-400 { color: var(--fg-mute) !important; }
+    .bg-white { background: var(--surface) !important; }
+    .bg-slate-50 { background: var(--surface-2) !important; }
+    .bg-slate-100,.bg-slate-200 { background: var(--surface-2) !important; }
+    .border-slate-200,.border-slate-300 { border-color: var(--border) !important; }
+    .border-slate-100 { border-color: var(--border) !important; }
+    .bg-white.rounded-2xl,.bg-white.rounded-xl,.bg-white.rounded-lg { background: var(--surface) !important; }
+    
+    
+      .avatar-ring { box-shadow: 0 0 0 2px var(--border-strong, rgba(255,255,255,.14)), 0 2px 8px rgba(0,0,0,.25); border-radius: 50%; }
+    </style>
 </head>
-  <body
-    class="flex h-screen overflow-hidden bg-slate-100"
-  >
+
+  <body>
+  <!-- Background layers -->
+  <div class="bg-mesh" aria-hidden="true">
+    <div class="mesh mesh-1"></div>
+    <div class="mesh mesh-2"></div>
+    <div class="mesh mesh-3"></div>
+  </div>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-noise" aria-hidden="true"></div>
+  <div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
+
+
     <!-- Toast Notification Container -->
     <div
       id="toast-container" class="fixed top-4 right-4 z-[9999] flex flex-col gap-2 min-w-[280px]"
     ></div>
 
     <!-- Sidebar Navigation -->
-    <aside
-      class="w-64 bg-dark text-white flex flex-col transition-all duration-300 shadow-xl z-20 hidden md:flex"
+    <div class="dash-shell">
+    <aside class="dash-side"
     >
       <!-- Sidebar decorative ring -->
       <div class="sb-ring"></div>
 
       <!-- Brand -->
-      <div class="brand-wrap">
-        <div class="brand-logo">A</div>
+      <div class="dash-brand">
+        <div class="brand-mark">A</div>
         <div>
           <div class="brand-name">Ami-Bridge</div>
-          <div class="brand-sub">STUDENT PORTAL</div>
+          <div class="brand-tag">STUDENT PORTAL</div>
         </div>
       </div>
 
@@ -125,10 +606,10 @@
         </button>
       </nav>
 
-      <div class="px-3 py-4 border-t border-white/5">
+      <div class="mt-auto pt-4">
         <button
           onclick="logout()"
-          class="logout-btn"
+          class="signout-btn"
         >
           <i class="fas fa-sign-out-alt w-5"></i>
           <span class="font-medium">Logout</span>
@@ -137,101 +618,153 @@
     </aside>
 
     <!-- Main Content Area -->
-    <main class="flex-1 flex flex-col h-screen overflow-hidden">
-      <!-- â”€â”€ TOP HEADER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
-      <header class="bg-white h-16 flex items-center justify-between px-6 z-10 shrink-0 extracted-style-184">
-        <h1 id="page-title" class="extracted-style-185">
+    <main class="dash-main">
+      <!-- ── TOP HEADER ──────────────────────────────────────────── -->
+      <header class="dash-topbar" style="border-bottom:1px solid #E2E8F0;position:relative;">
+        <h1 id="page-title" style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;color:#0F172A;letter-spacing:-0.3px;">
           Performance Analytics
         </h1>
         <div class="flex items-center gap-3">
+            <!-- Theme toggle -->
+            <button id="theme-toggle-btn" class="theme-toggle" title="Toggle theme" aria-label="Toggle theme">
+              <div class="toggle-track">
+                <span class="toggle-icon icon-sun"><i class="fas fa-sun" style="font-size:12px;"></i></span>
+                <span class="toggle-icon icon-moon"><i class="fas fa-moon" style="font-size:12px;"></i></span>
+                <span class="toggle-thumb"></span>
+              </div>
+            </button>
           <!-- NOTIFICATION BELL -->
           <div class="relative" id="notif-wrapper">
-            <button class="notif-btn" onclick="toggleNotifDropdown(event)" title="Notifications" id="notif-bell-btn">
-              <i class="fas fa-bell extracted-style-186"></i>
-              <span class="notif-dot extracted-style-187" id="notif-indicator"></span>
+            <button class="icon-btn" id="notif-bell-btn" style="position:relative;" onclick="toggleNotifDropdown(event)" title="Notifications" id="notif-bell-btn" style="position:relative;">
+              <i class="fas fa-bell" style="font-size:15px;color:#64748B;"></i>
+              <span class="notif-dot" id="notif-indicator" style="display:none;"></span>
             </button>
             <!-- Dropdown -->
-            <div id="notif-dropdown" class="hidden extracted-style-188">
-              <div class="extracted-style-189">
-                <div class="extracted-style-190">
-                  <span class="extracted-style-191">Notifications</span>
-                  <span id="notif-badge" class="extracted-style-192">0</span>
+            <div id="notif-dropdown" class="hidden" style="position:absolute;top:calc(100% + 10px);right:0;width:340px;background:#fff;border:1px solid #E2E8F0;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.13),0 2px 8px rgba(0,0,0,0.07);z-index:9999;overflow:hidden;">
+              <div style="padding:14px 18px 12px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:#0F172A;">Notifications</span>
+                  <span id="notif-badge" style="background:#2563EB;color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:99px;display:none;">0</span>
                 </div>
-                <button onclick="markAllRead()" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='none'" class="extracted-style-193">Mark all read</button>
+                <button onclick="markAllRead()" style="font-size:11.5px;color:#2563EB;font-weight:600;background:none;border:none;cursor:pointer;padding:3px 8px;border-radius:6px;" onmouseover="this.style.background='#F1F5F9'" onmouseout="this.style.background='none'">Mark all read</button>
               </div>
-              <div id="notif-list" class="extracted-style-194">
-                <div class="extracted-style-195">
-                  <i class="fas fa-bell-slash extracted-style-196"></i>
-                  <p class="extracted-style-197">No notifications yet</p>
+              <div id="notif-list" style="max-height:320px;overflow-y:auto;padding:8px 0;">
+                <div style="text-align:center;padding:28px 20px;color:#94A3B8;">
+                  <i class="fas fa-bell-slash" style="font-size:28px;margin-bottom:8px;display:block;opacity:0.4;"></i>
+                  <p style="font-size:13px;font-weight:500;">No notifications yet</p>
                 </div>
               </div>
-              <div class="extracted-style-198">
-                <span class="extracted-style-199">You're all caught up âœ“</span>
+              <div style="padding:10px 18px;border-top:1px solid #F1F5F9;text-align:center;">
+                <span style="font-size:12px;color:#94A3B8;">You're all caught up ✓</span>
               </div>
             </div>
           </div>
           <!-- DIVIDER -->
-          <div class="extracted-style-200"></div>
+          <div style="width:1px;height:28px;background:#E2E8F0;"></div>
           <!-- USER CHIP -->
-          <div class="user-chip extracted-style-201" onclick="navigate('profile')" title="Go to My Profile">
-            <img id="header-avatar" src="https://api.dicebear.com/7.x/initials/svg?seed=User&amp;backgroundColor=2563EB&amp;textColor=ffffff" alt="Avatar" class="user-avatar extracted-style-202" />
+          <div class="user-chip" onclick="navigate('profile')" title="Go to My Profile" style="cursor:pointer;">
+            <img id="header-avatar" src="https://api.dicebear.com/7.x/initials/svg?seed=User&amp;backgroundColor=2563EB&amp;textColor=ffffff" alt="Avatar" class="user-avatar" style="width:30px;height:30px;" />
             <div class="text-right hidden sm:block">
-              <p id="header-user-name" class="extracted-style-203">Loading...</p>
-              <p class="extracted-style-204">Student</p>
+              <p id="header-user-name" style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;color:#0F172A;line-height:1.2;">Loading...</p>
+              <p style="font-size:11px;color:#94A3B8;line-height:1;">Student</p>
             </div>
-            <i class="fas fa-chevron-right extracted-style-205"></i>
+            <i class="fas fa-chevron-right" style="font-size:10px;color:#CBD5E1;margin-left:2px;"></i>
           </div>
         </div>
       </header>
 
       <!-- Scrollable Content -->
-      <div class="flex-1 overflow-y-auto p-6 main-bg">
+      <div class="dash-content">
         <!-- SECTION: ANALYTICS -->
         <div
           id="sec-analytics"
-          class="section-container block fade-in max-w-6xl mx-auto"
+          class="section-container block fade-in max-w-6xl mx-auto reveal"
         >
           <!-- Welcome Banner -->
-          <div class="welcome-banner">
-            <div class="extracted-style-206">
+          <div class="dash-banner">
+            <div style="position: relative; z-index: 1">
               <div
-
-               class="extracted-style-207">
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 12px;
+                  margin-bottom: 8px;
+                "
+              >
                 <div
-
-                 class="extracted-style-208">
+                  style="
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.2);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 22px;
+                  "
+                >
                   <i class="fas fa-user-graduate"></i>
                 </div>
                 <div>
                   <p
-
-                   class="extracted-style-209">
+                    style="
+                      font-size: 13px;
+                      opacity: 0.8;
+                      font-weight: 500;
+                      letter-spacing: 0.5px;
+                    "
+                  >
                     WELCOME BACK
                   </p>
                   <h2
-
+                    style="
+                      font-size: 22px;
+                      font-weight: 800;
+                      letter-spacing: -0.5px;
+                    "
                     id="welcome-name"
-                   class="extracted-style-210">
+                  >
                     Student
                   </h2>
                 </div>
               </div>
-              <p class="extracted-style-211">
+              <p style="font-size: 14px; opacity: 0.85; max-width: 480px">
                 Practice mock interviews, upload your resume, and track your
-                progress â€” all in one place.
+                progress — all in one place.
               </p>
               <div
-
-               class="extracted-style-212">
+                style="
+                  display: flex;
+                  gap: 16px;
+                  margin-top: 16px;
+                  flex-wrap: wrap;
+                "
+              >
                 <div
-
-                 class="extracted-style-213">
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    font-size: 13px;
+                    background: rgba(255, 255, 255, 0.15);
+                    padding: 6px 14px;
+                    border-radius: 20px;
+                  "
+                >
                   <span class="pulse-dot"></span>
                   <span>Ready to Practice</span>
                 </div>
                 <div
-
-                 class="extracted-style-213">
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    font-size: 13px;
+                    background: rgba(255, 255, 255, 0.15);
+                    padding: 6px 14px;
+                    border-radius: 20px;
+                  "
+                >
                   <i class="fas fa-rocket"></i>
                   <span>Keep it up!</span>
                 </div>
@@ -239,7 +772,17 @@
             </div>
             <img
               src="https://illustrations.popsy.co/blue/studying.svg"
-              alt="" class="extracted-style-214" />
+              alt=""
+              style="
+                position: absolute;
+                right: 28px;
+                bottom: 0;
+                height: 155px;
+                opacity: 0.55;
+                z-index: 0;
+                pointer-events: none;
+              "
+            />
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -250,7 +793,7 @@
               <div>
                 <p class="text-sm text-slate-500 font-medium">Total Attempts</p>
                 <p
-                  class="extracted-heading-outfit"
+                  style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;"
                   id="stat-total-attempts"
                 >
                   0
@@ -268,7 +811,7 @@
                   Average Accuracy
                 </p>
                 <p
-                  class="extracted-heading-outfit"
+                  style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;"
                   id="stat-avg-accuracy"
                 >
                   0%
@@ -284,7 +827,7 @@
               <div>
                 <p class="text-sm text-slate-500 font-medium">Highest Score</p>
                 <p
-                  class="extracted-heading-outfit"
+                  style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;"
                   id="stat-high-score"
                 >
                   0
@@ -312,16 +855,16 @@
         <!-- SECTION: PRACTICE -->
         <div
           id="sec-practice"
-          class="section-container hidden fade-in max-w-6xl mx-auto"
+          class="section-container hidden fade-in max-w-6xl mx-auto reveal"
         >
           <!-- Company Grid View -->
           <div id="practice-dashboard">
             <div class="mb-6 flex justify-between items-end">
               <div>
-                <h2 class="extracted-heading-outfit">
+                <h2 style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;">
                   Select a Company
                 </h2>
-                <p class="text-slate-500 mt-1">
+                <p class="text-fg-mute mt-1">
                   Practice curated technical and aptitude questions.
                 </p>
               </div>
@@ -347,17 +890,17 @@
               <div>
                 <h3
                   id="test-company-name"
-                  class="extracted-heading-outfit"
+                  style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-primary"
                 >
                   Company
                 </h3>
-                <p class="text-slate-500">Assessment Test</p>
+                <p class="">Assessment Test</p>
               </div>
               <div class="text-right">
                 <span class="text-sm font-semibold text-slate-500"
                   >Question</span
                 >
-                <div class="extracted-heading-outfit">
+                <div style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-xl font-bold">
                   <span id="current-q-num">1</span> /
                   <span id="total-q-num">5</span>
                 </div>
@@ -410,10 +953,10 @@
             >
               <i class="fas fa-check"></i>
             </div>
-            <h2 class="extracted-heading-outfit">
+            <h2 style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-3xl font-bold text-slate-800 mb-2">
               Assessment Complete!
             </h2>
-            <p class="text-slate-500 mb-8">
+            <p class="text-fg-mute mb-8">
               Your responses have been recorded and saved to your history.
             </p>
 
@@ -422,11 +965,11 @@
                 class="bg-slate-50 p-6 rounded-xl border border-slate-100 min-w-[150px]"
               >
                 <p
-                  class="text-slate-500 text-sm font-bold uppercase tracking-wide"
+                  class="text-fg-mute text-sm font-bold uppercase tracking-wide"
                 >
                   Your Score
                 </p>
-                <p class="stat-value text-primary mt-2">
+                <p class="kpi-value" style="color:var(--c-blue-1);">
                   <span id="result-score">0</span
                   ><span class="text-xl text-slate-400"
                     >/<span id="result-max">0</span></span
@@ -437,11 +980,11 @@
                 class="bg-slate-50 p-6 rounded-xl border border-slate-100 min-w-[150px]"
               >
                 <p
-                  class="text-slate-500 text-sm font-bold uppercase tracking-wide"
+                  class="text-fg-mute text-sm font-bold uppercase tracking-wide"
                 >
                   Accuracy
                 </p>
-                <p class="stat-value text-primary mt-2">
+                <p class="kpi-value" style="color:var(--c-blue-1);">
                   <span id="result-percentage">0</span>%
                 </p>
               </div>
@@ -459,14 +1002,14 @@
         <!-- SECTION: RESUME -->
         <div
           id="sec-resume"
-          class="section-container hidden fade-in max-w-5xl mx-auto"
+          class="section-container hidden fade-in max-w-5xl mx-auto reveal"
         >
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Left column: Upload + AI score -->
             <div class="md:col-span-1 space-y-4">
               <div class="panel-card p-6">
                 <div class="flex items-center justify-between mb-4">
-                  <h3 class="text-lg font-semibold text-slate-900 display">Upload Resume</h3>
+                  <h3 class="text-lg font-semibold" style="font-family:var(--font-display);color:var(--fg);">Upload Resume</h3>
                   <span class="text-xs bg-purple-100 text-purple-700 px-2.5 py-1 rounded-full font-medium flex items-center gap-1">
                     <i class="fas fa-robot text-xs"></i> Ami-Bridge AI
                   </span>
@@ -496,7 +1039,7 @@
                   >
                     Click or drag &amp; drop
                   </p>
-                  <p class="text-xs text-slate-400 mt-1">PDF only Â· Max 5MB Â· AI checks automatically on upload</p>
+                  <p class="text-xs text-slate-400 mt-1">PDF only · Max 5MB · AI checks automatically on upload</p>
                   <input
                     type="file"
                     id="file-upload"
@@ -520,8 +1063,8 @@
                   <div class="w-full bg-slate-200 rounded-full h-2">
                     <div
                       id="upload-bar"
-                      class="bg-blue-500 h-2 rounded-full transition-all duration-200 extracted-style-215"
-
+                      class="bg-blue-500 h-2 rounded-full transition-all duration-200"
+                      style="width: 0%"
                     ></div>
                   </div>
                   <p
@@ -582,7 +1125,7 @@
               <!-- Resume list card -->
               <div class="panel-card p-6">
                 <div class="flex items-center justify-between mb-4">
-                  <h3 class="text-lg font-semibold text-slate-900 display">My Resumes</h3>
+                  <h3 class="text-lg font-semibold" style="font-family:var(--font-display);color:var(--fg);">My Resumes</h3>
                   <span
                     class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-full"
                     id="resume-count"
@@ -625,8 +1168,8 @@
                     </button>
                   </div>
                 </div>
-                <!-- PDF renders here â€” no download prompt, browser shows it natively -->
-                <div class="w-full extracted-style-216">
+                <!-- PDF renders here — no download prompt, browser shows it natively -->
+                <div class="w-full" style="height: 680px">
                   <iframe
                     id="inline-pdf-frame"
                     src=""
@@ -651,7 +1194,7 @@
                         .getElementById('ai-feedback-panel')
                         .classList.add('hidden')
                     "
-                    class="text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition"
+                    class="text-fg-mute hover:text-slate-600 w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition"
                   >
                     <i class="fas fa-times"></i>
                   </button>
@@ -665,13 +1208,13 @@
         <!-- SECTION: HISTORY -->
         <div
           id="sec-history"
-          class="section-container hidden fade-in max-w-5xl mx-auto"
+          class="section-container hidden fade-in max-w-5xl mx-auto reveal"
         >
           <div class="panel-card">
             <div
               class="p-6 border-b border-slate-200 flex justify-between items-center"
             >
-              <h3 class="text-lg font-semibold text-slate-900 display">
+              <h3 class="text-lg font-semibold" style="font-family:var(--font-display);color:var(--fg);">
                 Assessment History
               </h3>
             </div>
@@ -705,11 +1248,11 @@
         <!-- SECTION: FEEDBACK -->
         <div
           id="sec-feedback"
-          class="section-container hidden fade-in max-w-4xl mx-auto"
+          class="section-container hidden fade-in max-w-4xl mx-auto reveal"
         >
           <div class="mb-6">
-            <h2 class="extracted-heading-outfit">Mentor Feedback</h2>
-            <p class="text-slate-500 mt-1">
+            <h2 style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;">Mentor Feedback</h2>
+            <p class="text-fg-mute mt-1">
               Review personalized advice from your assigned mentors.
             </p>
           </div>
@@ -723,7 +1266,7 @@
         <!-- SECTION: PROFILE -->
         <div
           id="sec-profile"
-          class="section-container hidden fade-in max-w-4xl mx-auto"
+          class="section-container hidden fade-in max-w-4xl mx-auto reveal"
         >
           <div
             class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
@@ -751,11 +1294,11 @@
                   <div class="pb-1">
                     <h2
                       id="profile-name-display"
-                      class="extracted-heading-outfit"
+                      style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;"
                     >
                       Loading...
                     </h2>
-                    <p class="text-slate-500 font-medium">Student Candidate</p>
+                    <p class="text-fg-mute font-medium">Student Candidate</p>
                   </div>
                 </div>
                 <button
@@ -767,7 +1310,7 @@
               </div>
 
               <div class="mb-6 pt-2 border-t border-slate-100">
-                <h3 class="text-lg font-semibold text-slate-900 display">
+                <h3 class="text-lg font-semibold" style="font-family:var(--font-display);color:var(--fg);">
                   Personal Details
                 </h3>
               </div>
@@ -855,18 +1398,18 @@
         </div>
 
         <!-- SECTION: LOCAL INTERNSHIPS -->
-        <div id="sec-internships" class="section-container hidden fade-in max-w-6xl mx-auto space-y-6">
+        <div id="sec-internships" class="section-container hidden fade-in max-w-6xl mx-auto space-y-6 reveal">
 
           <!-- Header -->
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 class="extracted-heading-outfit">
+              <h2 style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800 flex items-center gap-2">
                 <span class="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
                   <i class="fas fa-briefcase text-primary text-base"></i>
                 </span>
                 Local Internships
               </h2>
-              <p class="text-slate-500 text-sm mt-1">Offline opportunities from local companies â€” both paid and unpaid.</p>
+              <p class="text-fg-mute text-sm mt-1">Offline opportunities from local companies — both paid and unpaid.</p>
             </div>
             <!-- Filters -->
             <div class="flex items-center gap-2 flex-shrink-0">
@@ -905,6 +1448,7 @@
       </div>
 
     </main>
+    </div><!-- /.dash-shell -->
 
     <!-- Application Logic -->
     <script>
@@ -1083,8 +1627,8 @@
                 <div class="w-14 h-14 rounded-lg ${company.bg_color} ${company.text_color} flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
                     <i class="${company.icon_class}"></i>
                 </div>
-                <h3 class="text-lg font-semibold text-slate-900 display">${company.company_name}</h3>
-                <p class="text-slate-500 text-sm mb-4 line-clamp-2">${company.description}</p>
+                <h3 class="text-lg font-semibold" style="font-family:var(--font-display);color:var(--fg);">${company.company_name}</h3>
+                <p class="text-fg-mute text-sm mb-4 line-clamp-2">${company.description}</p>
                 <button onclick="startPractice(${company.company_id})" class="w-full py-2 rounded-lg bg-slate-50 text-primary font-medium border border-slate-200 hover:bg-primary hover:text-white hover:border-primary transition-colors">
                     Start Practice
                 </button>
@@ -1103,8 +1647,8 @@
           list.innerHTML = `
             <div class="text-center p-8 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 flex flex-col items-center">
                 <i class="fas fa-file-pdf text-3xl text-slate-300 mb-2"></i>
-                <p class="text-slate-500 font-medium">No resumes uploaded yet.</p>
-                <p class="text-slate-400 text-sm mt-1">Upload a PDF to get Ami-Bridge AI feedback</p>
+                <p class="text-fg-mute font-medium">No resumes uploaded yet.</p>
+                <p class="text-fg-mute text-sm mt-1">Upload a PDF to get Ami-Bridge AI feedback</p>
             </div>`;
           return;
         }
@@ -1207,7 +1751,7 @@
                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm mb-3">
                         <i class="fas fa-comment-dots text-2xl text-slate-300"></i>
                     </div>
-                    <p class="text-slate-500 font-medium">No mentor feedback yet.</p>
+                    <p class="text-fg-mute font-medium">No mentor feedback yet.</p>
                 </div>`;
           return;
         }
@@ -1224,7 +1768,7 @@
                         <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-xs font-semibold">${fb.feedback_type}</span>
                         <span class="text-xs text-slate-400"><i class="far fa-clock mr-1"></i>${new Date(fb.feedback_date).toLocaleDateString()}</span>
                     </div>
-                    <p class="text-slate-600 text-sm leading-relaxed mt-2">${fb.feedback_text}</p>
+                    <p class="text-fg-soft text-sm leading-relaxed mt-2">${fb.feedback_text}</p>
                 </div>
             </div>
           `;
@@ -1311,7 +1855,7 @@
           optionsContainer.innerHTML += `
             <label class="flex items-center gap-3 p-4 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
                 <input type="radio" name="test-option" value="${index}" class="w-4 h-4 text-primary focus:ring-primary border-slate-300">
-                <span class="text-slate-700 text-sm">${opt}</span>
+                <span class="text-fg-soft text-sm">${opt}</span>
             </label>
           `;
         });
@@ -1451,7 +1995,7 @@
       }
 
       function processResumeFile(file) {
-        // Validate type â€” PDF only
+        // Validate type — PDF only
         const isValidType =
           file.type === "application/pdf" ||
           file.name.toLowerCase().endsWith(".pdf");
@@ -1507,11 +2051,11 @@
               return;
             }
 
-            // â”€â”€ Auto AI analysis immediately after upload â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+            // ── Auto AI analysis immediately after upload ─────────────────
             // Switch progress bar to AI-checking state
             bar.classList.remove("bg-blue-500");
             bar.classList.add("bg-purple-500");
-            statusTxt.textContent = "ðŸ¤– Ami-Bridge AI is checking your resume...";
+            statusTxt.textContent = "🤖 Ami-Bridge AI is checking your resume...";
 
             // Show AI panel loading state immediately
             const panel = document.getElementById("ai-feedback-panel");
@@ -1530,23 +2074,23 @@
                 { method: "POST" }
               );
 
-              // â”€â”€ NOT A RESUME: delete it silently and reject â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+              // ── NOT A RESUME: delete it silently and reject ──────────────
               if (analysisRes.status === 422) {
                 const errData = await analysisRes.json();
 
-                // Delete the uploaded file from DB â€” it's not a resume
+                // Delete the uploaded file from DB — it's not a resume
                 await fetch(`${API_BASE}/api/resume/${newResume.resume_id}`, { method: "DELETE" });
 
                 // Show rejection in progress bar area
                 bar.classList.remove("bg-purple-500");
                 bar.classList.add("bg-red-500");
-                statusTxt.textContent = "âŒ Not a resume â€” file removed.";
+                statusTxt.textContent = "❌ Not a resume — file removed.";
 
                 // Show rejection in AI panel
                 feedbackContent.innerHTML = `
                   <div class="p-6 bg-red-50 border border-red-200 rounded-xl text-center">
                     <i class="fas fa-file-circle-xmark text-red-500 text-4xl mb-3 block"></i>
-                    <p class="font-bold text-red-800 text-base mb-2">Not a Resume â€” File Rejected</p>
+                    <p class="font-bold text-red-800 text-base mb-2">Not a Resume — File Rejected</p>
                     <p class="text-sm text-red-700 mb-1">${errData.message || "The uploaded PDF is not a resume or CV."}</p>
                     <p class="text-xs text-red-500 mt-3">The file has been automatically removed. Please upload your actual resume/CV.</p>
                   </div>`;
@@ -1558,7 +2102,7 @@
                 return;
               }
 
-              // â”€â”€ AI unavailable: keep file, show retry â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+              // ── AI unavailable: keep file, show retry ────────────────────
               if (!analysisRes.ok) {
                 const err = await analysisRes.json();
                 throw new Error(err.error || "AI analysis failed");
@@ -1572,7 +2116,7 @@
                 renderResumes();
                 bar.classList.remove("bg-purple-500");
                 bar.classList.add("bg-amber-500");
-                statusTxt.textContent = "âš ï¸ Ami-Bridge AI busy â€” use AI Check to retry.";
+                statusTxt.textContent = "⚠️ Ami-Bridge AI busy — use AI Check to retry.";
                 feedbackContent.innerHTML = `
                   <div class="p-6 bg-slate-50 border border-slate-200 rounded-xl text-center">
                     <i class="fas fa-clock text-slate-400 text-4xl mb-3 block"></i>
@@ -1583,19 +2127,19 @@
                       <i class="fas fa-redo mr-1"></i> Try AI Check Again
                     </button>
                   </div>`;
-                showToast("Resume saved. Ami-Bridge AI is busy â€” click 'Try Again' to retry.", "info");
+                showToast("Resume saved. Ami-Bridge AI is busy — click 'Try Again' to retry.", "info");
                 setTimeout(() => { prog.classList.add("hidden"); bar.style.width = "0%"; }, 3000);
                 return;
               }
 
-              // â”€â”€ SUCCESS: valid resume, show full results â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+              // ── SUCCESS: valid resume, show full results ─────────────────
               newResume.gemini_score = data.score;
               state.resumes.unshift(newResume);
               renderResumes();
 
               bar.classList.remove("bg-purple-500");
               bar.classList.add("bg-green-500");
-              statusTxt.textContent = "âœ… Resume verified & scored!";
+              statusTxt.textContent = "✅ Resume verified & scored!";
 
               // Show success banner
               document.getElementById("upload-success-name").textContent = file.name;
@@ -1690,12 +2234,12 @@
               setTimeout(() => { prog.classList.add("hidden"); bar.style.width = "0%"; }, 3000);
 
             } catch (aiErr) {
-              // AI errored but file is uploaded â€” keep it, let user retry manually
+              // AI errored but file is uploaded — keep it, let user retry manually
               state.resumes.unshift(newResume);
               renderResumes();
               bar.classList.remove("bg-purple-500");
               bar.classList.add("bg-amber-500");
-              statusTxt.textContent = "âš ï¸ Ami-Bridge AI check failed â€” use AI Check button to retry.";
+              statusTxt.textContent = "⚠️ Ami-Bridge AI check failed — use AI Check button to retry.";
               feedbackContent.innerHTML = `
                 <div class="p-6 text-center text-red-500">
                   <i class="fas fa-exclamation-triangle text-3xl mb-2 block"></i>
@@ -1717,7 +2261,7 @@
         });
 
         xhr.addEventListener("error", () => {
-          showUploadError("Network error â€” make sure the server is running on port 5000.");
+          showUploadError("Network error — make sure the server is running on port 5000.");
         });
         xhr.addEventListener("timeout", () => {
           showUploadError("Upload timed out. Try a smaller file.");
@@ -1735,7 +2279,7 @@
         bar.classList.remove("bg-blue-500");
         bar.classList.add("bg-red-500");
         bar.style.width = "100%";
-        statusTxt.textContent = "âŒ " + msg;
+        statusTxt.textContent = "❌ " + msg;
         showToast(msg, "error");
         setTimeout(() => {
           prog.classList.add("hidden");
@@ -1772,7 +2316,7 @@
       }
 
       function viewResume(resumeId, name) {
-        // â”€â”€ Always sync score card to the resume being viewed â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Always sync score card to the resume being viewed ──────────────
         const scoreCard   = document.getElementById("ai-score-card");
         const scoreDisp   = document.getElementById("ai-score-display");
         const atsDisp     = document.getElementById("ai-ats-score");
@@ -1794,7 +2338,7 @@
           summaryDisp.textContent = "Click Re-analyse to see full AI feedback.";
           scoreCard.classList.remove("hidden");
         } else {
-          // No score for this resume â€” hide the score card completely
+          // No score for this resume — hide the score card completely
           scoreCard.classList.add("hidden");
           scoreDisp.textContent = "--";
           scoreDisp.className   = "text-5xl font-black mb-1 text-white";
@@ -1818,7 +2362,7 @@
       async function analyzeResume(resumeId) {
         showToast("Analyzing resume with AI... This may take a moment.", "info");
 
-        // â”€â”€ Reset score card immediately so stale data from previous resume is cleared â”€â”€
+        // ── Reset score card immediately so stale data from previous resume is cleared ──
         const scoreCard = document.getElementById("ai-score-card");
         scoreCard.classList.add("hidden");
         document.getElementById("ai-score-display").textContent = "--";
@@ -1843,7 +2387,7 @@
             { method: "POST" },
           );
 
-          // Handle NOT_A_RESUME â€” document is not a resume
+          // Handle NOT_A_RESUME — document is not a resume
           if (res.status === 422) {
             const errData = await res.json();
             feedbackContent.innerHTML = `
@@ -1853,7 +2397,7 @@
                 <p class="text-sm text-amber-700">${errData.message || "The uploaded PDF does not appear to be a resume or CV."}</p>
                 <p class="text-xs text-amber-600 mt-3">Please upload your actual resume/CV in PDF format.</p>
               </div>`;
-            showToast("Document rejected â€” does not appear to be a resume.", "error");
+            showToast("Document rejected — does not appear to be a resume.", "error");
             return;
           }
 
@@ -1881,7 +2425,7 @@
                   </button>
                 </div>
               </div>`;
-            showToast(isImageErr ? "Image PDF analysis failed â€” check server logs." : "AI service busy â€” please try again.", "error");
+            showToast(isImageErr ? "Image PDF analysis failed — check server logs." : "AI service busy — please try again.", "error");
             return;
           }
 
@@ -1889,7 +2433,7 @@
           const r = state.resumes.find((r) => r.resume_id === resumeId);
           if (r) { r.gemini_score = data.score; renderResumes(); }
 
-          // â”€â”€ Score card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          // ── Score card ────────────────────────────────────────────────────
           const score = data.score ?? null;
           const atsScore = data.ats_score ?? null;
           const scoreColor = score == null ? "text-white"
@@ -1903,7 +2447,7 @@
           document.getElementById("ai-summary-short").textContent = data.summary || "";
           scoreCard.classList.remove("hidden");
 
-          // â”€â”€ Feedback panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          // ── Feedback panel ────────────────────────────────────────────────
           const strengths = (data.strengths || []).map((s) =>
             `<li class="flex gap-2 items-start">
               <i class="fas fa-check-circle text-green-500 mt-0.5 shrink-0"></i>
@@ -2041,8 +2585,7 @@
         showToast("Logging out...", "info");
         localStorage.removeItem("ami_user");
         setTimeout(() => {
-          document.body.innerHTML =
-            '<div class="h-screen w-full flex items-center justify-center bg-slate-50"><h1 class="text-2xl font-bold text-slate-500" style="font-family:\'Outfit\',sans-serif;letter-spacing:-0.3px;">Redirecting to Login...</h1></div>';
+          document.body.innerHTML = `<div style="height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg,#020817);"><p style="font-family:var(--font-display,'Space Grotesk'),sans-serif;font-size:18px;font-weight:600;color:var(--fg-mute,#707895);">Redirecting to login…</p></div>`;
           setTimeout(() => {
             window.location.href = "index.html";
           }, 500);
@@ -2155,8 +2698,8 @@
           },
         });
       }
-
-      // â”€â”€ LOCAL INTERNSHIPS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    
+      // ── LOCAL INTERNSHIPS ─────────────────────────────────────────────────
       function renderInternships() {
         const grid    = document.getElementById("internship-grid");
         const statsBar= document.getElementById("intern-stats-bar");
@@ -2188,7 +2731,7 @@
                   <i class="fas fa-briefcase text-3xl text-slate-300"></i>
                 </div>
                 <p class="font-semibold text-slate-600">No internships found</p>
-                <p class="text-slate-400 text-sm mt-1">Check back later â€” mentors and admins add listings regularly.</p>
+                <p class="text-fg-mute text-sm mt-1">Check back later — mentors and admins add listings regularly.</p>
               </div>
             </div>`;
           return;
@@ -2231,39 +2774,147 @@
               class="intern-apply-btn ${applyHover}"
               style="${applyColor}border:none;cursor:pointer;">
               <i class="fas fa-paper-plane"></i>
-              Apply Now &nbsp;Â·&nbsp; ${i.apply_contact}
+              Apply Now &nbsp;·&nbsp; ${i.apply_contact}
             </a>
           </div>`;
         }).join("");
       }
 
-      // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+      // ══════════════════════════════════════════════════════════════
       // NOTIFICATION SYSTEM
-      // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-      const _notifState = { items: [], read: new Set() };
+      // ══════════════════════════════════════════════════════════════
+      let _notifications = [];
+
+      function toggleNotifDropdown(e) {
+        e.stopPropagation();
+        const dd = document.getElementById("notif-dropdown");
+        const isOpen = !dd.classList.contains("hidden");
+        // Close any other open dropdowns first
+        document.querySelectorAll("[id$='-dropdown']").forEach(d => d.classList.add("hidden"));
+        if (!isOpen) {
+          dd.classList.remove("hidden");
+          renderNotifications();
+          // Add click-outside listener
+          setTimeout(() => document.addEventListener("click", closeNotifOnOutside), 0);
+        }
+      }
+
+      function closeNotifOnOutside(e) {
+        const wrapper = document.getElementById("notif-wrapper");
+        if (wrapper && !wrapper.contains(e.target)) {
+          document.getElementById("notif-dropdown").classList.add("hidden");
+          document.removeEventListener("click", closeNotifOnOutside);
+        }
+      }
 
       function addNotification(message, type = "info", title = "") {
         const icons = {
-          info:    { icon: "fa-info-circle", color: "#3B82F6", bg: "#EFF6FF" },
-          success: { icon: "fa-check-circle", color: "#22C55E", bg: "#ECFDF5" },
-          warning: { icon: "fa-exclamation-triangle", color: "#F59E0B", bg: "#FFFBEB" },
-          error:   { icon: "fa-times-circle", color: "#EF4444", bg: "#FEF2F2" },
-          ai:      { icon: "fa-robot", color: "#8B5CF6", bg: "#F5F3FF" },
+          info:    { icon: "fa-info-circle",    color: "#3B82F6" },
+          success: { icon: "fa-check-circle",   color: "#22C55E" },
+          warning: { icon: "fa-exclamation-triangle", color: "#F59E0B" },
+          error:   { icon: "fa-times-circle",   color: "#EF4444" },
+          ai:      { icon: "fa-robot",          color: "#8B5CF6" },
         };
         const meta = icons[type] || icons.info;
-        _notifState.items.unshift({
-          id: "event-" + Date.now(),
-          icon: meta.icon,
-          color: meta.color,
-          bg: meta.bg,
-          title: title || (type === "ai" ? "AI Analysis" : type.charAt(0).toUpperCase() + type.slice(1)),
-          body: message,
-          action: null,
-          time: new Date(),
+        const now  = new Date();
+        const timeStr = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+        _notifications.unshift({
+          id:      Date.now(),
+          title:   title || (type === "ai" ? "AI Analysis" : type.charAt(0).toUpperCase() + type.slice(1)),
+          message,
+          icon:    meta.icon,
+          color:   meta.color,
+          time:    timeStr,
+          read:    false,
         });
-        _notifState.items = _notifState.items.slice(0, 20);
-        _renderNotifDropdown();
+
+        // Keep max 20
+        if (_notifications.length > 20) _notifications = _notifications.slice(0, 20);
+
+        updateNotifBadge();
+        renderNotifications();
       }
+
+      function updateNotifBadge() {
+        const unread = _notifications.filter(n => !n.read).length;
+        const badge  = document.getElementById("notif-badge");
+        const dot    = document.getElementById("notif-indicator");
+        if (unread > 0) {
+          badge.textContent = unread > 9 ? "9+" : unread;
+          badge.style.display = "inline-block";
+          dot.style.display = "block";
+        } else {
+          badge.style.display = "none";
+          dot.style.display = "none";
+        }
+      }
+
+      function markAllRead() {
+        _notifications.forEach(n => n.read = true);
+        updateNotifBadge();
+        renderNotifications();
+      }
+
+      function dismissNotification(id) {
+        _notifications = _notifications.filter(n => n.id !== id);
+        updateNotifBadge();
+        renderNotifications();
+      }
+
+      function renderNotifications() {
+        const list = document.getElementById("notif-list");
+        if (!list) return;
+
+        if (_notifications.length === 0) {
+          list.innerHTML = `
+            <div style="text-align:center;padding:28px 20px;color:#94A3B8;">
+              <i class="fas fa-bell-slash" style="font-size:28px;margin-bottom:8px;display:block;opacity:0.4;"></i>
+              <p style="font-size:13px;font-weight:500;">No notifications yet</p>
+            </div>`;
+          return;
+        }
+
+        list.innerHTML = _notifications.map(n => `
+          <div onclick="document.getElementById('notif-${n.id}').style.display='none'" id="notif-${n.id}"
+            style="
+              display:flex;align-items:flex-start;gap:12px;
+              padding:11px 18px;
+              background:${n.read ? "transparent" : "#F8FAFF"};
+              border-left:3px solid ${n.read ? "transparent" : n.color};
+              transition:background 0.15s;cursor:pointer;
+            "
+            onmouseover="this.style.background='#F8FAFF'"
+            onmouseout="this.style.background='${n.read ? "transparent" : "#F8FAFF"}'"
+          >
+            <div style="width:32px;height:32px;border-radius:10px;background:${n.color}18;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+              <i class="fas ${n.icon}" style="font-size:13px;color:${n.color};"></i>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <p style="font-weight:600;font-size:12.5px;color:#0F172A;margin-bottom:2px;">${n.title}</p>
+              <p style="font-size:12px;color:#64748B;line-height:1.4;">${n.message}</p>
+              <p style="font-size:10.5px;color:#94A3B8;margin-top:4px;">${n.time}</p>
+            </div>
+            <button onclick="event.stopPropagation();dismissNotification(${n.id})"
+              style="background:none;border:none;color:#CBD5E1;cursor:pointer;padding:2px 4px;border-radius:4px;font-size:11px;flex-shrink:0;"
+              onmouseover="this.style.color='#EF4444'" onmouseout="this.style.color='#CBD5E1'"
+              title="Dismiss">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>`).join("");
+
+        // Mark all as read after viewing
+        setTimeout(() => {
+          _notifications.forEach(n => n.read = true);
+          updateNotifBadge();
+        }, 1500);
+      }
+
+
+      // ════════════════════════════════════════════════════════════════
+      // NOTIFICATION SYSTEM
+      // ════════════════════════════════════════════════════════════════
+      const _notifState = { items: [], read: new Set() };
 
       function _buildStudentNotifications() {
         const items = [];
@@ -2427,7 +3078,7 @@
         const isHidden = dd.classList.contains("hidden");
         dd.classList.toggle("hidden");
         if (isHidden) {
-          // Mark open â€” schedule close on outside click
+          // Mark open — schedule close on outside click
           setTimeout(() => {
             document.addEventListener("click", _notifOutsideClick, { once: true });
           }, 10);
@@ -2443,7 +3094,7 @@
         if (wrapper && !wrapper.contains(e.target)) {
           closeNotifDropdown();
         } else {
-          // Click was inside â€” re-attach listener
+          // Click was inside — re-attach listener
           setTimeout(() => {
             document.addEventListener("click", _notifOutsideClick, { once: true });
           }, 10);
@@ -2454,6 +3105,54 @@
         _notifState.items.forEach(i => _notifState.read.add(i.id));
         _renderNotifDropdown();
       }
+
+      
+      // ── CURSOR GLOW ──────────────────────────────────────────────
+      (function(){
+        const glow = document.getElementById("cursor-glow");
+        if (!glow) return;
+        let rx=0,ry=0,cx=window.innerWidth/2,cy=window.innerHeight/2;
+        const lerp=(a,b,t)=>a+(b-a)*t;
+        document.addEventListener("mousemove",e=>{rx=e.clientX;ry=e.clientY;});
+        (function loop(){
+          cx=lerp(cx,rx,.1); cy=lerp(cy,ry,.1);
+          glow.style.transform=`translate3d(${cx-240}px,${cy-240}px,0)`;
+          requestAnimationFrame(loop);
+        })();
+      })();
+
+      // ── THEME TOGGLE ─────────────────────────────────────────────
+      // ── THEME TOGGLE ─────────────────────────────────────────────
+      (function(){
+        const btn = document.getElementById("theme-toggle-btn");
+        if (!btn) return;
+        // Apply saved preference immediately (FOUC already handled inline above)
+        btn.addEventListener("click", () => {
+          const cur = document.documentElement.getAttribute("data-theme") || "dark";
+          const next = cur === "dark" ? "light" : "dark";
+          document.documentElement.setAttribute("data-theme", next);
+          localStorage.setItem("ami-theme", next);
+        });
+      })();
+
+      // ── TOPBAR SCROLL EFFECT ──────────────────────────────────────
+      (function(){
+        const bar = document.querySelector(".dash-topbar");
+        if (!bar) return;
+        const content = document.querySelector(".dash-content");
+        if (!content) return;
+        content.addEventListener("scroll", () => {
+          bar.classList.toggle("scrolled", content.scrollTop > 8);
+        });
+      })();
+
+      // ── SCROLL REVEAL ─────────────────────────────────────────────
+      (function(){
+        const obs = new IntersectionObserver(entries => {
+          entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add("in"); obs.unobserve(e.target); } });
+        }, {threshold:0.08});
+        document.querySelectorAll(".reveal").forEach(el => obs.observe(el));
+      })();
 
       </script>
   </body>
