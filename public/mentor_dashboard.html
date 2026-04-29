@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <script>tailwind.config={theme:{extend:{}}};</script>
   <style>
     /* ── THEME TOKENS ─────────────────────────────────── */
@@ -79,6 +80,12 @@
     .mesh-3{bottom:-25vmax;left:25vmax;background:radial-gradient(closest-side,rgba(16,185,129,.35),transparent 70%);}
     [data-role="mentor"] .mesh-1{background:radial-gradient(closest-side,rgba(16,185,129,.50),transparent 70%);}
     [data-role="mentor"] .mesh-2{background:radial-gradient(closest-side,rgba(37,99,235,.35),transparent 70%);}
+    [data-role="mentor"] .mesh-3{
+      left:auto;
+      right:12vmax;
+      bottom:-30vmax;
+      background:radial-gradient(closest-side,rgba(16,185,129,.24),transparent 74%);
+    }
     [data-role="admin"] .mesh-1{background:radial-gradient(closest-side,rgba(168,85,247,.55),transparent 70%);}
     [data-role="admin"] .mesh-2{background:radial-gradient(closest-side,rgba(244,63,94,.25),transparent 70%);}
     .bg-grid{
@@ -275,8 +282,25 @@
     }
     /* ── SCROLLABLE CONTENT ───────────────────────────── */
     .dash-content{
+      position:relative;
       flex:1;overflow-y:auto;padding:28px;
       display:flex;flex-direction:column;gap:24px;
+    }
+    .dash-content::before{
+      content:"";
+      position:absolute;
+      left:0;top:0;bottom:0;
+      width:170px;
+      pointer-events:none;
+      z-index:0;
+      background:linear-gradient(90deg,var(--bg) 0%,rgba(2,8,23,.86) 60%,rgba(2,8,23,0) 100%);
+    }
+    [data-theme="light"] .dash-content::before{
+      background:linear-gradient(90deg,var(--bg) 0%,rgba(241,245,249,.92) 58%,rgba(241,245,249,0) 100%);
+    }
+    .dash-content > *{position:relative;z-index:1;}
+    @media (max-width: 1024px){
+      .dash-content::before{display:none;}
     }
     ::-webkit-scrollbar{width:3px;height:3px;}
     ::-webkit-scrollbar-track{background:transparent;}
@@ -509,6 +533,49 @@
     .border-slate-200,.border-slate-300 { border-color: var(--border) !important; }
     .border-slate-100 { border-color: var(--border) !important; }
     .bg-white.rounded-2xl,.bg-white.rounded-xl,.bg-white.rounded-lg { background: var(--surface) !important; }
+    /* ── BULK CSV ──────────────────────────────────────── */
+    .csv-format-card{
+      background:linear-gradient(180deg,rgba(16,185,129,.16),rgba(16,185,129,.08));
+      border:1px solid rgba(52,211,153,.32);
+      border-radius:14px;padding:18px;
+    }
+    .csv-format-title{color:#A7F3D0;}
+    .csv-format-text{color:#D1FAE5;}
+    .csv-format-code{
+      background:rgba(148,163,184,.2);
+      border:1px solid rgba(148,163,184,.28);
+      color:#E2E8F0;
+      padding:2px 6px;border-radius:8px;
+      font-size:11px;font-family:var(--font-mono);
+    }
+    .csv-format-link{color:#6EE7B7;}
+    .csv-format-link:hover{color:#D1FAE5;}
+    .csv-dropzone{
+      border:2px dashed var(--border-strong);
+      background:var(--surface);
+      border-radius:14px;
+      transition:border-color .2s var(--ease),background .2s var(--ease),transform .2s var(--ease);
+    }
+    .csv-dropzone:hover{border-color:rgba(52,211,153,.6);background:var(--surface-2);transform:translateY(-1px);}
+    .csv-dropzone.dragover{border-color:rgba(52,211,153,.72);background:rgba(16,185,129,.11);}
+    [data-theme="light"] .csv-format-card{
+      background:linear-gradient(180deg,rgba(16,185,129,.12),rgba(16,185,129,.06));
+      border-color:rgba(16,185,129,.24);
+    }
+    [data-theme="light"] .csv-format-title{color:#047857;}
+    [data-theme="light"] .csv-format-text{color:#065F46;}
+    [data-theme="light"] .csv-format-code{background:rgba(209,250,229,.9);border-color:rgba(110,231,183,.75);color:#065F46;}
+    [data-theme="light"] .csv-format-link{color:#059669;}
+    /* ── INTERNSHIP ACTIONS ───────────────────────────── */
+    .intern-action-btn{
+      width:38px;height:38px;border-radius:12px;border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;
+      background:var(--surface-2);color:var(--fg-soft);
+      transition:all .18s var(--ease);
+    }
+    .intern-action-btn:hover{border-color:var(--border-strong);color:var(--fg);}
+    .intern-action-btn.edit:hover{color:#60A5FA;}
+    .intern-action-btn.delete:hover{color:#F87171;}
     
     
       .avatar-ring { box-shadow: 0 0 0 2px var(--border-strong, rgba(255,255,255,.14)), 0 2px 8px rgba(0,0,0,.25); border-radius: 50%; }
@@ -991,7 +1058,7 @@
               <p class="text-fg-mute text-sm mt-1">Post and manage local internship opportunities for your students.</p>
             </div>
             <button onclick="openMentorInternModal()"
-              class="btn-primary">
+              class="btn btn-primary">
               <i class="fas fa-plus"></i> Add Internship
             </button>
           </div>
@@ -1094,7 +1161,7 @@
           <button type="button" onclick="closeModal('mentor-internship-modal')"
             class="btn-secondary">Cancel</button>
           <button type="button" id="mentor-intern-submit-btn" onclick="submitMentorInternship()"
-            class="btn-primary">
+            class="btn btn-primary">
             <i class="fas fa-save"></i> Save Internship
           </button>
         </div>
@@ -1299,17 +1366,17 @@
           <p class="text-fg-mute mt-1">Upload a CSV file to register multiple students at once.</p>
         </div>
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-5">
-          <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-700">
-            <p class="font-bold mb-1"><i class="fas fa-info-circle mr-1"></i> CSV Format Required</p>
-            <p>Your CSV must have these columns: <code class="bg-blue-100 px-1 rounded">name, email, password</code></p>
-            <p class="mt-1">Optional: <code class="bg-blue-100 px-1 rounded">mentor_email</code> — auto-assigns the student to that mentor.</p>
-            <a href="#" onclick="downloadSampleCSV(event)" class="text-blue-600 underline font-medium mt-2 inline-block">Download Sample CSV</a>
+          <div class="csv-format-card">
+            <p class="csv-format-title font-bold mb-1"><i class="fas fa-info-circle mr-1"></i> CSV Format Required</p>
+            <p class="csv-format-text text-sm">Your CSV must have these columns: <code class="csv-format-code">name, email, password</code></p>
+            <p class="csv-format-text text-sm mt-1">Optional: <code class="csv-format-code">mentor_email</code> - auto-assigns the student to that mentor.</p>
+            <a href="#" onclick="downloadSampleCSV(event)" class="csv-format-link underline font-medium mt-2 inline-block">Download Sample CSV</a>
           </div>
           <div id="csv-drop-zone"
-            class="border-2 border-dashed border-slate-300 rounded-xl p-10 text-center hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer"
+            class="csv-dropzone p-10 text-center transition-all cursor-pointer"
             onclick="document.getElementById('csv-file-input').click()"
-            ondragover="event.preventDefault(); this.classList.add('border-blue-400','bg-blue-50')"
-            ondragleave="this.classList.remove('border-blue-400','bg-blue-50')"
+            ondragover="event.preventDefault(); this.classList.add('dragover')"
+            ondragleave="this.classList.remove('dragover')"
             ondrop="handleCSVDrop(event)">
             <i class="fas fa-file-csv text-4xl text-slate-400 mb-3 block"></i>
             <p class="font-medium text-slate-600">Click or drag & drop CSV file</p>
@@ -1903,7 +1970,7 @@
         e.preventDefault();
         document
           .getElementById("csv-drop-zone")
-          .classList.remove("border-blue-400", "bg-blue-50");
+          .classList.remove("dragover");
         if (e.dataTransfer.files[0]) processCSVFile(e.dataTransfer.files[0]);
       }
       function handleCSVUpload(e) {
@@ -2139,7 +2206,7 @@
             : "";
 
           return `
-          <div class="bg-white border border-slate-200 rounded-2xl p-5 flex gap-4 items-start hover:border-purple-200 hover:shadow-md transition group">
+          <div class="panel-card flex gap-4 items-start">
             <div class="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center shrink-0">
               <i class="fas fa-building text-purple-500 text-lg"></i>
             </div>
@@ -2160,11 +2227,11 @@
             </div>
             <div class="flex gap-2 shrink-0">
               <button onclick="editMentorInternship(${i.internship_id})" title="Edit"
-                class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition flex items-center justify-center">
+                class="intern-action-btn edit">
                 <i class="fas fa-edit text-sm"></i>
               </button>
               <button onclick="deleteMentorInternship(${i.internship_id})" title="Delete"
-                class="w-9 h-9 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition flex items-center justify-center">
+                class="intern-action-btn delete">
                 <i class="fas fa-trash-alt text-sm"></i>
               </button>
             </div>
