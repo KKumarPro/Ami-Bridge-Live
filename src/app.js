@@ -10,6 +10,8 @@ const resumeRoutes = require("./routes/resume.routes");
 const companyRoutes = require("./routes/company.routes");
 const interviewRoutes = require("./routes/interview.routes");
 const internshipRoutes = require("./routes/internship.routes");
+const streakRoutes = require("./routes/streak.routes");
+const badgeRoutes = require("./routes/badge.routes");
 
 // Middlewares
 const errorMiddleware = require("./middlewares/error.middleware");
@@ -30,6 +32,8 @@ app.use("/api", resumeRoutes);
 app.use("/api", companyRoutes);
 app.use("/api", interviewRoutes);
 app.use("/api", internshipRoutes);
+app.use("/api", streakRoutes);
+app.use("/api", badgeRoutes);
 
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get("/api/health", (_req, res) =>

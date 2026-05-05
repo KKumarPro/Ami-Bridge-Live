@@ -6,6 +6,7 @@ const { analyzeResume, generateMentorSuggestion } = require("./ai.service");
 const { processUploadedFile, base64ToBuffer } = require("./file.service");
 const { extractTextFromPDF } = require("../utils/parser");
 const logger = require("../utils/logger");
+const badgeService = require("./badge.service");
 
 // ── Upload ───────────────────────────────────────────────────────────────────
 const uploadResume = async (file, studentId) => {
@@ -14,7 +15,8 @@ const uploadResume = async (file, studentId) => {
 
   // 2. Fetch the student's name to personalize the AI prompt
   const userResult = await UserModel.findById(studentId);
-  const studentName = userResult.rows.length > 0 ? userResult.rows[0].name : "Student";
+  const studentName =
+    userResult.rows.length > 0 ? userResult.rows[0].name : "Student";
 
   // 3. Save first, analyze after upload from the dedicated endpoint.
   // This keeps upload fast and prevents client-side upload timeouts
@@ -96,6 +98,17 @@ const analyzeResumeAI = async (resumeId) => {
     JSON.stringify(analysis),
     analysis.score,
   );
+
+  // Award badges based on resume score
+  try {
+    await badgeService.awardResumeScoreBadges(
+      resume.student_id,
+      analysis.score,
+    );
+  } catch (e) {
+    logger.warn(`[Badge] Failed to award badges: ${e.message}`);
+  }
+
   return analysis;
 };
 

@@ -1,7 +1,8 @@
 "use strict";
 
-const bcrypt    = require("bcryptjs");
+const bcrypt = require("bcryptjs");
 const UserModel = require("../models/user.model");
+const streakService = require("./streak.service");
 
 const register = async (name, email, password, role) => {
   const existing = await UserModel.findByEmail(email);
@@ -10,7 +11,7 @@ const register = async (name, email, password, role) => {
     err.status = 400;
     throw err;
   }
-  const salt   = await bcrypt.genSalt(10);
+  const salt = await bcrypt.genSalt(10);
   const hashed = await bcrypt.hash(password, salt);
   const result = await UserModel.create(name, email, hashed, role);
   return result.rows[0];
@@ -23,13 +24,21 @@ const login = async (email, password) => {
     err.status = 400;
     throw err;
   }
-  const user    = result.rows[0];
+  const user = result.rows[0];
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     const err = new Error("Invalid credentials");
     err.status = 400;
     throw err;
   }
+
+  // Update streak on login
+  try {
+    await streakService.updateStreakOnLogin(user.id);
+  } catch (e) {
+    // Non-fatal - don't fail login if streak update fails
+  }
+
   return { id: user.id, name: user.name, email: user.email, role: user.role };
 };
 

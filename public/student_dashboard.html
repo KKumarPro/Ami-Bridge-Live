@@ -188,7 +188,7 @@
           class="section-container block fade-in max-w-6xl mx-auto reveal"
         >
           <!-- Welcome Banner -->
-          <div class="dash-banner">
+          <div class="dash-banner" style="position: relative; margin-bottom: 24px;">
             <div style="position: relative; z-index: 1">
               <div
                 style="
@@ -290,6 +290,47 @@
                 pointer-events: none;
               "
             />
+            
+            <!-- Streak & Badge Badges (Right Side) -->
+            <div style="position: absolute; top: 20px; right: 28px; display: flex; flex-direction: column; gap: 12px; z-index: 2;">
+              <!-- Streak Display -->
+              <div style="
+                background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(255, 171, 87, 0.2));
+                border: 1.5px solid rgba(255, 107, 107, 0.4);
+                border-radius: 12px;
+                padding: 12px 16px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                backdrop-filter: blur(10px);
+                min-width: 140px;
+              ">
+                <i class="fas fa-fire" style="font-size: 18px; color: #FF6B6B;"></i>
+                <div>
+                  <div style="font-size: 11px; opacity: 0.7; font-weight: 600;">STREAK</div>
+                  <div style="font-size: 16px; font-weight: 700; color: #FF6B6B;" id="streak-count">0</div>
+                </div>
+              </div>
+
+              <!-- Current Badge Display -->
+              <div style="
+                background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(99, 102, 241, 0.2));
+                border: 1.5px solid rgba(168, 85, 247, 0.4);
+                border-radius: 12px;
+                padding: 10px 14px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                backdrop-filter: blur(10px);
+                min-width: 140px;
+              " id="current-badge-container">
+                <i class="fas fa-gift" style="font-size: 20px; color: #A855F7; opacity: 0.8;"></i>
+                <div>
+                  <div style="font-size: 11px; opacity: 0.7; font-weight: 600;">LATEST BADGE</div>
+                  <div style="font-size: 12px; font-weight: 700; color: var(--fg);" id="current-badge-name">None Yet</div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -328,7 +369,7 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <div class="panel-card p-6 chart-card">
               <h3 style="font-size:22px;font-weight:700;color:var(--fg);letter-spacing:-.01em;margin-bottom:4px;">
                 Performance Trend
@@ -342,6 +383,22 @@
               </h3>
               <p style="font-size:12.5px;color:var(--fg-mute);margin-bottom:14px;">Distribution of attempts across companies</p>
               <canvas id="companyChart" height="200"></canvas>
+            </div>
+          </div>
+
+          <!-- Earned Badges Section -->
+          <div class="panel-card p-6">
+            <h3 style="font-size:22px;font-weight:700;color:var(--fg);letter-spacing:-.01em;margin-bottom:4px;display:flex;align-items:center;gap:8px;">
+              <i class="fas fa-award" style="color: #A855F7;"></i>
+              Earned Badges
+            </h3>
+            <p style="font-size:12.5px;color:var(--fg-mute);margin-bottom:20px;">Your achievements on the platform</p>
+            
+            <div id="badges-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 16px;">
+              <div style="text-align: center; padding: 20px; opacity: 0.5;">
+                <i class="fas fa-inbox" style="font-size: 32px; margin-bottom: 8px; display: block;"></i>
+                <p style="font-size: 12px;">No badges yet</p>
+              </div>
             </div>
           </div>
         </div>
@@ -1002,6 +1059,54 @@
       };
 
       // --- 2. INITIALIZATION & DATA FETCHING ---
+      
+      /**  Display Streak Information */
+      function displayStreak(streak) {
+        const streakCountEl = document.getElementById("streak-count");
+        if (streakCountEl && streak) {
+          streakCountEl.textContent = streak.current_streak || 0;
+        }
+      }
+
+      /** Display All Earned Badges */
+      function displayBadges(badges) {
+        const badgesContainer = document.getElementById("badges-container");
+        if (!badgesContainer) return;
+        
+        if (!badges || badges.length === 0) {
+          badgesContainer.innerHTML = `
+            <div style="text-align: center; padding: 20px; opacity: 0.5; grid-column: 1 / -1;">
+              <i class="fas fa-inbox" style="font-size: 32px; margin-bottom: 8px; display: block;"></i>
+              <p style="font-size: 12px;">No badges earned yet — keep practicing!</p>
+            </div>`;
+          return;
+        }
+
+        badgesContainer.innerHTML = badges.map((badge) => `
+          <div style="text-align: center; padding: 12px; background: var(--bg-alt, #0F172A); border-radius: 8px; border: 1px solid rgba(168, 85, 247, 0.2);" title="${badge.description}">
+            <div style="font-size: 28px; margin-bottom: 6px;">
+              <i class="fas ${badge.icon === 'star' ? 'fa-star' : badge.icon === 'trophy' ? 'fa-trophy' : badge.icon === 'flame' ? 'fa-fire' : badge.icon === 'award' ? 'fa-award' : badge.icon === 'lightning-fill' ? 'fa-bolt' : 'fa-badge'}" style="color: ${badge.color || '#A855F7'};"></i>
+            </div>
+            <p style="font-size: 11px; font-weight: 700; color: var(--fg); line-height: 1.2;">${badge.name}</p>
+          </div>
+        `).join("");
+      }
+
+      /** Display Current/Latest Badge */
+      function displayCurrentBadge(badges) {
+        const badgeNameEl = document.getElementById("current-badge-name");
+        if (!badgeNameEl) return;
+        
+        if (!badges || badges.length === 0) {
+          badgeNameEl.textContent = "None Yet";
+          return;
+        }
+
+        const latestBadge = badges[0]; // Newest badge
+        badgeNameEl.textContent = latestBadge.name || "Achievement";
+      }
+
+      // --- 2. INITIALIZATION & DATA FETCHING ---
       window.onload = async () => {
         // 1. Authenticate user
         const loggedInUser = JSON.parse(localStorage.getItem("ami_user"));
@@ -1031,13 +1136,15 @@
 
         // 3. Fetch Real Data from Database
         try {
-          const [companiesRes, historyRes, resumesRes, feedbackRes, internshipsRes] =
+          const [companiesRes, historyRes, resumesRes, feedbackRes, internshipsRes, streakRes, badgesRes] =
             await Promise.all([
               fetch(`${API_BASE}/api/companies`),
               fetch(`${API_BASE}/api/student/${loggedInUser.id}/attempts`),
               fetch(`${API_BASE}/api/student/${loggedInUser.id}/resumes`),
               fetch(`${API_BASE}/api/student/${loggedInUser.id}/feedback`),
               fetch(`${API_BASE}/api/internships`),
+              fetch(`${API_BASE}/api/student/${loggedInUser.id}/streak`),
+              fetch(`${API_BASE}/api/student/${loggedInUser.id}/badges`),
             ]);
 
           if (companiesRes.ok) state.companies = await companiesRes.json();
@@ -1045,6 +1152,17 @@
           if (resumesRes.ok) state.resumes = await resumesRes.json();
           if (feedbackRes.ok) state.feedback = await feedbackRes.json();
           if (internshipsRes.ok) state.internships = await internshipsRes.json();
+          
+          // Load streak and badges
+          if (streakRes.ok) {
+            const streak = await streakRes.json();
+            displayStreak(streak);
+          }
+          if (badgesRes.ok) {
+            const badges = await badgesRes.json();
+            displayBadges(badges);
+            displayCurrentBadge(badges);
+          }
         } catch (error) {
           console.error("Error fetching dashboard data:", error);
           showToast(

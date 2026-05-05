@@ -28,6 +28,17 @@ const saveAttempt = async (req, res, next) => {
       total_score,
       max_score,
     );
+
+    // Award quiz badges
+    try {
+      const attempts = await InterviewModel.getAttemptsByStudent(student_id);
+      const totalAttempts = attempts.rows.length;
+      const badgeService = require("../services/badge.service");
+      await badgeService.awardQuizBadges(student_id, totalAttempts);
+    } catch (e) {
+      // Non-fatal
+    }
+
     return R.created(res, result.rows[0]);
   } catch (err) {
     next(err);

@@ -111,7 +111,6 @@
         background: rgba(124, 58, 237, 0.35);
         color: #fff;
       }
-
       /* ══════════════════════════════════════════════════════
        BG LAYERS
     ══════════════════════════════════════════════════════ */
@@ -463,6 +462,11 @@
         padding: 14px 28px;
         font-size: 15px;
         border-radius: 14px;
+      }
+      .btn-sm {
+        padding: 8px 16px;
+        font-size: 13.5px;
+        border-radius: 10px;
       }
 
       /* ══════════════════════════════════════════════════════
@@ -844,6 +848,21 @@
       .wa3 {
         background: linear-gradient(135deg, #7c3aed, #f43f5e);
       }
+      .win-meta {
+        flex: 1;
+      }
+      .win-name {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--fg);
+      }
+      .win-status {
+        font-size: 11px;
+        color: var(--fg-mute);
+      }
+      .chip-xs {
+        font-size: 10px;
+      }
 
       /* ══════════════════════════════════════════════════════
        TRUST STRIP / MARQUEE
@@ -904,6 +923,21 @@
         width: 8px;
         height: 8px;
         border-radius: 50%;
+      }
+      .mq-dot-blue {
+        background: var(--c-blue-1);
+      }
+      .mq-dot-violet {
+        background: var(--c-violet-1);
+      }
+      .mq-dot-emerald {
+        background: var(--c-emerald-1);
+      }
+      .mq-dot-amber {
+        background: var(--c-amber);
+      }
+      .mq-dot-rose {
+        background: var(--c-rose);
       }
 
       /* ══════════════════════════════════════════════════════
@@ -1324,6 +1358,9 @@
       .role-cta:hover {
         gap: 14px;
       }
+      .role-cta i {
+        font-size: 12px;
+      }
 
       /* ══════════════════════════════════════════════════════
        HOW IT WORKS — LANES
@@ -1571,6 +1608,9 @@
       .footer-meta a:hover {
         color: var(--fg);
       }
+      .footer-sep {
+        color: var(--border-strong);
+      }
 
       /* ══════════════════════════════════════════════════════
        AUTH MODAL
@@ -1626,17 +1666,11 @@
       .auth-body {
         padding: 24px;
       }
-      .auth-title {
+      .auth-brand {
         font-family: var(--font-display);
         font-weight: 700;
-        font-size: 26px;
-        letter-spacing: -0.02em;
+        font-size: 15px;
         color: var(--fg);
-      }
-      .auth-sub {
-        color: var(--fg-soft);
-        font-size: 14px;
-        margin-top: 6px;
       }
       .auth-tabs {
         display: flex;
@@ -1830,13 +1864,6 @@
           opacity 0.9s var(--ease-out),
           transform 0.9s var(--ease-out);
       }
-      .reveal-l {
-        opacity: 0;
-        transform: translateX(-28px);
-        transition:
-          opacity 0.9s var(--ease-out),
-          transform 0.9s var(--ease-out);
-      }
       .reveal-r {
         opacity: 0;
         transform: translateX(28px);
@@ -1845,7 +1872,6 @@
           transform 0.9s var(--ease-out);
       }
       .reveal.in,
-      .reveal-l.in,
       .reveal-r.in {
         opacity: 1;
         transform: translate(0);
@@ -1858,15 +1884,6 @@
       }
       .d3 {
         transition-delay: 0.26s;
-      }
-      .d4 {
-        transition-delay: 0.34s;
-      }
-      .d5 {
-        transition-delay: 0.42s;
-      }
-      .d6 {
-        transition-delay: 0.5s;
       }
 
       /* ══════════════════════════════════════════════════════
