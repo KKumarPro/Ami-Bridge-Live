@@ -647,6 +647,9 @@
                 <p class="text-xs text-slate-500">
                   Student: <span id="modal-student-name">Student Name</span>
                 </p>
+                <p class="text-xs text-indigo-600 font-medium">
+                  Target Position: <span id="modal-target-role">Web Developer</span>
+                </p>
               </div>
             </div>
             <button
@@ -659,6 +662,7 @@
 
           <input type="hidden" id="modal-student-id" />
           <input type="hidden" id="modal-resume-id" />
+          <input type="hidden" id="modal-target-role-input" />
 
           <div>
             <div class="flex items-center justify-between mb-1">
@@ -896,7 +900,9 @@
                     id: r.resume_id,
                     studentId: student.id,
                     studentName: student.name,
-                    fileName: r.file_name,
+                    fileName: r.resume_name || r.file_name || "Resume",
+                    targetRole: r.target_role || "Web Developer",
+                    gemini_score: r.gemini_score,
                     date: r.upload_date,
                     status: r.status || "Pending Review",
                   })),
@@ -1065,6 +1071,10 @@
         }
 
         state.resumes.forEach((res) => {
+          const safeRole = (res.targetRole || "Web Developer")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
           const scoreHTML =
             res.gemini_score != null
               ? `<span class="px-2 py-1 rounded text-xs font-bold ${res.gemini_score >= 70 ? "bg-green-100 text-green-700" : res.gemini_score >= 50 ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"}">${res.gemini_score}/100</span>`
@@ -1074,10 +1084,13 @@
             <tr class="hover:bg-slate-50 transition-colors">
               <td class="px-6 py-4 font-bold text-slate-800">${res.studentName}</td>
               <td class="px-6 py-4">
-                <div class="flex items-center gap-2 text-blue-600">
+                <div class="flex items-center gap-2 text-blue-600 mb-1">
                   <i class="fas fa-file-pdf text-red-500"></i>
                   <span class="font-medium text-sm">${res.fileName}</span>
                 </div>
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-full text-xs font-medium">
+                  <i class="fas fa-briefcase"></i>${safeRole}
+                </span>
               </td>
               <td class="px-6 py-4 text-slate-600 text-sm">${new Date(res.date).toLocaleDateString()}</td>
               <td class="px-6 py-4">${scoreHTML}</td>
@@ -1086,7 +1099,7 @@
                   class="px-2 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg text-xs transition" title="View PDF">
                   <i class="fas fa-eye"></i>
                 </button>
-                <button onclick="openResumeReviewModal('${res.id}', '${res.studentId}', '${res.studentName}', '${res.fileName}')"
+                <button onclick="openResumeReviewModal('${res.id}', '${res.studentId}', '${res.studentName}', '${res.fileName}', '${(res.targetRole || "Web Developer").replace(/'/g, "\\'")}')"
                   class="px-2 py-1.5 bg-green-50 text-green-600 hover:bg-green-600 hover:text-white rounded-lg text-xs transition" title="Give Feedback">
                   <i class="fas fa-comment-medical"></i>
                 </button>
@@ -1357,6 +1370,7 @@
                 (d) => `<tr class="hover:bg-slate-50">
               <td class="px-4 py-3 font-semibold text-slate-800 text-sm">${d.student_name}</td>
               <td class="px-4 py-3 text-xs text-slate-500">${d.student_email}</td>
+              <td class="px-4 py-3 text-xs text-indigo-700 font-medium">${String(d.target_role || "Web Developer").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</td>
               <td class="px-4 py-3 text-xs text-slate-600">${d.education || "—"}</td>
               <td class="px-4 py-3 text-xs text-slate-600">${Array.isArray(d.skills) ? d.skills.slice(0, 4).join(", ") : d.skills || "—"}</td>
               <td class="px-4 py-3 text-center">${d.gemini_score != null ? `<span class="px-2 py-1 rounded-full text-xs font-bold ${d.gemini_score >= 70 ? "bg-green-100 text-green-700" : d.gemini_score >= 50 ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"}">${d.gemini_score}/100</span>` : "<span class='text-slate-400 text-xs'>N/A</span>"}</td>
@@ -1368,8 +1382,8 @@
             results.innerHTML = `<div class="p-4 border-b flex justify-between items-center"><p class="text-sm font-semibold text-slate-700">${data.length} resume(s)</p>
               <button onclick="exportOCRCSV()" class="px-3 py-1.5 bg-green-50 text-green-700 hover:bg-green-600 hover:text-white rounded-lg text-xs font-medium transition"><i class="fas fa-download mr-1"></i>Export CSV</button></div>
               <div class="overflow-x-auto"><table class="w-full text-left"><thead><tr class="bg-slate-50 text-slate-500 text-xs uppercase">
-                <th class="px-4 py-3">Name</th><th class="px-4 py-3">Email</th><th class="px-4 py-3">Education</th>
-                <th class="px-4 py-3">Skills</th><th class="px-4 py-3 text-center">Score</th><th class="px-4 py-3 text-center">PDF</th>
+                <th class="px-4 py-3">Name</th><th class="px-4 py-3">Email</th><th class="px-4 py-3">Target Role</th>
+                <th class="px-4 py-3">Education</th><th class="px-4 py-3">Skills</th><th class="px-4 py-3 text-center">Score</th><th class="px-4 py-3 text-center">PDF</th>
               </tr></thead><tbody class="divide-y divide-slate-100">${rows}</tbody></table></div>`;
           }
         } catch (err) {
@@ -1386,6 +1400,7 @@
         const cols = [
           "student_name",
           "student_email",
+          "target_role",
           "education",
           "skills",
           "experience",
@@ -1486,9 +1501,14 @@
         studentId,
         studentName,
         fileName,
+        targetRole,
       ) {
         document.getElementById("modal-resume-name").innerText = fileName;
         document.getElementById("modal-student-name").innerText = studentName;
+        document.getElementById("modal-target-role").innerText =
+          targetRole || "Web Developer";
+        document.getElementById("modal-target-role-input").value =
+          targetRole || "Web Developer";
         document.getElementById("modal-student-id").value = studentId;
         document.getElementById("modal-resume-id").value = resumeId;
         document.getElementById("modal-feedback-text").value = "";

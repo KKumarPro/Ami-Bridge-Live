@@ -168,6 +168,14 @@
           </div>
           <!-- DIVIDER -->
           <div style="width:1px;height:28px;background:#E2E8F0;"></div>
+          <!-- STREAK INDICATOR -->
+          <div style="background: linear-gradient(135deg, #FF6B6B, #FF8B5A); border-radius: 10px; padding: 8px 14px; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" title="Current Streak" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 20px rgba(255, 107, 107, 0.4)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';">
+            <i class="fas fa-fire" style="font-size: 14px; color: #fff;"></i>
+            <div>
+              <div style="font-size: 10px; font-weight: 700; color: #fff; opacity: 0.9;">STREAK</div>
+              <div style="font-size: 13px; font-weight: 800; color: #fff;" id="streak-count">0</div>
+            </div>
+          </div>
           <!-- USER CHIP -->
           <div class="user-chip" onclick="navigate('profile')" title="Go to My Profile" style="cursor:pointer;">
             <img id="header-avatar" src="https://api.dicebear.com/7.x/initials/svg?seed=User&amp;backgroundColor=2563EB&amp;textColor=ffffff" alt="Avatar" class="user-avatar" style="width:30px;height:30px;" />
@@ -291,46 +299,7 @@
               "
             />
             
-            <!-- Streak & Badge Badges (Right Side) -->
-            <div style="position: absolute; top: 20px; right: 28px; display: flex; flex-direction: column; gap: 12px; z-index: 2;">
-              <!-- Streak Display -->
-              <div style="
-                background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(255, 171, 87, 0.2));
-                border: 1.5px solid rgba(255, 107, 107, 0.4);
-                border-radius: 12px;
-                padding: 12px 16px;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                backdrop-filter: blur(10px);
-                min-width: 140px;
-              ">
-                <i class="fas fa-fire" style="font-size: 18px; color: #FF6B6B;"></i>
-                <div>
-                  <div style="font-size: 11px; opacity: 0.7; font-weight: 600;">STREAK</div>
-                  <div style="font-size: 16px; font-weight: 700; color: #FF6B6B;" id="streak-count">0</div>
-                </div>
-              </div>
 
-              <!-- Current Badge Display -->
-              <div style="
-                background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(99, 102, 241, 0.2));
-                border: 1.5px solid rgba(168, 85, 247, 0.4);
-                border-radius: 12px;
-                padding: 10px 14px;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                backdrop-filter: blur(10px);
-                min-width: 140px;
-              " id="current-badge-container">
-                <i class="fas fa-gift" style="font-size: 20px; color: #A855F7; opacity: 0.8;"></i>
-                <div>
-                  <div style="font-size: 11px; opacity: 0.7; font-weight: 600;">LATEST BADGE</div>
-                  <div style="font-size: 12px; font-weight: 700; color: var(--fg);" id="current-badge-name">None Yet</div>
-                </div>
-              </div>
-            </div>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -565,6 +534,31 @@
                     <i class="fas fa-robot text-xs"></i> Ami-Bridge AI
                   </span>
                 </div>
+                <div class="mb-4">
+                  <label for="target-role-input" class="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">
+                    Target Position
+                  </label>
+                  <input
+                    id="target-role-input"
+                    type="text"
+                    class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                    placeholder="e.g. Frontend Developer, Data Analyst, Java Backend Engineer"
+                    list="target-role-suggestions"
+                  />
+                  <datalist id="target-role-suggestions">
+                    <option value="Web Developer"></option>
+                    <option value="Frontend Developer"></option>
+                    <option value="Backend Developer"></option>
+                    <option value="Full Stack Developer"></option>
+                    <option value="Data Analyst"></option>
+                    <option value="Machine Learning Engineer"></option>
+                    <option value="DevOps Engineer"></option>
+                    <option value="Mobile App Developer"></option>
+                  </datalist>
+                  <p class="text-xs text-slate-400 mt-1">
+                    ATS score and missing keywords will be calculated for this specific role.
+                  </p>
+                </div>
 
                 <!-- Drop zone -->
                 <div
@@ -663,6 +657,10 @@
                   <span id="ai-ats-score" class="text-white font-semibold"
                     >--</span
                   >/100
+                </div>
+                <div class="text-xs text-indigo-100 mb-2">
+                  Target Position:
+                  <span id="ai-target-role" class="text-white font-semibold">--</span>
                 </div>
                 <div
                   class="text-xs text-indigo-100 leading-relaxed"
@@ -1274,6 +1272,10 @@
 
         state.resumes.forEach((res) => {
           // Pre-compute HTML strings to avoid nested backtick conflicts
+          const targetRole = (res.target_role || "Web Developer")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
           const scoreBadge = res.gemini_score != null
             ? '<span class="px-2 py-0.5 rounded-full text-xs font-bold ' +
               (res.gemini_score >= 70 ? 'bg-green-100 text-green-700' :
@@ -1283,6 +1285,8 @@
             : '<span class="px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full text-xs">Not analyzed</span>';
 
           const safeName = (res.resume_name || 'Resume').replace(/'/g, "\'");
+          const roleBadge = '<span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-full text-xs font-medium">' +
+            '<i class="fas fa-briefcase mr-1"></i>' + targetRole + '</span>';
 
           const actionBtn = res.gemini_score != null
             ? '<button onclick="analyzeResume(' + res.resume_id + ')" ' +
@@ -1302,6 +1306,7 @@
                         <p class="font-semibold text-slate-800 text-sm truncate">${res.resume_name || res.file_name || "Resume"}</p>
                         <div class="flex items-center gap-2 mt-1 flex-wrap">
                           <p class="text-xs text-slate-400">${new Date(res.upload_date).toLocaleDateString()}</p>
+                          ${roleBadge}
                           ${scoreBadge}
                         </div>
                     </div>
@@ -1594,6 +1599,12 @@
         showToast("Profile updated successfully!", "success");
       }
 
+      function getTargetRoleInputValue() {
+        const el = document.getElementById("target-role-input");
+        const role = (el?.value || "").trim().replace(/\s+/g, " ");
+        return role || "Web Developer";
+      }
+
       function handleDrop(event) {
         event.preventDefault();
         document
@@ -1611,6 +1622,16 @@
       }
 
       function processResumeFile(file) {
+        const targetRole = getTargetRoleInputValue();
+        const roleInput = document.getElementById("target-role-input");
+        if (roleInput && !roleInput.value.trim()) {
+          roleInput.classList.add("border-red-400");
+          roleInput.focus();
+          showToast("Please enter the target position for this resume.", "error");
+          return;
+        }
+        roleInput?.classList.remove("border-red-400");
+
         // Validate type — PDF only
         const isValidType =
           file.type === "application/pdf" ||
@@ -1643,6 +1664,7 @@
 
         const formData = new FormData();
         formData.append("resume", file);
+        formData.append("target_role", targetRole);
 
         const xhr = new XMLHttpRequest();
 
@@ -1671,7 +1693,7 @@
             // Switch progress bar to AI-checking state
             bar.classList.remove("bg-blue-500");
             bar.classList.add("bg-purple-500");
-            statusTxt.textContent = "🤖 Ami-Bridge AI is checking your resume...";
+            statusTxt.textContent = `🤖 Ami-Bridge AI is checking your resume for ${targetRole}...`;
 
             // Show AI panel loading state immediately
             const panel = document.getElementById("ai-feedback-panel");
@@ -1750,6 +1772,7 @@
 
               // ── SUCCESS: valid resume, show full results ─────────────────
               newResume.gemini_score = data.score;
+              newResume.target_role = data.target_role || newResume.target_role || targetRole;
               state.resumes.unshift(newResume);
               renderResumes();
 
@@ -1772,6 +1795,7 @@
               document.getElementById("ai-score-display").className = "text-5xl font-black mb-1 " + scoreColor;
               document.getElementById("ai-score-display").textContent = score ?? "--";
               document.getElementById("ai-ats-score").textContent = atsScore ?? "--";
+              document.getElementById("ai-target-role").textContent = newResume.target_role || targetRole || "--";
               document.getElementById("ai-summary-short").textContent = data.summary || "";
               scoreCard.classList.remove("hidden");
 
@@ -1937,11 +1961,15 @@
         const scoreCard   = document.getElementById("ai-score-card");
         const scoreDisp   = document.getElementById("ai-score-display");
         const atsDisp     = document.getElementById("ai-ats-score");
+        const targetRoleDisp = document.getElementById("ai-target-role");
         const summaryDisp = document.getElementById("ai-summary-short");
         const feedPanel   = document.getElementById("ai-feedback-panel");
 
         // Look up this resume in local state for its cached score
         const resume = state.resumes.find(r => r.resume_id === resumeId);
+        const targetRole = resume?.target_role || "Web Developer";
+        const roleInput = document.getElementById("target-role-input");
+        if (roleInput) roleInput.value = targetRole;
 
         if (resume && resume.gemini_score != null) {
           // Show the cached score for THIS resume
@@ -1952,7 +1980,8 @@
           scoreDisp.className   = "text-5xl font-black mb-1 " + scoreColor;
           scoreDisp.textContent = score;
           atsDisp.textContent   = "--";   // ATS only available after full analysis
-          summaryDisp.textContent = "Click Re-analyse to see full AI feedback.";
+          targetRoleDisp.textContent = targetRole;
+          summaryDisp.textContent = "Role-based score loaded. Click Re-analyse for detailed feedback.";
           scoreCard.classList.remove("hidden");
         } else {
           // No score for this resume — hide the score card completely
@@ -1960,6 +1989,7 @@
           scoreDisp.textContent = "--";
           scoreDisp.className   = "text-5xl font-black mb-1 text-white";
           atsDisp.textContent   = "--";
+          targetRoleDisp.textContent = targetRole || "--";
           summaryDisp.textContent = "";
         }
 
@@ -1977,6 +2007,10 @@
       }
 
       async function analyzeResume(resumeId) {
+        const resume = state.resumes.find((item) => item.resume_id === resumeId);
+        const targetRole = resume?.target_role || "Web Developer";
+        const roleInput = document.getElementById("target-role-input");
+        if (roleInput) roleInput.value = targetRole;
         showToast("Analyzing resume with AI... This may take a moment.", "info");
 
         // ── Reset score card immediately so stale data from previous resume is cleared ──
@@ -1985,6 +2019,7 @@
         document.getElementById("ai-score-display").textContent = "--";
         document.getElementById("ai-score-display").className = "text-5xl font-black mb-1 text-white";
         document.getElementById("ai-ats-score").textContent = "--";
+        document.getElementById("ai-target-role").textContent = "--";
         document.getElementById("ai-summary-short").textContent = "";
 
         const panel = document.getElementById("ai-feedback-panel");
@@ -1993,7 +2028,7 @@
           <div class="flex flex-col items-center justify-center py-12 text-slate-400">
             <i class="fas fa-spinner fa-spin text-4xl mb-4 text-purple-400"></i>
             <p class="text-sm font-semibold text-slate-600">Reading your resume...</p>
-            <p class="text-xs mt-1 text-slate-400">Ami-Bridge AI is analysing every section in detail</p>
+            <p class="text-xs mt-1 text-slate-400">Ami-Bridge AI is analysing every section in detail for ${targetRole}</p>
           </div>`;
         panel.classList.remove("hidden");
         panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -2048,7 +2083,11 @@
 
           // Update gemini_score in local state
           const r = state.resumes.find((r) => r.resume_id === resumeId);
-          if (r) { r.gemini_score = data.score; renderResumes(); }
+          if (r) {
+            r.gemini_score = data.score;
+            r.target_role = data.target_role || r.target_role || "Web Developer";
+            renderResumes();
+          }
 
           // ── Score card ────────────────────────────────────────────────────
           const score = data.score ?? null;
@@ -2061,6 +2100,7 @@
           document.getElementById("ai-score-display").className = "text-5xl font-black mb-1 " + scoreColor;
           document.getElementById("ai-score-display").textContent = score ?? "--";
           document.getElementById("ai-ats-score").textContent = atsScore != null ? atsScore : "--";
+          document.getElementById("ai-target-role").textContent = data.target_role || r?.target_role || "Web Developer";
           document.getElementById("ai-summary-short").textContent = data.summary || "";
           scoreCard.classList.remove("hidden");
 
@@ -2592,13 +2632,14 @@
         // 1. Unanalyzed resumes
         (state.resumes || []).forEach(r => {
           if (!r.gemini_score) {
+            const role = r.target_role || "Web Developer";
             items.push({
               id:   "resume-unanalyzed-" + r.resume_id,
               icon: "fa-robot",
               color:"#8B5CF6",
               bg:   "#F5F3FF",
               title:"Resume needs AI check",
-              body: (r.resume_name || "Your resume") + " has not been analysed yet.",
+              body: (r.resume_name || "Your resume") + " has not been analysed yet for " + role + ".",
               action: () => { navigate("resume"); },
               time:  r.upload_date ? new Date(r.upload_date) : new Date(now - 3600000),
             });
@@ -2608,13 +2649,14 @@
         // 2. Low score warning (< 50)
         (state.resumes || []).forEach(r => {
           if (r.gemini_score != null && r.gemini_score < 50) {
+            const role = r.target_role || "Web Developer";
             items.push({
               id:   "resume-low-" + r.resume_id,
               icon: "fa-triangle-exclamation",
               color:"#DC2626",
               bg:   "#FEF2F2",
               title:"Low AI score detected",
-              body: (r.resume_name || "A resume") + " scored " + r.gemini_score + "/100. Improve it!",
+              body: (r.resume_name || "A resume") + " scored " + r.gemini_score + "/100 for " + role + ". Improve it!",
               action: () => { navigate("resume"); },
               time:  new Date(now - 7200000),
             });

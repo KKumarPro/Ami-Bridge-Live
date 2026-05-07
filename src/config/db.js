@@ -45,6 +45,7 @@ const initDB = async () => {
       ALTER TABLE resumes ADD COLUMN IF NOT EXISTS file_type    VARCHAR(100);
       ALTER TABLE resumes ADD COLUMN IF NOT EXISTS gemini_feedback TEXT;
       ALTER TABLE resumes ADD COLUMN IF NOT EXISTS gemini_score    INTEGER;
+      ALTER TABLE resumes ADD COLUMN IF NOT EXISTS target_role     VARCHAR(120);
 
       CREATE TABLE IF NOT EXISTS user_streaks (
         user_id INT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,

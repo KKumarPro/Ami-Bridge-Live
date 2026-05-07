@@ -11,7 +11,11 @@ const upload = async (req, res, next) => {
     if (!req.file) return R.badRequest(res, "No file uploaded");
 
     // Upload is intentionally save-only; AI runs via /resume/:id/analyze
-    const resume = await resumeService.uploadResume(req.file, req.params.id);
+    const resume = await resumeService.uploadResume(
+      req.file,
+      req.params.id,
+      req.body?.target_role,
+    );
 
     return R.created(res, resume);
   } catch (err) {

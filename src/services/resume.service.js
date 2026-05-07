@@ -1,24 +1,26 @@
 "use strict";
 
 const ResumeModel = require("../models/resume.model");
-const UserModel = require("../models/user.model");
 const { analyzeResume, generateMentorSuggestion } = require("./ai.service");
 const { processUploadedFile, base64ToBuffer } = require("./file.service");
 const { extractTextFromPDF } = require("../utils/parser");
 const logger = require("../utils/logger");
 const badgeService = require("./badge.service");
 
+function normalizeTargetRole(targetRole) {
+  const role = String(targetRole || "").trim().replace(/\s+/g, " ");
+  if (!role) return "Web Developer";
+  return role.length > 120 ? role.slice(0, 120) : role;
+}
+
 // ── Upload ───────────────────────────────────────────────────────────────────
-const uploadResume = async (file, studentId) => {
+const uploadResume = async (file, studentId, targetRole) => {
+  const normalizedRole = normalizeTargetRole(targetRole);
+
   // 1. Process the uploaded file
   const { base64, filePath } = await processUploadedFile(file, studentId);
 
-  // 2. Fetch the student's name to personalize the AI prompt
-  const userResult = await UserModel.findById(studentId);
-  const studentName =
-    userResult.rows.length > 0 ? userResult.rows[0].name : "Student";
-
-  // 3. Save first, analyze after upload from the dedicated endpoint.
+  // 2. Save first, analyze after upload from the dedicated endpoint.
   // This keeps upload fast and prevents client-side upload timeouts
   // for scanned/image-based PDFs that need slower vision models.
   const result = await ResumeModel.create(
@@ -27,12 +29,13 @@ const uploadResume = async (file, studentId) => {
     filePath,
     base64,
     file.mimetype,
+    normalizedRole,
   );
-  const resumeId = result.rows[0].resume_id;
 
   // Return newly created resume with null score (pending analysis).
   return {
     ...result.rows[0],
+    target_role: normalizedRole,
     gemini_score: null,
   };
 };
@@ -84,6 +87,7 @@ const analyzeResumeAI = async (resumeId) => {
     throw err;
   }
 
+  const normalizedRole = normalizeTargetRole(resume.target_role);
   const pdfBase64 = resume.file_data;
   const fileBuffer = base64ToBuffer(pdfBase64);
   const resumeText = await extractTextFromPDF(fileBuffer);
@@ -92,10 +96,15 @@ const analyzeResumeAI = async (resumeId) => {
     resumeText,
     resume.student_name,
     pdfBase64,
+    normalizedRole,
   );
+  const analysisWithRole = {
+    ...analysis,
+    target_role: normalizedRole,
+  };
   await ResumeModel.saveAIFeedback(
     resumeId,
-    JSON.stringify(analysis),
+    JSON.stringify(analysisWithRole),
     analysis.score,
   );
 
@@ -109,7 +118,7 @@ const analyzeResumeAI = async (resumeId) => {
     logger.warn(`[Badge] Failed to award badges: ${e.message}`);
   }
 
-  return analysis;
+  return analysisWithRole;
 };
 
 // ── Get cached AI feedback ───────────────────────────────────────────────────
@@ -120,11 +129,12 @@ const getAIFeedback = async (resumeId) => {
     err.status = 404;
     throw err;
   }
-  const { gemini_feedback, gemini_score } = result.rows[0];
+  const { gemini_feedback, gemini_score, target_role } = result.rows[0];
   if (!gemini_feedback) return { analyzed: false };
   return {
     analyzed: true,
     score: gemini_score,
+    target_role: normalizeTargetRole(target_role),
     ...JSON.parse(gemini_feedback),
   };
 };
@@ -166,13 +176,18 @@ const getOCRForMentor = async (students) => {
           resumeText,
           student?.name || "Student",
           resume.file_data,
+          normalizeTargetRole(resume.target_role),
         );
+        const analysisWithRole = {
+          ...analysis,
+          target_role: normalizeTargetRole(resume.target_role),
+        };
         await ResumeModel.saveAIFeedback(
           resume.resume_id,
-          JSON.stringify(analysis),
+          JSON.stringify(analysisWithRole),
           analysis.score,
         );
-        extractedData = analysis;
+        extractedData = analysisWithRole;
         logger.info(
           `[OCR] Mentor OCR: analyzed resume ${resume.resume_id} for ${student?.name}`,
         );
@@ -194,6 +209,9 @@ const getOCRForMentor = async (students) => {
       student_name: student?.name || "Unknown",
       student_email: student?.email || "",
       resume_name: resume.resume_name,
+      target_role: normalizeTargetRole(
+        extractedData.target_role || resume.target_role,
+      ),
       upload_date: resume.upload_date,
       gemini_score: extractedData.score ?? resume.gemini_score,
       ...extractedData,
@@ -219,13 +237,18 @@ const getOCRForAdmin = async () => {
           resumeText,
           resume.student_name || "Student",
           resume.file_data,
+          normalizeTargetRole(resume.target_role),
         );
+        const analysisWithRole = {
+          ...analysis,
+          target_role: normalizeTargetRole(resume.target_role),
+        };
         await ResumeModel.saveAIFeedback(
           resume.resume_id,
-          JSON.stringify(analysis),
+          JSON.stringify(analysisWithRole),
           analysis.score,
         );
-        extractedData = analysis;
+        extractedData = analysisWithRole;
         logger.info(
           `[OCR] Admin OCR: analyzed resume ${resume.resume_id} for ${resume.student_name}`,
         );
@@ -247,6 +270,9 @@ const getOCRForAdmin = async () => {
       student_name: resume.student_name,
       student_email: resume.student_email,
       resume_name: resume.resume_name,
+      target_role: normalizeTargetRole(
+        extractedData.target_role || resume.target_role,
+      ),
       upload_date: resume.upload_date,
       gemini_score: extractedData.score ?? resume.gemini_score,
       ...extractedData,

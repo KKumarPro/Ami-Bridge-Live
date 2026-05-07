@@ -20,7 +20,7 @@ const runResumeAnalysisJob = async () => {
 
   try {
     const result = await pool.query(
-      `SELECT r.resume_id, r.file_data, u.name AS student_name
+      `SELECT r.resume_id, r.file_data, r.target_role, u.name AS student_name
        FROM resumes r
        JOIN users u ON r.student_id = u.id
        WHERE r.gemini_feedback IS NULL AND r.file_data IS NOT NULL
@@ -38,11 +38,21 @@ const runResumeAnalysisJob = async () => {
       try {
         const buffer     = Buffer.from(resume.file_data, "base64");
         const resumeText = await extractTextFromPDF(buffer);
-        const analysis   = await analyzeResume(resumeText, resume.student_name, resume.file_data);
+        const analysis   = await analyzeResume(
+          resumeText,
+          resume.student_name,
+          resume.file_data,
+          resume.target_role,
+        );
+
+        const analysisWithRole = {
+          ...analysis,
+          target_role: resume.target_role || "Web Developer",
+        };
 
         await pool.query(
           "UPDATE resumes SET gemini_feedback = $1, gemini_score = $2 WHERE resume_id = $3",
-          [JSON.stringify(analysis), analysis.score, resume.resume_id]
+          [JSON.stringify(analysisWithRole), analysis.score, resume.resume_id]
         );
         logger.info("[Job] Analyzed resume_id=" + resume.resume_id + " score=" + analysis.score);
       } catch (err) {

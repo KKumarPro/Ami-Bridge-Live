@@ -3,17 +3,17 @@
 const { pool } = require("../config/db");
 
 const ResumeModel = {
-  create: (studentId, resumeName, filePath, fileData, fileType) =>
+  create: (studentId, resumeName, filePath, fileData, fileType, targetRole) =>
     pool.query(
-      `INSERT INTO resumes (student_id, resume_name, file_path, file_data, file_type)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING resume_id, student_id, resume_name, upload_date, file_type`,
-      [studentId, resumeName, filePath, fileData, fileType]
+      `INSERT INTO resumes (student_id, resume_name, file_path, file_data, file_type, target_role)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING resume_id, student_id, resume_name, upload_date, file_type, target_role`,
+      [studentId, resumeName, filePath, fileData, fileType, targetRole]
     ),
 
   findByStudent: (studentId) =>
     pool.query(
-      `SELECT resume_id, student_id, resume_name, upload_date, file_type, gemini_score, gemini_feedback
+      `SELECT resume_id, student_id, resume_name, upload_date, file_type, target_role, gemini_score, gemini_feedback
        FROM resumes WHERE student_id = $1 ORDER BY upload_date DESC`,
       [studentId]
     ),
@@ -43,20 +43,20 @@ const ResumeModel = {
 
   getAIFeedback: (resumeId) =>
     pool.query(
-      "SELECT gemini_feedback, gemini_score FROM resumes WHERE resume_id = $1",
+      "SELECT gemini_feedback, gemini_score, target_role FROM resumes WHERE resume_id = $1",
       [resumeId]
     ),
 
   findByStudentIds: (studentIds) =>
     pool.query(
-      `SELECT resume_id, student_id, resume_name, upload_date, file_data, gemini_feedback, gemini_score
+      `SELECT resume_id, student_id, resume_name, upload_date, target_role, file_data, gemini_feedback, gemini_score
        FROM resumes WHERE student_id = ANY($1::int[]) ORDER BY upload_date DESC`,
       [studentIds]
     ),
 
   findAllWithStudents: () =>
     pool.query(
-      `SELECT r.resume_id, r.student_id, r.resume_name, r.upload_date,
+      `SELECT r.resume_id, r.student_id, r.resume_name, r.upload_date, r.target_role,
               r.file_data, r.gemini_feedback, r.gemini_score,
               u.name AS student_name, u.email AS student_email
        FROM resumes r JOIN users u ON r.student_id = u.id

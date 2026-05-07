@@ -76,14 +76,20 @@ function extractJSON(raw) {
 const SYSTEM_MSG =
   "You are a resume analysis expert. Always respond with raw JSON only — no markdown, no code fences, no explanations.";
 
-function buildPrompt(studentName, resumeText) {
+function normalizeTargetRole(targetRole) {
+  const role = String(targetRole || "").trim();
+  return role || "Web Developer";
+}
+
+function buildPrompt(studentName, resumeText, targetRole) {
+  const role = normalizeTargetRole(targetRole);
   const content = resumeText
     ? `RESUME TEXT:\n---\n${resumeText}\n---`
     : "The resume is provided as a PDF document. Read ALL visible text carefully.";
 
   return `You are a brutally strict ATS resume evaluator and senior tech recruiter for Indian engineering placements.
 
-Analyze the resume of "${studentName || "the student"}" specifically for a WEB DEVELOPER role.
+Analyze the resume of "${studentName || "the student"}" specifically for the target role: "${role}".
 
 You must think like:
 - An ATS system filtering candidates automatically
@@ -129,17 +135,17 @@ REQUIRED OUTPUT FORMAT:
 "Clear weakness + exact fix"
 ],
 "keywords_missing":[
-"important web dev keyword",
-"important web dev keyword",
-"important web dev keyword",
-"important web dev keyword",
-"important web dev keyword"
+"important keyword for the target role",
+"important keyword for the target role",
+"important keyword for the target role",
+"important keyword for the target role",
+"important keyword for the target role"
 ],
 "sections_feedback":{
 "contact":"Precise feedback (missing links, formatting issues, etc.)",
 "education":"Relevance, clarity, missing details",
 "skills":"Depth, categorization, missing tools",
-"experience":"Impact, metrics, relevance to web dev",
+"experience":"Impact, metrics, relevance to the target role",
 "projects":"Quality, complexity, real-world relevance"
 }
 }
@@ -261,10 +267,11 @@ function normalizeGeminiError(err) {
 }
 
 // ── METHOD 1: Groq — text-based PDFs ─────────────────────────────────────────
-async function analyzeWithGroq(resumeText, studentName) {
+async function analyzeWithGroq(resumeText, studentName, targetRole) {
   const prompt = buildPrompt(
     studentName,
     resumeText.trim().substring(0, 12000),
+    targetRole,
   );
 
   for (const model of GROQ_MODELS) {
@@ -293,7 +300,7 @@ async function analyzeWithGroq(resumeText, studentName) {
 }
 
 // ── METHOD 2: Gemini — image/scanned PDFs ────────────────────────────────────
-async function analyzeWithGemini(pdfBase64, studentName) {
+async function analyzeWithGemini(pdfBase64, studentName, targetRole) {
   if (!env.GEMINI_API_KEY) {
     logger.error(
       "[AI] GEMINI_API_KEY is not set in .env — image-based PDF analysis requires it. Get free key: https://aistudio.google.com/app/apikey",
@@ -301,7 +308,7 @@ async function analyzeWithGemini(pdfBase64, studentName) {
     return null;
   }
 
-  const prompt = buildPrompt(studentName, null); // no text — Gemini reads PDF visually
+  const prompt = buildPrompt(studentName, null, targetRole); // no text — Gemini reads PDF visually
 
   let lastGeminiError = null;
 
@@ -345,7 +352,9 @@ async function analyzeWithGemini(pdfBase64, studentName) {
 }
 
 // ── Main entry point ──────────────────────────────────────────────────────────
-const analyzeResume = async (resumeText, studentName, pdfBase64) => {
+const analyzeResume = async (resumeText, studentName, pdfBase64, targetRole) => {
+  const normalizedRole = normalizeTargetRole(targetRole);
+
   if (!env.GROQ_API_KEY && !env.GEMINI_API_KEY) return noKeyResponse();
 
   const textIsUsable = resumeText && resumeText.trim().length > 100;
@@ -353,21 +362,29 @@ const analyzeResume = async (resumeText, studentName, pdfBase64) => {
   if (textIsUsable) {
     // ── Text-based PDF: try Groq first ────────────────────────────────────
     logger.info(`[AI] Text PDF (${resumeText.trim().length} chars) → Groq`);
-    const groqResult = await analyzeWithGroq(resumeText, studentName);
+    const groqResult = await analyzeWithGroq(
+      resumeText,
+      studentName,
+      normalizedRole,
+    );
     if (groqResult) return groqResult;
 
     // Groq failed on all models — fall back to Gemini with the text
     logger.warn("[AI] Groq exhausted — falling back to Gemini with text");
     if (env.GEMINI_API_KEY && pdfBase64) {
       try {
-        const geminiResult = await analyzeWithGemini(pdfBase64, studentName);
+        const geminiResult = await analyzeWithGemini(
+          pdfBase64,
+          studentName,
+          normalizedRole,
+        );
         if (geminiResult) return geminiResult;
       } catch (gemErr) {
         if (gemErr.code === "NOT_A_RESUME") throw gemErr;
         logger.error(
           `[AI] Gemini text-fallback failed (${gemErr.code || "GEMINI_FAILED"}): ${gemErr.message}`,
         );
-        return genericFeedback(studentName, gemErr.message);
+        return genericFeedback(studentName, gemErr.message, normalizedRole);
       }
     }
   } else {
@@ -386,7 +403,11 @@ const analyzeResume = async (resumeText, studentName, pdfBase64) => {
     }
     if (pdfBase64) {
       try {
-        const geminiResult = await analyzeWithGemini(pdfBase64, studentName);
+        const geminiResult = await analyzeWithGemini(
+          pdfBase64,
+          studentName,
+          normalizedRole,
+        );
         if (geminiResult) return geminiResult;
       } catch (gemErr) {
         if (gemErr.code === "NOT_A_RESUME") throw gemErr;
@@ -394,13 +415,13 @@ const analyzeResume = async (resumeText, studentName, pdfBase64) => {
         logger.error(
           `[AI] Gemini image analysis failed (${gemErr.code || "GEMINI_FAILED"}): ${gemErr.message}`,
         );
-        return genericFeedback(studentName, gemErr.message);
+        return genericFeedback(studentName, gemErr.message, normalizedRole);
       }
     }
   }
 
   logger.error(`[AI] All methods exhausted for: ${studentName}`);
-  return genericFeedback(studentName);
+  return genericFeedback(studentName, null, normalizedRole);
 };
 
 // ── Mentor suggestion ─────────────────────────────────────────────────────────
@@ -443,10 +464,11 @@ function noKeyResponse() {
   };
 }
 
-function genericFeedback(studentName, reason) {
+function genericFeedback(studentName, reason, targetRole) {
   return {
     score: null,
     ats_score: null,
+    target_role: normalizeTargetRole(targetRole),
     _generic: true,
     summary:
       reason ||
@@ -459,4 +481,3 @@ function genericFeedback(studentName, reason) {
 }
 
 module.exports = { analyzeResume, generateMentorSuggestion };
-
