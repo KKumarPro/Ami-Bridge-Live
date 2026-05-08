@@ -543,18 +543,7 @@
                     type="text"
                     class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none"
                     placeholder="e.g. Frontend Developer, Data Analyst, Java Backend Engineer"
-                    list="target-role-suggestions"
                   />
-                  <datalist id="target-role-suggestions">
-                    <option value="Web Developer"></option>
-                    <option value="Frontend Developer"></option>
-                    <option value="Backend Developer"></option>
-                    <option value="Full Stack Developer"></option>
-                    <option value="Data Analyst"></option>
-                    <option value="Machine Learning Engineer"></option>
-                    <option value="DevOps Engineer"></option>
-                    <option value="Mobile App Developer"></option>
-                  </datalist>
                   <p class="text-xs text-slate-400 mt-1">
                     ATS score and missing keywords will be calculated for this specific role.
                   </p>
@@ -584,7 +573,7 @@
                   >
                     Click or drag &amp; drop
                   </p>
-                  <p class="text-xs text-slate-400 mt-1">PDF only · Max 5MB · AI checks automatically on upload</p>
+                  <p class="text-xs text-slate-400 mt-1">PDF only · Max 5MB · AI runs when you click Analyze Resume</p>
                   <input
                     type="file"
                     id="file-upload"
@@ -638,6 +627,18 @@
                     ></p>
                   </div>
                 </div>
+
+                <button
+                  type="button"
+                  onclick="analyzeSelectedResume()"
+                  class="mt-4 w-full px-3 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                  id="manual-analyze-btn"
+                >
+                  <i class="fas fa-robot"></i> Analyze Resume
+                </button>
+                <p class="text-[11px] text-slate-400 mt-1 text-center">
+                  Upload resume first, then type role, then click Analyze Resume.
+                </p>
               </div>
 
               <!-- AI Score Card (shown after AI check) -->
@@ -1013,6 +1014,8 @@
         currentUser: null,
         companies: [],
         resumes: [],
+        selectedResumeId: null,
+        lastUploadedResumeId: null,
         history: [],
         feedback: [],
         internships: [],
@@ -1283,6 +1286,9 @@
                'bg-red-100 text-red-700') +
               '">Ami-Bridge AI: ' + res.gemini_score + '/100</span>'
             : '<span class="px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full text-xs">Not analyzed</span>';
+          const atsBadge = typeof res.ats_score === "number"
+            ? '<span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium">ATS: ' + res.ats_score + '/100</span>'
+            : "";
 
           const safeName = (res.resume_name || 'Resume').replace(/'/g, "\'");
           const roleBadge = '<span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-full text-xs font-medium">' +
@@ -1308,6 +1314,7 @@
                           <p class="text-xs text-slate-400">${new Date(res.upload_date).toLocaleDateString()}</p>
                           ${roleBadge}
                           ${scoreBadge}
+                          ${atsBadge}
                         </div>
                     </div>
                 </div>
@@ -1599,12 +1606,6 @@
         showToast("Profile updated successfully!", "success");
       }
 
-      function getTargetRoleInputValue() {
-        const el = document.getElementById("target-role-input");
-        const role = (el?.value || "").trim().replace(/\s+/g, " ");
-        return role || "Web Developer";
-      }
-
       function handleDrop(event) {
         event.preventDefault();
         document
@@ -1622,16 +1623,6 @@
       }
 
       function processResumeFile(file) {
-        const targetRole = getTargetRoleInputValue();
-        const roleInput = document.getElementById("target-role-input");
-        if (roleInput && !roleInput.value.trim()) {
-          roleInput.classList.add("border-red-400");
-          roleInput.focus();
-          showToast("Please enter the target position for this resume.", "error");
-          return;
-        }
-        roleInput?.classList.remove("border-red-400");
-
         // Validate type — PDF only
         const isValidType =
           file.type === "application/pdf" ||
@@ -1664,7 +1655,6 @@
 
         const formData = new FormData();
         formData.append("resume", file);
-        formData.append("target_role", targetRole);
 
         const xhr = new XMLHttpRequest();
 
@@ -1688,210 +1678,22 @@
               showUploadError("Server returned an unexpected response.");
               return;
             }
+            newResume.gemini_score = null;
+            newResume.ats_score = null;
+            state.resumes.unshift(newResume);
+            state.lastUploadedResumeId = newResume.resume_id;
+            state.selectedResumeId = newResume.resume_id;
+            renderResumes();
+            document.getElementById("ai-score-card").classList.add("hidden");
+            document.getElementById("ai-feedback-panel").classList.add("hidden");
 
-            // ── Auto AI analysis immediately after upload ─────────────────
-            // Switch progress bar to AI-checking state
             bar.classList.remove("bg-blue-500");
-            bar.classList.add("bg-purple-500");
-            statusTxt.textContent = `🤖 Ami-Bridge AI is checking your resume for ${targetRole}...`;
-
-            // Show AI panel loading state immediately
-            const panel = document.getElementById("ai-feedback-panel");
-            const feedbackContent = document.getElementById("ai-feedback-content");
-            feedbackContent.innerHTML = `
-              <div class="flex flex-col items-center justify-center py-12 text-slate-400">
-                <i class="fas fa-spinner fa-spin text-4xl mb-4 text-purple-400"></i>
-                <p class="text-sm font-semibold text-slate-600">Checking your document...</p>
-                <p class="text-xs mt-1 text-slate-400">Ami-Bridge AI is verifying this is a resume and scoring it</p>
-              </div>`;
-            panel.classList.remove("hidden");
-
-            try {
-              const analysisRes = await fetch(
-                `${API_BASE}/api/resume/${newResume.resume_id}/analyze`,
-                { method: "POST" }
-              );
-
-              // ── NOT A RESUME: delete it silently and reject ──────────────
-              if (analysisRes.status === 422) {
-                const errData = await analysisRes.json();
-
-                // Delete the uploaded file from DB — it's not a resume
-                await fetch(`${API_BASE}/api/resume/${newResume.resume_id}`, { method: "DELETE" });
-
-                // Show rejection in progress bar area
-                bar.classList.remove("bg-purple-500");
-                bar.classList.add("bg-red-500");
-                statusTxt.textContent = "❌ Not a resume — file removed.";
-
-                // Show rejection in AI panel
-                feedbackContent.innerHTML = `
-                  <div class="p-6 bg-red-50 border border-red-200 rounded-xl text-center">
-                    <i class="fas fa-file-circle-xmark text-red-500 text-4xl mb-3 block"></i>
-                    <p class="font-bold text-red-800 text-base mb-2">Not a Resume — File Rejected</p>
-                    <p class="text-sm text-red-700 mb-1">${errData.message || "The uploaded PDF is not a resume or CV."}</p>
-                    <p class="text-xs text-red-500 mt-3">The file has been automatically removed. Please upload your actual resume/CV.</p>
-                  </div>`;
-
-                showToast("Rejected: Not a resume. File deleted automatically.", "error");
-
-                // Hide progress after delay
-                setTimeout(() => { prog.classList.add("hidden"); bar.style.width = "0%"; }, 4000);
-                return;
-              }
-
-              // ── AI unavailable: keep file, show retry ────────────────────
-              if (!analysisRes.ok) {
-                const err = await analysisRes.json();
-                throw new Error(err.error || "AI analysis failed");
-              }
-
-              const data = await analysisRes.json();
-
-              if (data._generic) {
-                // Add to state so user can see it and retry manually
-                state.resumes.unshift(newResume);
-                renderResumes();
-                bar.classList.remove("bg-purple-500");
-                bar.classList.add("bg-amber-500");
-                statusTxt.textContent = "⚠️ Ami-Bridge AI busy — use AI Check to retry.";
-                feedbackContent.innerHTML = `
-                  <div class="p-6 bg-slate-50 border border-slate-200 rounded-xl text-center">
-                    <i class="fas fa-clock text-slate-400 text-4xl mb-3 block"></i>
-                    <p class="font-bold text-slate-700 text-base mb-1">Ami-Bridge AI Temporarily Unavailable</p>
-                    <p class="text-sm text-slate-500">${data.summary}</p>
-                    <button onclick="analyzeResume(${newResume.resume_id})"
-                      class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition">
-                      <i class="fas fa-redo mr-1"></i> Try AI Check Again
-                    </button>
-                  </div>`;
-                showToast("Resume saved. Ami-Bridge AI is busy — click 'Try Again' to retry.", "info");
-                setTimeout(() => { prog.classList.add("hidden"); bar.style.width = "0%"; }, 3000);
-                return;
-              }
-
-              // ── SUCCESS: valid resume, show full results ─────────────────
-              newResume.gemini_score = data.score;
-              newResume.target_role = data.target_role || newResume.target_role || targetRole;
-              state.resumes.unshift(newResume);
-              renderResumes();
-
-              bar.classList.remove("bg-purple-500");
-              bar.classList.add("bg-green-500");
-              statusTxt.textContent = "✅ Resume verified & scored!";
-
-              // Show success banner
-              document.getElementById("upload-success-name").textContent = file.name;
-              banner.classList.remove("hidden");
-
-              // Update score card
-              const scoreCard = document.getElementById("ai-score-card");
-              const score = data.score ?? null;
-              const atsScore = data.ats_score ?? null;
-              const scoreColor = score == null ? "text-white"
-                : score >= 75 ? "text-green-300"
-                : score >= 50 ? "text-yellow-300"
-                : "text-red-300";
-              document.getElementById("ai-score-display").className = "text-5xl font-black mb-1 " + scoreColor;
-              document.getElementById("ai-score-display").textContent = score ?? "--";
-              document.getElementById("ai-ats-score").textContent = atsScore ?? "--";
-              document.getElementById("ai-target-role").textContent = newResume.target_role || targetRole || "--";
-              document.getElementById("ai-summary-short").textContent = data.summary || "";
-              scoreCard.classList.remove("hidden");
-
-              // Build full feedback panel
-              const strengths = (data.strengths || []).map((s) =>
-                `<li class="flex gap-2 items-start">
-                  <i class="fas fa-check-circle text-green-500 mt-0.5 shrink-0"></i>
-                  <span class="text-sm text-slate-700">${s}</span>
-                </li>`).join("");
-
-              const improvements = (data.improvements || []).map((imp) =>
-                `<li class="flex gap-2 items-start">
-                  <i class="fas fa-times-circle text-red-400 mt-0.5 shrink-0"></i>
-                  <span class="text-sm text-slate-700">${imp}</span>
-                </li>`).join("");
-
-              const keywords = (data.keywords_missing || []).map((k) =>
-                `<span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-medium">${k}</span>`
-              ).join("");
-
-              const sectionIcons = {
-                contact: "fa-address-card", education: "fa-graduation-cap",
-                skills: "fa-code", experience: "fa-briefcase", projects: "fa-rocket",
-              };
-              const sectionsHTML = Object.entries(data.sections_feedback || {}).map(([key, val]) =>
-                `<div class="flex gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                  <div class="w-7 h-7 rounded-lg bg-purple-100 flex items-center justify-center shrink-0 mt-0.5">
-                    <i class="fas ${sectionIcons[key] || "fa-file-alt"} text-purple-600 text-xs"></i>
-                  </div>
-                  <div>
-                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-0.5">${key}</p>
-                    <p class="text-sm text-slate-700 leading-relaxed">${val}</p>
-                  </div>
-                </div>`).join("");
-
-              feedbackContent.innerHTML = `
-                <div class="space-y-5">
-                  <div class="p-4 bg-indigo-50 rounded-xl border border-indigo-100">
-                    <p class="text-xs font-bold text-indigo-600 uppercase tracking-wide mb-1.5">
-                      <i class="fas fa-robot mr-1"></i> Ami-Bridge AI Summary
-                    </p>
-                    <p class="text-sm text-slate-700 leading-relaxed">${data.summary || "No summary available."}</p>
-                  </div>
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div class="bg-green-50 border border-green-100 rounded-xl p-4">
-                      <p class="text-xs font-bold text-green-700 uppercase tracking-wide mb-2.5 flex items-center gap-1.5">
-                        <i class="fas fa-thumbs-up"></i> Pros
-                      </p>
-                      <ul class="space-y-2">${strengths || "<li class='text-sm text-slate-400 italic'>No strengths identified</li>"}</ul>
-                    </div>
-                    <div class="bg-red-50 border border-red-100 rounded-xl p-4">
-                      <p class="text-xs font-bold text-red-700 uppercase tracking-wide mb-2.5 flex items-center gap-1.5">
-                        <i class="fas fa-thumbs-down"></i> Cons
-                      </p>
-                      <ul class="space-y-2">${improvements || "<li class='text-sm text-slate-400 italic'>No issues found</li>"}</ul>
-                    </div>
-                  </div>
-                  ${keywords ? `
-                  <div>
-                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2 flex items-center gap-1.5">
-                      <i class="fas fa-tags text-slate-400"></i> Missing ATS Keywords
-                    </p>
-                    <div class="flex flex-wrap gap-2">${keywords}</div>
-                  </div>` : ""}
-                  ${sectionsHTML ? `
-                  <div>
-                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2.5 flex items-center gap-1.5">
-                      <i class="fas fa-list-check text-slate-400"></i> Section Feedback
-                    </p>
-                    <div class="space-y-2">${sectionsHTML}</div>
-                  </div>` : ""}
-                </div>`;
-
-              panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
-              showToast("Resume verified and scored by Ami-Bridge AI!", "success");
-              setTimeout(() => { prog.classList.add("hidden"); bar.style.width = "0%"; }, 3000);
-
-            } catch (aiErr) {
-              // AI errored but file is uploaded — keep it, let user retry manually
-              state.resumes.unshift(newResume);
-              renderResumes();
-              bar.classList.remove("bg-purple-500");
-              bar.classList.add("bg-amber-500");
-              statusTxt.textContent = "⚠️ Ami-Bridge AI check failed — use AI Check button to retry.";
-              feedbackContent.innerHTML = `
-                <div class="p-6 text-center text-red-500">
-                  <i class="fas fa-exclamation-triangle text-3xl mb-2 block"></i>
-                  <p class="text-sm font-medium">${aiErr.message}</p>
-                  <button onclick="analyzeResume(${newResume.resume_id})"
-                    class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition">
-                    <i class="fas fa-redo mr-1"></i> Try AI Check Again
-                  </button>
-                </div>`;
-              showToast("Resume saved but AI check failed. Try again.", "error");
-              setTimeout(() => { prog.classList.add("hidden"); bar.style.width = "0%"; }, 3000);
-            }
+            bar.classList.add("bg-green-500");
+            statusTxt.textContent = "✅ Resume uploaded. Enter role and click Analyze Resume.";
+            document.getElementById("upload-success-name").textContent = file.name;
+            banner.classList.remove("hidden");
+            showToast("Resume uploaded. Now type role and click Analyze Resume.", "success");
+            setTimeout(() => { prog.classList.add("hidden"); bar.style.width = "0%"; }, 2200);
 
           } else {
             let errMsg = "Upload failed.";
@@ -1907,7 +1709,7 @@
           showUploadError("Upload timed out. Please retry (network/server may be slow).");
         });
 
-        // Allow slower networks/dev machines; AI analysis runs after upload anyway.
+        // Allow slower networks/dev machines.
         xhr.timeout = 120000;
         xhr.open("POST", `${API_BASE}/api/student/${state.currentUser.id}/resumes`);
         xhr.send(formData);
@@ -1957,6 +1759,7 @@
       }
 
       function viewResume(resumeId, name) {
+        state.selectedResumeId = resumeId;
         // ── Always sync score card to the resume being viewed ──────────────
         const scoreCard   = document.getElementById("ai-score-card");
         const scoreDisp   = document.getElementById("ai-score-display");
@@ -1974,14 +1777,17 @@
         if (resume && resume.gemini_score != null) {
           // Show the cached score for THIS resume
           const score     = resume.gemini_score;
+          const atsScore  = typeof resume.ats_score === "number" ? resume.ats_score : null;
           const scoreColor = score >= 75 ? "text-green-300"
             : score >= 50 ? "text-yellow-300"
             : "text-red-300";
           scoreDisp.className   = "text-5xl font-black mb-1 " + scoreColor;
           scoreDisp.textContent = score;
-          atsDisp.textContent   = "--";   // ATS only available after full analysis
+          atsDisp.textContent   = atsScore != null ? atsScore : "--";
           targetRoleDisp.textContent = targetRole;
-          summaryDisp.textContent = "Role-based score loaded. Click Re-analyse for detailed feedback.";
+          summaryDisp.textContent = atsScore != null
+            ? "Role-based ATS score loaded for this resume."
+            : "Role-based score loaded. Click Re-analyse for detailed feedback.";
           scoreCard.classList.remove("hidden");
         } else {
           // No score for this resume — hide the score card completely
@@ -2006,10 +1812,35 @@
         closeInlinePdf();
       }
 
+      function analyzeSelectedResume() {
+        const targetId =
+          state.selectedResumeId ||
+          state.lastUploadedResumeId ||
+          state.resumes?.[0]?.resume_id;
+        if (!targetId) {
+          showToast("Upload a resume first, then run analysis.", "error");
+          return;
+        }
+        analyzeResume(targetId);
+      }
+
       async function analyzeResume(resumeId) {
         const resume = state.resumes.find((item) => item.resume_id === resumeId);
-        const targetRole = resume?.target_role || "Web Developer";
+        if (!resume) {
+          showToast("Please select a valid resume to analyze.", "error");
+          return;
+        }
+        state.selectedResumeId = resumeId;
         const roleInput = document.getElementById("target-role-input");
+        const typedRole = (roleInput?.value || "").trim().replace(/\s+/g, " ");
+        if (!typedRole) {
+          roleInput?.classList.add("border-red-400");
+          roleInput?.focus();
+          showToast("Type the target role first, then click Analyze Resume.", "error");
+          return;
+        }
+        roleInput?.classList.remove("border-red-400");
+        const targetRole = typedRole;
         if (roleInput) roleInput.value = targetRole;
         showToast("Analyzing resume with AI... This may take a moment.", "info");
 
@@ -2036,7 +1867,11 @@
         try {
           const res = await fetch(
             `${API_BASE}/api/resume/${resumeId}/analyze`,
-            { method: "POST" },
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ target_role: targetRole }),
+            },
           );
 
           // Handle NOT_A_RESUME — document is not a resume
@@ -2085,7 +1920,8 @@
           const r = state.resumes.find((r) => r.resume_id === resumeId);
           if (r) {
             r.gemini_score = data.score;
-            r.target_role = data.target_role || r.target_role || "Web Developer";
+            r.ats_score = data.ats_score ?? null;
+            r.target_role = data.target_role || targetRole || r.target_role || "Web Developer";
             renderResumes();
           }
 

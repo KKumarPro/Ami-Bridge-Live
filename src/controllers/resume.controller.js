@@ -69,7 +69,10 @@ const remove = async (req, res, next) => {
 
 const analyze = async (req, res, next) => {
   try {
-    const analysis = await resumeService.analyzeResumeAI(req.params.resumeId);
+    const analysis = await resumeService.analyzeResumeAI(
+      req.params.resumeId,
+      req.body?.target_role,
+    );
     return R.ok(res, analysis);
   } catch (err) {
     // NOT_A_RESUME: Gemini confirmed the uploaded PDF is not a resume

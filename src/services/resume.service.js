@@ -43,7 +43,20 @@ const uploadResume = async (file, studentId, targetRole) => {
 // ── List ─────────────────────────────────────────────────────────────────────
 const listResumes = async (studentId) => {
   const result = await ResumeModel.findByStudent(studentId);
-  return result.rows;
+  return result.rows.map((row) => {
+    let parsed = null;
+    if (row.gemini_feedback) {
+      try {
+        parsed = JSON.parse(row.gemini_feedback);
+      } catch (_) {}
+    }
+    return {
+      ...row,
+      target_role: normalizeTargetRole(parsed?.target_role || row.target_role),
+      ats_score:
+        typeof parsed?.ats_score === "number" ? parsed.ats_score : null,
+    };
+  });
 };
 
 // ── View (stream) ────────────────────────────────────────────────────────────
@@ -73,7 +86,7 @@ const deleteResume = async (resumeId) => {
 };
 
 // ── AI Analysis ──────────────────────────────────────────────────────────────
-const analyzeResumeAI = async (resumeId) => {
+const analyzeResumeAI = async (resumeId, targetRoleOverride) => {
   const result = await ResumeModel.findById(resumeId);
   if (result.rows.length === 0) {
     const err = new Error("Resume not found");
@@ -87,7 +100,9 @@ const analyzeResumeAI = async (resumeId) => {
     throw err;
   }
 
-  const normalizedRole = normalizeTargetRole(resume.target_role);
+  const normalizedRole = normalizeTargetRole(
+    targetRoleOverride || resume.target_role,
+  );
   const pdfBase64 = resume.file_data;
   const fileBuffer = base64ToBuffer(pdfBase64);
   const resumeText = await extractTextFromPDF(fileBuffer);
@@ -106,6 +121,7 @@ const analyzeResumeAI = async (resumeId) => {
     resumeId,
     JSON.stringify(analysisWithRole),
     analysis.score,
+    normalizedRole,
   );
 
   // Award badges based on resume score
@@ -186,6 +202,7 @@ const getOCRForMentor = async (students) => {
           resume.resume_id,
           JSON.stringify(analysisWithRole),
           analysis.score,
+          normalizeTargetRole(resume.target_role),
         );
         extractedData = analysisWithRole;
         logger.info(
@@ -247,6 +264,7 @@ const getOCRForAdmin = async () => {
           resume.resume_id,
           JSON.stringify(analysisWithRole),
           analysis.score,
+          normalizeTargetRole(resume.target_role),
         );
         extractedData = analysisWithRole;
         logger.info(

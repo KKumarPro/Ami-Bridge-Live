@@ -35,10 +35,10 @@ const ResumeModel = {
   delete: (resumeId) =>
     pool.query("DELETE FROM resumes WHERE resume_id = $1", [resumeId]),
 
-  saveAIFeedback: (resumeId, feedbackJSON, score) =>
+  saveAIFeedback: (resumeId, feedbackJSON, score, targetRole = null) =>
     pool.query(
-      "UPDATE resumes SET gemini_feedback = $1, gemini_score = $2 WHERE resume_id = $3",
-      [feedbackJSON, score, resumeId]
+      "UPDATE resumes SET gemini_feedback = $1, gemini_score = $2, target_role = COALESCE($4, target_role) WHERE resume_id = $3",
+      [feedbackJSON, score, resumeId, targetRole]
     ),
 
   getAIFeedback: (resumeId) =>
