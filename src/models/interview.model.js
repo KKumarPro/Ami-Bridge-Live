@@ -8,6 +8,13 @@ const InterviewModel = {
       companyId,
     ]),
 
+  createQuestion: (company_id, question_text, options, correct_index) =>
+    pool.query(
+      `INSERT INTO interview_questions (company_id, question_text, options, correct_index)
+       VALUES ($1, $2, $3, $4) RETURNING *`,
+      [company_id, question_text, JSON.stringify(options), correct_index],
+    ),
+
   saveAttempt: (student_id, company_id, total_score, max_score) =>
     pool.query(
       `INSERT INTO student_attempts (student_id, company_id, total_score, max_score)

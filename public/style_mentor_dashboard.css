@@ -1532,3 +1532,89 @@ textarea:focus {
     0 2px 8px rgba(0, 0, 0, 0.25);
   border-radius: 50%;
 }
+
+/* ── THEME-AWARE TAILWIND OVERRIDES (prevents white-flash in dark mode) ── */
+.text-slate-900, .text-slate-800 { color: var(--fg) !important; }
+.text-slate-700, .text-slate-600 { color: var(--fg-soft) !important; }
+.text-slate-500, .text-slate-400, .text-slate-300 { color: var(--fg-mute) !important; }
+
+.bg-white { background: var(--surface-solid) !important; }
+.bg-slate-50 { background: var(--surface) !important; }
+.bg-slate-100 { background: var(--surface-2) !important; }
+.bg-slate-200 { background: var(--surface-2) !important; }
+.bg-green-100 { background: rgba(16,185,129,0.15) !important; }
+.bg-red-50   { background: rgba(244,63,94,0.1)   !important; }
+.bg-red-100  { background: rgba(244,63,94,0.12)  !important; }
+.bg-blue-50  { background: rgba(37,99,235,0.1)   !important; }
+.bg-purple-50, .bg-purple-100 { background: rgba(168,85,247,0.1) !important; }
+.bg-amber-50  { background: rgba(245,158,11,0.1) !important; }
+.bg-indigo-100{ background: rgba(99,102,241,0.12) !important; }
+
+.border-slate-100, .border-slate-200, .border-slate-300 { border-color: var(--border) !important; }
+.divide-slate-100 > * + *, .divide-slate-200 > * + * { border-color: var(--border) !important; }
+.border-white { border-color: var(--surface-solid) !important; }
+
+.hover\:bg-slate-50:hover  { background: var(--surface)   !important; }
+.hover\:bg-slate-100:hover { background: var(--surface-2) !important; }
+.hover\:bg-slate-200:hover { background: var(--surface-2) !important; }
+.hover\:bg-red-100:hover   { background: rgba(244,63,94,0.15)  !important; }
+.hover\:bg-red-500:hover   { background: var(--c-rose) !important; }
+.hover\:bg-blue-600:hover  { background: var(--c-blue-2) !important; }
+.hover\:bg-purple-600:hover, .hover\:bg-purple-700:hover { background: var(--c-violet-2) !important; }
+.hover\:bg-primaryHover:hover { background: #1d4ed8 !important; }
+.hover\:text-white:hover   { color: #fff !important; }
+.hover\:text-slate-600:hover { color: var(--fg-soft) !important; }
+
+.bg-primary { background: var(--c-emerald-2) !important; }
+.hover\:bg-primary:hover { background: var(--c-emerald-2) !important; }
+.text-primary { color: var(--c-emerald-1) !important; }
+.bg-white.rounded-2xl, .bg-white.rounded-xl, .bg-white.rounded-lg { background: var(--surface) !important; }
+
+/* ── FULL-WIDTH LAYOUT ── */
+.max-w-6xl, .max-w-5xl, .max-w-4xl, .max-w-3xl, .max-w-2xl { max-width: 100% !important; }
+.mx-auto { margin-left: 0 !important; margin-right: 0 !important; }
+.section-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  box-sizing: border-box;
+}
+
+/* Filter/search bars */
+#mentor-intern-stats {
+  background: transparent !important;
+  color: var(--fg-soft) !important;
+}
+
+/* Mentor internship modal title */
+#mentor-intern-modal-title { color: var(--fg) !important; }
+
+/* Reveal animation — once shown, keep visible on re-navigate */
+.section-container.block .reveal,
+.section-container.block.reveal {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+/* ── MODAL FLICKER FIX ── */
+.modal-backdrop {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+.modal-backdrop:not(.hidden) {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal-backdrop .modal-inner,
+.modal-backdrop > div > div {
+  transform: translateY(16px);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
+  opacity: 0;
+}
+.modal-backdrop:not(.hidden) .modal-inner,
+.modal-backdrop:not(.hidden) > div > div {
+  transform: translateY(0);
+  opacity: 1;
+}

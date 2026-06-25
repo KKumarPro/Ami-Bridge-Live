@@ -18,6 +18,15 @@ const getQuestions = async (req, res, next) => {
   }
 };
 
+const createQuestion = async (req, res, next) => {
+  try {
+    const question = await companyService.createQuestion(req.body);
+    return R.created(res, question);
+  } catch (err) {
+    next(err);
+  }
+};
+
 // ── Attempts ──────────────────────────────────────────────────────────────────
 const saveAttempt = async (req, res, next) => {
   try {
@@ -247,6 +256,8 @@ const bulkRegister = async (req, res, next) => {
 module.exports = {
   getQuestions,
   saveAttempt,
+  getQuestions,
+  createQuestion,
   getAttempts,
   getFeedback,
   saveFeedback,

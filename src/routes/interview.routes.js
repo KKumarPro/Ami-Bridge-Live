@@ -5,6 +5,7 @@ const ctrl = require("../controllers/interview.controller");
 
 // Questions
 router.get("/questions/:companyId", ctrl.getQuestions);
+router.post("/questions", ctrl.createQuestion);
 
 // Student attempts
 router.post("/attempts", ctrl.saveAttempt);

@@ -1499,3 +1499,129 @@ textarea:focus {
     0 2px 8px rgba(0, 0, 0, 0.25);
   border-radius: 50%;
 }
+
+/* ── THEME-AWARE TAILWIND OVERRIDE (prevents white-flash in dark mode) ── */
+
+/* Text color overrides */
+.text-slate-900, .text-slate-800 { color: var(--fg) !important; }
+.text-slate-700, .text-slate-600 { color: var(--fg-soft) !important; }
+.text-slate-500, .text-slate-400, .text-slate-300 { color: var(--fg-mute) !important; }
+
+/* Background overrides */
+.bg-white { background: var(--surface-solid) !important; }
+.bg-slate-50 { background: var(--surface) !important; }
+.bg-slate-100 { background: var(--surface-2) !important; }
+.bg-slate-200 { background: var(--surface-2) !important; }
+.bg-green-100 { background: rgba(16,185,129,0.15) !important; }
+.bg-red-50   { background: rgba(244,63,94,0.1)   !important; }
+.bg-blue-50  { background: rgba(37,99,235,0.1)   !important; }
+.bg-purple-50, .bg-purple-100 { background: rgba(168,85,247,0.1) !important; }
+.bg-amber-50  { background: rgba(245,158,11,0.1) !important; }
+.bg-indigo-100{ background: rgba(99,102,241,0.12) !important; }
+.bg-yellow-100{ background: rgba(234,179,8,0.12) !important; }
+
+/* Border overrides */
+.border-slate-100, .border-slate-200, .border-slate-300 { border-color: var(--border) !important; }
+.divide-slate-100 > * + * { border-color: var(--border) !important; }
+.border-white { border-color: var(--surface-solid) !important; }
+
+/* Hover — the key fix for white-flash */
+.hover\:bg-slate-50:hover  { background: var(--surface)   !important; }
+.hover\:bg-slate-100:hover { background: var(--surface-2) !important; }
+.hover\:bg-slate-200:hover { background: var(--surface-2) !important; }
+.hover\:bg-white:hover     { background: var(--surface-solid) !important; }
+.hover\:bg-blue-50:hover   { background: rgba(37,99,235,0.12)  !important; }
+.hover\:bg-blue-400:hover, .hover\:bg-blue-500:hover, .hover\:bg-blue-600:hover {
+  background: var(--c-blue-2) !important;
+}
+.hover\:bg-red-500:hover   { background: var(--c-rose)        !important; }
+.hover\:bg-purple-600:hover, .hover\:bg-purple-700:hover {
+  background: var(--c-violet-2) !important;
+}
+.hover\:bg-amber-500:hover { background: var(--c-amber)       !important; }
+.hover\:text-white:hover   { color: #fff !important; }
+.hover\:text-slate-600:hover { color: var(--fg-soft) !important; }
+.hover\:border-blue-400:hover { border-color: var(--c-blue-1) !important; }
+
+/* Primary color vars (used inline as bg-primary / text-primary) */
+:root { --color-primary: var(--c-blue-2); --color-primaryHover: #1d4ed8; }
+.bg-primary        { background: var(--c-blue-2) !important; }
+.hover\:bg-primary:hover  { background: var(--c-blue-2) !important; }
+.hover\:bg-primaryHover:hover { background: #1d4ed8 !important; }
+.text-primary      { color: var(--c-blue-1) !important; }
+.focus\:ring-primary:focus { box-shadow: 0 0 0 3px var(--ring) !important; }
+
+/* Table rows */
+.hover\:bg-slate-50:hover  { background: var(--surface-2) !important; }
+tr.hover\:bg-slate-50:hover td { background: transparent !important; }
+
+/* Rounded card wrappers that use bg-white */
+.bg-white.rounded-2xl,
+.bg-white.rounded-xl,
+.bg-white.rounded-lg { background: var(--surface) !important; }
+
+/* Upload drop zone */
+.border-dashed.border-slate-300 { border-color: var(--border-strong) !important; }
+.hover\:border-blue-400:hover { border-color: var(--c-blue-1) !important; }
+
+/* Internship filter inputs */
+#intern-stats-bar {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+  color: var(--fg-soft) !important;
+}
+
+/* Score result boxes */
+.bg-slate-50.p-6 {
+  background: var(--surface-2) !important;
+  border-color: var(--border) !important;
+}
+
+/* profile avatar border */
+.border-white.rounded-full { border-color: var(--surface-solid) !important; }
+
+/* notification/activity item hover — override inline style via a helper class */
+.notif-item-hover:hover { background: var(--surface-2) !important; }
+
+/* Attempt history table header */
+.bg-slate-50.text-slate-500 { 
+  background: var(--surface-2) !important; 
+  color: var(--fg-mute) !important; 
+}
+
+/* Section containers: always full width inside dash-content */
+.section-container {
+  width: 100%;
+}
+
+/* Reveal: once an element is shown, make sure it stays visible */
+.section-container.block .reveal,
+.section-container.block.reveal {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+/* ── FULL-WIDTH LAYOUT: Remove Tailwind max-width restrictions ── */
+.max-w-6xl, .max-w-5xl, .max-w-4xl, .max-w-3xl, .max-w-2xl {
+  max-width: 100% !important;
+}
+.mx-auto {
+  /* Keep horizontal centering but allow full width */
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* dash-content padding and width */
+.dash-content {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Ensure section containers fill full width */
+.section-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  box-sizing: border-box;
+}

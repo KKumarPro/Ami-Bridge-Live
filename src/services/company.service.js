@@ -19,4 +19,13 @@ const getQuestions = async (companyId) => {
   return result.rows;
 };
 
-module.exports = { getAllCompanies, createCompany, getQuestions };
+const createQuestion = async (data) => {
+  const { company_id, question_text, options, correct_index } = data;
+  if (!company_id || !question_text || !Array.isArray(options) || options.length < 2) {
+    throw new Error("company_id, question_text, and at least 2 options are required.");
+  }
+  const result = await InterviewModel.createQuestion(company_id, question_text, options, correct_index ?? 0);
+  return result.rows[0];
+};
+
+module.exports = { getAllCompanies, createCompany, getQuestions, createQuestion };
