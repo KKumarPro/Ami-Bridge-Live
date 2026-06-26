@@ -20,11 +20,19 @@ const getQuestions = async (companyId) => {
 };
 
 const createQuestion = async (data) => {
-  const { company_id, question_text, options, correct_index } = data;
-  if (!company_id || !question_text || !Array.isArray(options) || options.length < 2) {
-    throw new Error("company_id, question_text, and at least 2 options are required.");
+  const { company_id, question_text, option_a, option_b, option_c, option_d, correct_answer } = data;
+  if (!company_id || !question_text || !option_a || !option_b) {
+    throw new Error("company_id, question_text, option_a, and option_b are required.");
   }
-  const result = await InterviewModel.createQuestion(company_id, question_text, options, correct_index ?? 0);
+  const result = await InterviewModel.createQuestion(
+    company_id,
+    question_text,
+    option_a,
+    option_b,
+    option_c ?? null,
+    option_d ?? null,
+    correct_answer ?? 0,
+  );
   return result.rows[0];
 };
 

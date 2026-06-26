@@ -301,13 +301,14 @@
             >
               <div class="flex items-center gap-3 w-full sm:w-auto">
                 <div class="relative flex-1 sm:w-64">
-                  <i class="fas fa-search absolute left-3 top-3 text-slate-400"></i>
+                  <i class="fas fa-search absolute left-3 top-3" style="color:var(--fg-mute);"></i>
                   <input
                     type="text"
                     id="q-user-search"
                     placeholder="Search users..."
                     oninput="renderUsers()"
-                    class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                    class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none transition"
+                    style="background:var(--surface);border-color:var(--border);color:var(--fg);"
                   />
                 </div>
                 <!-- Role filter dropdown -->
@@ -315,27 +316,51 @@
                   <button
                     onclick="toggleFilterDropdown()"
                     id="filter-btn"
-                    class="flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-lg bg-white hover:bg-slate-50 focus:ring-2 focus:ring-primary outline-none text-slate-700 font-medium transition"
+                    class="flex items-center gap-2 px-4 py-2 border rounded-lg font-medium transition outline-none focus:ring-2 focus:ring-primary"
+                    style="background:var(--surface);border-color:var(--border);color:var(--fg);"
+                    onmouseover="this.style.background='var(--surface-2)'"
+                    onmouseout="this.style.background='var(--surface)'"
                   >
-                    <i class="fas fa-filter text-slate-400"></i>
+                    <i class="fas fa-filter" style="color:var(--fg-mute);"></i>
                     <span id="filter-btn-label">All Roles</span>
-                    <i class="fas fa-chevron-down text-slate-400 text-xs"></i>
+                    <i class="fas fa-chevron-down text-xs" style="color:var(--fg-mute);"></i>
                   </button>
                   <div
                     id="filter-dropdown"
-                    class="hidden absolute right-0 mt-2 w-44 bg-white border border-slate-200 rounded-xl shadow-lg z-50 overflow-hidden"
+                    class="hidden absolute right-0 mt-2 w-44 rounded-xl z-50 overflow-hidden"
+                    style="background:var(--surface-solid);border:1px solid var(--border-strong);box-shadow:var(--shadow-lg);"
                   >
-                    <button onclick="setRoleFilter('all')" id="filter-opt-all" class="w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 flex items-center gap-2 font-medium text-primary bg-primary/5">
-                      <i class="fas fa-users w-4 text-primary"></i> All Roles
+                    <button onclick="setRoleFilter('all')" id="filter-opt-all"
+                      class="w-full text-left px-4 py-2.5 text-sm flex items-center gap-2 font-medium transition"
+                      style="color:var(--c-violet-1);background:rgba(124,58,237,0.1);"
+                      onmouseover="this.style.background='rgba(124,58,237,0.18)'"
+                      onmouseout="this.style.background='rgba(124,58,237,0.1)'"
+                    >
+                      <i class="fas fa-users w-4" style="color:var(--c-violet-1);"></i> All Roles
                     </button>
-                    <button onclick="setRoleFilter('student')" id="filter-opt-student" class="w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 flex items-center gap-2 text-slate-700">
-                      <i class="fas fa-user-graduate w-4 text-blue-500"></i> Students
+                    <button onclick="setRoleFilter('student')" id="filter-opt-student"
+                      class="w-full text-left px-4 py-2.5 text-sm flex items-center gap-2 transition"
+                      style="color:var(--fg-soft);background:transparent;"
+                      onmouseover="this.style.background='var(--surface-2)'"
+                      onmouseout="this.style.background='transparent'"
+                    >
+                      <i class="fas fa-user-graduate w-4" style="color:#3b82f6;"></i> Students
                     </button>
-                    <button onclick="setRoleFilter('mentor')" id="filter-opt-mentor" class="w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 flex items-center gap-2 text-slate-700">
-                      <i class="fas fa-chalkboard-teacher w-4 text-purple-500"></i> Mentors
+                    <button onclick="setRoleFilter('mentor')" id="filter-opt-mentor"
+                      class="w-full text-left px-4 py-2.5 text-sm flex items-center gap-2 transition"
+                      style="color:var(--fg-soft);background:transparent;"
+                      onmouseover="this.style.background='var(--surface-2)'"
+                      onmouseout="this.style.background='transparent'"
+                    >
+                      <i class="fas fa-chalkboard-teacher w-4" style="color:#a855f7;"></i> Mentors
                     </button>
-                    <button onclick="setRoleFilter('admin')" id="filter-opt-admin" class="w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 flex items-center gap-2 text-slate-700">
-                      <i class="fas fa-shield-alt w-4 text-red-500"></i> Admins
+                    <button onclick="setRoleFilter('admin')" id="filter-opt-admin"
+                      class="w-full text-left px-4 py-2.5 text-sm flex items-center gap-2 transition"
+                      style="color:var(--fg-soft);background:transparent;"
+                      onmouseover="this.style.background='var(--surface-2)'"
+                      onmouseout="this.style.background='transparent'"
+                    >
+                      <i class="fas fa-shield-alt w-4" style="color:#ef4444;"></i> Admins
                     </button>
                   </div>
                 </div>
@@ -404,19 +429,20 @@
           class="section-container hidden fade-in max-w-7xl mx-auto reveal"
         >
           <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+            class="rounded-xl overflow-hidden"
+            style="background:var(--surface);border:1px solid var(--border);"
           >
             <div
-              class="p-6 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50"
+              class="p-6 border-b flex flex-col sm:flex-row justify-between items-center gap-4"
+              style="border-color:var(--border);background:var(--surface-2);"
             >
               <div class="flex items-center gap-3 w-full sm:w-auto">
-                <label class="font-semibold text-slate-700"
-                  >Target Company:</label
-                >
+                <label class="font-semibold" style="color:var(--fg-soft);">Target Company:</label>
                 <select
                   id="q-company-filter"
                   onchange="renderQuestions()"
-                  class="border border-slate-300 rounded-lg py-2 px-4 focus:ring-2 focus:ring-primary outline-none bg-white min-w-[200px]"
+                  class="border rounded-lg py-2 px-4 focus:ring-2 focus:ring-primary outline-none min-w-[200px] transition"
+                  style="background:var(--surface);border-color:var(--border);color:var(--fg);"
                 >
                   <!-- Populated by JS -->
                 </select>
@@ -546,16 +572,19 @@
           </div>
 
           <!-- Filter + Stats bar -->
-          <div class="bg-white border border-slate-200 rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+          <div class="border rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+               style="background:var(--surface);border-color:var(--border);">
             <div class="flex items-center gap-3">
               <div class="relative">
-                <i class="fas fa-search absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                <i class="fas fa-search absolute left-3 top-2.5 text-xs" style="color:var(--fg-mute);"></i>
                 <input type="text" id="admin-intern-search" placeholder="Search role, company, location..."
                   oninput="renderAdminInternships()"
-                  class="border border-slate-200 rounded-xl py-2 pl-8 pr-3 text-sm focus:ring-2 focus:ring-primary outline-none w-56"/>
+                  class="border rounded-xl py-2 pl-8 pr-3 text-sm focus:ring-2 focus:ring-primary outline-none w-56 transition"
+                  style="background:var(--surface-2);border-color:var(--border);color:var(--fg);"/>
               </div>
               <select id="admin-intern-filter" onchange="renderAdminInternships()"
-                class="border border-slate-200 rounded-xl py-2 px-3 text-sm focus:ring-2 focus:ring-primary outline-none">
+                class="border rounded-xl py-2 px-3 text-sm focus:ring-2 focus:ring-primary outline-none transition"
+                style="background:var(--surface-2);border-color:var(--border);color:var(--fg);">
                 <option value="all">All Types</option>
                 <option value="paid">Paid</option>
                 <option value="unpaid">Unpaid</option>
@@ -571,7 +600,7 @@
           </div>
 
           <!-- Internship list -->
-          <div id="admin-internship-list" class="space-y-3">
+          <div id="admin-internship-list" class="intern-grid">
             <div class="text-center py-10 text-slate-400">
               <i class="fas fa-spinner fa-spin text-2xl block mb-2 text-slate-300"></i>
               <p class="text-sm">Loading internships...</p>
@@ -1177,11 +1206,18 @@
           const el = document.getElementById("filter-opt-" + r);
           if (!el) return;
           if (r === role) {
-            el.classList.add("bg-primary/5", "font-medium", "text-primary");
-            el.classList.remove("text-slate-700");
+            el.style.background = "rgba(124,58,237,0.1)";
+            el.style.color = "var(--c-violet-1)";
+            el.style.fontWeight = "600";
+            // Update mouseout to keep active bg
+            el.onmouseout = () => { el.style.background = "rgba(124,58,237,0.1)"; };
+            el.onmouseover = () => { el.style.background = "rgba(124,58,237,0.18)"; };
           } else {
-            el.classList.remove("bg-primary/5", "font-medium", "text-primary");
-            el.classList.add("text-slate-700");
+            el.style.background = "transparent";
+            el.style.color = "var(--fg-soft)";
+            el.style.fontWeight = "";
+            el.onmouseover = () => { el.style.background = "var(--surface-2)"; };
+            el.onmouseout = () => { el.style.background = "transparent"; };
           }
         });
         document.getElementById("filter-dropdown").classList.add("hidden");
@@ -1555,14 +1591,14 @@
 
       // Populate company dropdown and open the question modal
       function openQuestionModal() {
+        // The company dropdown is already populated by the question bank loader.
+        // Just sync the pre-selected value to match the active filter.
         const sel = document.getElementById("modal-q-company");
-        sel.innerHTML = state.companies && state.companies.length
-          ? state.companies.map(c => `<option value="${c.company_id}">${c.name}</option>`).join("")
-          : '<option value="">— No companies yet —</option>';
-        // Pre-select whatever is showing in the question bank filter
-        const activeFilter = document.getElementById("qbank-company-filter");
-        if (activeFilter && activeFilter.value) sel.value = activeFilter.value;
-        // Clear previous input
+        const activeFilter = document.getElementById("q-company-filter");
+        if (activeFilter && activeFilter.value && sel.options.length > 0) {
+          sel.value = activeFilter.value;
+        }
+        // Clear all input fields from any previous use
         ["modal-q-text","modal-q-opt-a","modal-q-opt-b","modal-q-opt-c","modal-q-opt-d"].forEach(id => {
           const el = document.getElementById(id);
           if (el) el.value = "";
@@ -1579,18 +1615,21 @@
         const optB = document.getElementById("modal-q-opt-b").value.trim();
         const optC = document.getElementById("modal-q-opt-c").value.trim();
         const optD = document.getElementById("modal-q-opt-d").value.trim();
-        const correctIndex = parseInt(document.getElementById("modal-q-answer").value, 10);
+        const correctAnswer = parseInt(document.getElementById("modal-q-answer").value, 10);
 
         if (!companyId) { showToast("Please select a company.", "error"); return; }
         if (!questionText) { showToast("Question text is required.", "error"); return; }
         if (!optA || !optB) { showToast("At least options A and B are required.", "error"); return; }
 
-        const options = [optA, optB, optC, optD].filter(Boolean);
+        // Use the real DB column names: option_a/b/c/d + correct_answer
         const payload = {
           company_id: Number(companyId),
           question_text: questionText,
-          options,
-          correct_index: correctIndex,
+          option_a: optA,
+          option_b: optB,
+          option_c: optC || null,
+          option_d: optD || null,
+          correct_answer: correctAnswer,
         };
 
         const btn = document.getElementById("q-submit-btn");
@@ -1610,16 +1649,17 @@
           }
 
           const saved = await res.json();
-          // Add to local state so it appears immediately without a reload
+          // Add to local state so it appears immediately without a full reload
           if (!state.questions) state.questions = {};
           if (!state.questions[companyId]) state.questions[companyId] = [];
           state.questions[companyId].unshift(saved);
 
           closeModal("question-modal");
           showToast("Question added to the bank!", "success");
-          addNotification("New question added for " + (state.companies?.find(c=>c.company_id==companyId)?.name || "company"), "success", "Question Bank Updated");
-          // Refresh question list if currently viewing that company
-          if (typeof loadQuestions === "function") loadQuestions(companyId);
+          const cName = state.companies?.find(c => c.company_id == companyId)?.company_name || "company";
+          addNotification("New question added for " + cName, "success", "Question Bank Updated");
+          // Re-render question list for the current company
+          if (typeof renderQuestions === "function") renderQuestions();
         } catch (err) {
           showToast("Failed to save: " + err.message, "error");
         } finally {
@@ -2207,55 +2247,52 @@
         }
 
         if (filtered.length === 0) {
-          list.innerHTML = `<div class="text-center py-14 bg-white rounded-2xl border border-dashed border-slate-300">
-            <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <i class="fas fa-briefcase text-3xl text-slate-300"></i></div>
-            <p class="font-semibold text-slate-600">No internships yet</p>
-            <p class="text-fg-mute text-sm mt-1">Click "Add Internship" to post the first listing.</p></div>`;
+          list.innerHTML = `<div class="intern-empty-state">
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style="background:var(--surface-2);">
+              <i class="fas fa-briefcase text-3xl" style="color:var(--fg-mute);opacity:0.5;"></i></div>
+            <p class="font-semibold" style="color:var(--fg-soft);">No internships yet</p>
+            <p style="color:var(--fg-mute);font-size:13px;margin-top:4px;">Click "Add Internship" to post the first listing.</p></div>`;
           return;
         }
 
         list.innerHTML = filtered.map(i => {
           const isPaid    = i.type === "paid";
-          const badgeCls  = isPaid ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700";
+          const badgeCls  = isPaid ? "intern-badge-paid" : "intern-badge-unpaid";
           const badgeTxt  = isPaid ? "Paid" : "Unpaid";
-          const activeCls = i.is_active ? "bg-blue-50 text-blue-600" : "bg-slate-100 text-slate-400";
+          const activeCls = i.is_active ? "intern-badge-active" : "intern-badge-inactive";
           const activeTxt = i.is_active ? "Active" : "Inactive";
           const stipendHtml = i.stipend
-            ? `<span class="flex items-center gap-1.5"><i class="fas fa-indian-rupee-sign text-green-500"></i>${i.stipend}</span>`
+            ? `<span class="intern-meta-item"><i class="fas fa-indian-rupee-sign" style="color:#22c55e;"></i>${i.stipend}</span>`
             : "";
 
           return `
-          <div class="panel-card">
-            <!-- Icon -->
-            <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-              <i class="fas fa-building text-primary text-lg"></i>
-            </div>
-            <!-- Body -->
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center flex-wrap gap-2 mb-1">
-                <h3 class="font-bold text-slate-800 text-base">${i.role}</h3>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeCls}">${badgeTxt}</span>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${activeCls}">${activeTxt}</span>
+          <div class="intern-grid-card">
+            <div class="intern-grid-card__header">
+              <div class="intern-grid-card__icon">
+                <i class="fas fa-building"></i>
               </div>
-              <p class="text-sm font-semibold text-primary mb-2">${i.company_name}</p>
-              <div class="flex flex-wrap gap-4 text-xs text-slate-500 mb-2">
-                <span class="flex items-center gap-1.5"><i class="fas fa-map-marker-alt text-slate-400"></i>${i.location}</span>
-                <span class="flex items-center gap-1.5"><i class="fas fa-clock text-slate-400"></i>${i.duration}</span>
+              <div class="intern-grid-card__badges">
+                <span class="intern-badge ${badgeCls}">${badgeTxt}</span>
+                <span class="intern-badge ${activeCls}">${activeTxt}</span>
+              </div>
+            </div>
+            <div class="intern-grid-card__body">
+              <h3 class="intern-grid-card__role">${i.role}</h3>
+              <p class="intern-grid-card__company">${i.company_name}</p>
+              <div class="intern-grid-card__meta">
+                <span class="intern-meta-item"><i class="fas fa-map-marker-alt"></i>${i.location}</span>
+                <span class="intern-meta-item"><i class="fas fa-clock"></i>${i.duration}</span>
                 ${stipendHtml}
-                <span class="flex items-center gap-1.5"><i class="fas fa-envelope text-slate-400"></i>${i.apply_contact}</span>
+                <span class="intern-meta-item"><i class="fas fa-envelope"></i>${i.apply_contact}</span>
               </div>
-              <p class="text-sm text-slate-600 line-clamp-2">${i.description}</p>
-              ${i.requirements ? `<p class="text-xs text-slate-400 mt-1.5 line-clamp-1"><span class="font-semibold">Req:</span> ${i.requirements}</p>` : ""}
+              <p class="intern-grid-card__desc">${i.description}</p>
+              ${i.requirements ? `<p class="intern-grid-card__req"><span>Req:</span> ${i.requirements}</p>` : ""}
             </div>
-            <!-- Actions -->
-            <div class="flex gap-2 shrink-0">
-              <button onclick="editInternship(${i.internship_id})" title="Edit"
-                class="intern-action-btn edit">
+            <div class="intern-grid-card__footer">
+              <button onclick="editInternship(${i.internship_id})" title="Edit" class="intern-action-btn edit">
                 <i class="fas fa-edit text-sm"></i>
               </button>
-              <button onclick="deleteInternship(${i.internship_id})" title="Delete"
-                class="intern-action-btn delete">
+              <button onclick="deleteInternship(${i.internship_id})" title="Delete" class="intern-action-btn delete">
                 <i class="fas fa-trash-alt text-sm"></i>
               </button>
             </div>
