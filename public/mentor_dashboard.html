@@ -189,7 +189,7 @@
         >
           <div class="mb-6 flex justify-between items-end">
             <div>
-              <h2 class="text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;">Your Mentees</h2>
+              <h2 style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;">Your Mentees</h2>
               <p class="text-fg-mute mt-1">
                 Students currently assigned to you for guidance.
               </p>
@@ -353,7 +353,7 @@
             >
               <i class="fas fa-user-graduate"></i>
             </div>
-            <h3 class="text-xl font-bold text-slate-700" style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;">Select a Student</h3>
+            <h3 style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-xl font-bold text-slate-700">Select a Student</h3>
             <p class="text-fg-mute mt-2">
               Choose a student from the dropdown above to view their performance
               analytics.
@@ -781,7 +781,7 @@
         ocrSection.innerHTML = `
         <div class="mb-6 flex items-center justify-between">
           <div>
-            <h2 class="text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;">Ami-Bridge AI Resume OCR</h2>
+            <h2 style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;">Ami-Bridge AI Resume OCR</h2>
             <p class="text-fg-mute mt-1">Extract structured data from all your students' resumes using Ami-Bridge AI.</p>
           </div>
           <button onclick="loadOCRData()" id="ocr-run-btn"
@@ -805,7 +805,7 @@
           "section-container hidden fade-in max-w-3xl mx-auto";
         bulkSection.innerHTML = `
         <div class="mb-6">
-          <h2 class="text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;">Bulk Register Students</h2>
+          <h2 style="font-family:'Outfit',sans-serif;letter-spacing:-0.3px;" text-2xl font-bold text-slate-800" style="font-family:'Sora',sans-serif;letter-spacing:-0.3px;">Bulk Register Students</h2>
           <p class="text-fg-mute mt-1">Upload a CSV file to register multiple students at once.</p>
         </div>
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-5">
@@ -1564,13 +1564,64 @@
       }
 
       function logout() {
+        const overlay = document.createElement("div");
+        overlay.id = "logout-confirm-overlay";
+        overlay.style.cssText = `
+          position:fixed;inset:0;z-index:99999;
+          display:flex;align-items:center;justify-content:center;
+          background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);
+          animation:fadeInOverlay 0.18s ease;
+        `;
+        overlay.innerHTML = `
+          <div style="
+            background:var(--surface);border:1px solid var(--border-strong);
+            border-radius:20px;padding:32px 28px;width:320px;max-width:90vw;
+            box-shadow:0 24px 60px rgba(0,0,0,0.4);
+            animation:slideUpModal 0.22s cubic-bezier(0.16,1,0.3,1);
+            text-align:center;
+          ">
+            <div style="
+              width:52px;height:52px;border-radius:14px;margin:0 auto 16px;
+              background:rgba(239,68,68,0.12);display:flex;align-items:center;justify-content:center;
+            ">
+              <i class="fas fa-sign-out-alt" style="font-size:22px;color:#f87171;"></i>
+            </div>
+            <h3 style="font-family:var(--font-display,'Space Grotesk'),sans-serif;font-size:17px;font-weight:700;color:var(--fg);margin:0 0 8px;">Log out?</h3>
+            <p style="font-size:13px;color:var(--fg-mute);margin:0 0 24px;line-height:1.5;">You'll be returned to the login screen. Any unsaved progress will remain intact.</p>
+            <div style="display:flex;gap:10px;">
+              <button onclick="document.getElementById('logout-confirm-overlay').remove()"
+                style="flex:1;padding:10px;border-radius:10px;border:1px solid var(--border-strong);background:var(--surface-2);color:var(--fg);font-size:14px;font-weight:600;cursor:pointer;transition:background 0.15s;"
+                onmouseover="this.style.background='var(--surface-3,var(--surface-2))'"
+                onmouseout="this.style.background='var(--surface-2)'">
+                Cancel
+              </button>
+              <button onclick="confirmLogout()"
+                style="flex:1;padding:10px;border-radius:10px;border:none;background:#ef4444;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.15s;"
+                onmouseover="this.style.background='#dc2626'"
+                onmouseout="this.style.background='#ef4444'">
+                Log Out
+              </button>
+            </div>
+          </div>
+          <style>
+            @keyframes fadeInOverlay { from{opacity:0} to{opacity:1} }
+            @keyframes slideUpModal  { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+          </style>
+        `;
+        overlay.addEventListener("click", (e) => {
+          if (e.target === overlay) overlay.remove();
+        });
+        document.body.appendChild(overlay);
+      }
+
+      function confirmLogout() {
+        const overlay = document.getElementById("logout-confirm-overlay");
+        if (overlay) overlay.remove();
         showToast("Logging out...", "info");
         localStorage.removeItem("ami_user");
         setTimeout(() => {
           document.body.innerHTML = `<div style="height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg,#020817);"><p style="font-family:var(--font-display,'Space Grotesk'),sans-serif;font-size:18px;font-weight:600;color:var(--fg-mute,#707895);">Redirecting to login…</p></div>`;
-          setTimeout(() => {
-            window.location.href = "index.html";
-          }, 500);
+          setTimeout(() => { window.location.href = "index.html"; }, 500);
         }, 1000);
       }
 
