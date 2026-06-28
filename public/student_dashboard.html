@@ -2791,30 +2791,27 @@
       })();
 
       </script>
-  <!-- MOBILE JS INJECTED -->
+  
     <script>
-      // Runs after all other scripts
-      document.addEventListener("DOMContentLoaded", function() {
-      // ── MOBILE HAMBURGER + DRAWER ──────────────────────────────────────
-      (function () {
-        if (window.innerWidth > 768) return; // desktop: do nothing
+      /* ── MOBILE HAMBURGER DRAWER — runs after everything else ─── */
+      document.addEventListener("DOMContentLoaded", function () {
+        // Only activate on mobile
+        function isMobile() { return window.innerWidth <= 768; }
 
-        const sidebar  = document.querySelector(".dash-side");
-        const topbar   = document.querySelector(".dash-topbar");
+        const sidebar = document.querySelector(".dash-side");
+        const topbar  = document.querySelector(".dash-topbar");
         if (!sidebar || !topbar) return;
 
-        // Create overlay
+        /* Create overlay */
         const overlay = document.createElement("div");
         overlay.className = "mob-overlay";
         document.body.appendChild(overlay);
 
-        // Create hamburger button
+        /* Create hamburger */
         const ham = document.createElement("button");
         ham.className = "mob-hamburger";
         ham.setAttribute("aria-label", "Open menu");
         ham.innerHTML = '<i class="fas fa-bars"></i>';
-
-        // Insert as first child of topbar
         topbar.insertBefore(ham, topbar.firstChild);
 
         function openDrawer() {
@@ -2831,31 +2828,29 @@
           document.body.style.overflow = "";
         }
 
-        ham.addEventListener("click", () => {
+        ham.addEventListener("click", function (e) {
+          e.stopPropagation();
           sidebar.classList.contains("mob-open") ? closeDrawer() : openDrawer();
         });
 
-        // Close when tapping overlay
         overlay.addEventListener("click", closeDrawer);
 
-        // Close drawer when a nav item is clicked (auto-navigate)
-        sidebar.querySelectorAll("nav button, .signout-btn").forEach(btn => {
-          btn.addEventListener("click", () => {
-            setTimeout(closeDrawer, 120); // slight delay so navigation runs first
+        /* Close drawer when any nav button is tapped */
+        sidebar.querySelectorAll("nav button, .signout-btn").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            if (isMobile()) setTimeout(closeDrawer, 150);
           });
         });
 
-        // Re-evaluate on resize (user rotates device)
-        window.addEventListener("resize", () => {
-          if (window.innerWidth > 768) {
-            closeDrawer();
+        /* On resize back to desktop, reset everything */
+        window.addEventListener("resize", function () {
+          if (!isMobile()) {
+            sidebar.classList.remove("mob-open");
+            overlay.classList.remove("active");
             sidebar.style.transform = "";
             document.body.style.overflow = "";
           }
         });
-      })();
-      // ── END MOBILE HAMBURGER ───────────────────────────────────────────
-
       });
     </script>
   </body>

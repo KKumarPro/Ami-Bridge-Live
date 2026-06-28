@@ -1153,5 +1153,73 @@
         });
       }
     </script>
+  
+    <script>
+      /* ── LANDING PAGE MOBILE NAV DRAWER ──────────────────────────── */
+      (function () {
+        if (window.innerWidth > 768) return;
+
+        var nav = document.querySelector(".nav");
+        if (!nav) return;
+
+        /* Create drawer */
+        var drawer = document.createElement("div");
+        drawer.className = "mob-nav-drawer";
+        drawer.innerHTML = [
+          '<div class="mob-nav-drawer__head">',
+            '<div class="mob-nav-drawer__brand">',
+              '<div class="nav-mark">A</div>',
+              '<span>Ami-Bridge</span>',
+            '</div>',
+            '<button class="mob-nav-drawer__close" id="mob-nav-close" aria-label="Close menu">',
+              '<i class="fas fa-times"></i>',
+            '</button>',
+          '</div>',
+          '<div class="mob-nav-drawer__links">',
+            '<a href="#features" onclick="closeMobNav()"><i class="fas fa-robot"></i> Features</a>',
+            '<a href="#numbers"  onclick="closeMobNav()"><i class="fas fa-chart-line"></i> Impact</a>',
+            '<a href="#roles"    onclick="closeMobNav()"><i class="fas fa-users"></i> Roles</a>',
+            '<a href="#how"      onclick="closeMobNav()"><i class="fas fa-map-signs"></i> How it works</a>',
+          '</div>',
+          '<div class="mob-nav-drawer__actions">',
+            '<button type="button" class="btn btn-ghost" onclick="closeMobNav(); openAuth(\'login\')">Sign in</button>',
+            '<button type="button" class="btn btn-primary" onclick="closeMobNav(); openAuth(\'signup\')">Get started</button>',
+          '</div>',
+        ].join("");
+        document.body.appendChild(drawer);
+
+        /* Overlay */
+        var ov = document.createElement("div");
+        ov.style.cssText = "display:none;position:fixed;inset:0;z-index:199;background:rgba(0,0,0,0.5);backdrop-filter:blur(3px);";
+        document.body.appendChild(ov);
+        ov.addEventListener("click", closeMobNav);
+
+        /* Hamburger */
+        var ham = document.createElement("button");
+        ham.className = "nav-hamburger";
+        ham.setAttribute("aria-label", "Open menu");
+        ham.innerHTML = '<i class="fas fa-bars"></i>';
+        nav.appendChild(ham);
+
+        ham.addEventListener("click", function () {
+          drawer.classList.add("mob-open");
+          ov.style.display = "block";
+          document.body.style.overflow = "hidden";
+        });
+
+        document.getElementById("mob-nav-close").addEventListener("click", closeMobNav);
+
+        window.closeMobNav = function () {
+          drawer.classList.remove("mob-open");
+          ov.style.display = "none";
+          document.body.style.overflow = "";
+        };
+
+        window.addEventListener("resize", function () {
+          if (window.innerWidth > 768) closeMobNav();
+        });
+      })();
+    </script>
   </body>
+
 </html>

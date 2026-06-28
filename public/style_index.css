@@ -1899,3 +1899,301 @@
         background: rgba(110, 140, 255, 0.3);
         border-radius: 99px;
       }
+
+/* ================================================================
+   INDEX / LANDING PAGE — MOBILE RESPONSIVE LAYER
+   All rules inside @media (max-width: 768px).
+   Desktop (>768px) completely unaffected.
+   ================================================================ */
+
+/* ── Hamburger button (hidden on desktop) ───────────────────────── */
+.nav-hamburger {
+  display: none;
+}
+
+@media (max-width: 768px) {
+
+  /* ── 1. NAV: hide links + actions, show hamburger ─────────────── */
+  .nav {
+    padding: 0 16px !important;
+    height: 56px !important;
+  }
+  .nav-links {
+    display: none !important;
+  }
+  .nav-actions {
+    display: none !important;
+  }
+  .nav-hamburger {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-2);
+    color: var(--fg);
+    cursor: pointer;
+    font-size: 16px;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .nav-hamburger:hover {
+    background: var(--surface);
+  }
+
+  /* ── 2. MOBILE NAV DRAWER ──────────────────────────────────────── */
+  .mob-nav-drawer {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.16,1,0.3,1);
+    overflow-y: auto;
+    padding: 0;
+  }
+  .mob-nav-drawer.mob-open {
+    transform: translateX(0);
+  }
+  .mob-nav-drawer__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    height: 56px;
+  }
+  .mob-nav-drawer__brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--fg);
+  }
+  .mob-nav-drawer__close {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-2);
+    color: var(--fg);
+    cursor: pointer;
+    font-size: 15px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mob-nav-drawer__links {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 12px;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .mob-nav-drawer__links a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 14px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--fg-soft);
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+  }
+  .mob-nav-drawer__links a i {
+    width: 18px;
+    text-align: center;
+    color: var(--fg-mute);
+    font-size: 14px;
+  }
+  .mob-nav-drawer__links a:hover,
+  .mob-nav-drawer__links a:active {
+    background: var(--surface-2);
+    color: var(--fg);
+  }
+  .mob-nav-drawer__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px 14px;
+  }
+  .mob-nav-drawer__actions .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 13px 0;
+    font-size: 15px;
+  }
+
+  /* ── 3. HERO ─────────────────────────────────────────────────── */
+  .hero {
+    padding-top: 80px !important;
+    padding-bottom: 48px !important;
+    flex-direction: column !important;
+    gap: 36px !important;
+    text-align: center;
+  }
+  .hero-title {
+    font-size: clamp(36px, 10vw, 52px) !important;
+    line-height: 1.1 !important;
+  }
+  .hero-sub {
+    font-size: 15px !important;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 88%;
+  }
+  .hero-cta {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+  .hero-cta .btn {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+  .hero-stats {
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 16px !important;
+  }
+  /* Hero visual: hide orbit, shrink window */
+  .orbit { display: none !important; }
+  .hero-visual {
+    width: 100% !important;
+    max-width: 340px !important;
+    margin: 0 auto !important;
+  }
+  .window {
+    width: 100% !important;
+    max-width: 340px !important;
+  }
+
+  /* ── 4. SECTIONS ─────────────────────────────────────────────── */
+  .section {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  .section-head {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .section-title {
+    font-size: clamp(22px, 6vw, 32px) !important;
+  }
+
+  /* ── 5. NUMBER GRID → 2 columns ─────────────────────────────── */
+  .num-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+  }
+  .num-card {
+    padding: 20px 14px !important;
+  }
+  .num-value {
+    font-size: clamp(32px, 8vw, 48px) !important;
+  }
+
+  /* ── 6. FEATURES GRID → 1 column ───────────────────────────── */
+  .feat-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .feat-card {
+    padding: 20px !important;
+  }
+
+  /* ── 7. ROLE CARDS → 1 column ──────────────────────────────── */
+  .role-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .role-card {
+    padding: 24px 18px !important;
+  }
+
+  /* ── 8. HOW IT WORKS LANES → 1 column ──────────────────────── */
+  .lanes {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+  .lane {
+    min-width: unset !important;
+    width: 100% !important;
+  }
+
+  /* ── 9. CTA SECTION ─────────────────────────────────────────── */
+  .cta-inner {
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: 20px !important;
+    padding: 28px 18px !important;
+  }
+  .cta-actions {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+  .cta-actions .btn {
+    width: 100%;
+    max-width: 260px;
+    justify-content: center;
+  }
+
+  /* ── 10. FOOTER ─────────────────────────────────────────────── */
+  .footer {
+    padding: 20px 16px !important;
+  }
+  .footer-grid {
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+  .footer-meta {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 8px 12px !important;
+  }
+
+  /* ── 11. AUTH MODAL → near fullscreen ──────────────────────── */
+  #auth-modal {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+  #auth-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 20px 20px 0 0 !important;
+    max-height: 92vh !important;
+    overflow-y: auto !important;
+    /* slide up from bottom on mobile */
+    transform: translateY(0) !important;
+  }
+  /* Adjust modal open/close transforms */
+  #auth-modal:not([hidden]) #auth-box {
+    transform: translateY(0) scale(1) !important;
+  }
+
+  /* ── 12. TRUST MARQUEE ──────────────────────────────────────── */
+  .trust-strip {
+    padding: 10px 0 !important;
+  }
+
+  /* ── 13. EYEBROW / KICKER ───────────────────────────────────── */
+  .eyebrow {
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+
+  /* ── 14. GENERAL SAFETY ─────────────────────────────────────── */
+  body { overflow-x: hidden; }
+  *, *::before, *::after { box-sizing: border-box; max-width: 100%; }
+  img { max-width: 100%; height: auto; }
+
+} /* end @media (max-width: 768px) */
