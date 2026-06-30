@@ -39,7 +39,16 @@ const login = async (email, password) => {
     // Non-fatal - don't fail login if streak update fails
   }
 
-  return { id: user.id, name: user.name, email: user.email, role: user.role };
+  return {
+    id:      user.id,
+    name:    user.name,
+    email:   user.email,
+    role:    user.role,
+    course:  user.course  || "",
+    college: user.college || "",
+    phone:   user.phone   || "",
+    city:    user.city    || "",
+  };
 };
 
 module.exports = { register, login };

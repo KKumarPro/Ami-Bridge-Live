@@ -108,6 +108,14 @@
           <i class="fas fa-file-csv w-5"></i>
           <span class="font-medium">Bulk Register</span>
         </button>
+        <button
+          onclick="navigate('profile')"
+          id="nav-profile"
+          class="nav-item"
+        >
+          <i class="fas fa-user w-5"></i>
+          <span class="font-medium">My Profile</span>
+        </button>
       </nav>
 
       <div class="sidebar-profile">
@@ -607,6 +615,80 @@
       </div>
     </div>
 
+        <!-- SECTION: MY PROFILE -->
+        <div id="sec-profile" class="section-container hidden fade-in reveal">
+          <div class="profile-card">
+            <div class="profile-body">
+              <div class="profile-top-row">
+                <div class="profile-avatar-wrap">
+                  <img id="profile-avatar" src="" alt="Avatar" class="profile-avatar-img" />
+                  <div class="profile-avatar-ring"></div>
+                </div>
+                <div class="profile-identity">
+                  <h2 id="profile-name-display" class="profile-identity__name">Loading...</h2>
+                  <div class="profile-identity__meta">
+                    <span class="profile-role-badge profile-role-badge--mentor">
+                      <i class="fas fa-chalkboard-teacher"></i> Mentor
+                    </span>
+                    <span id="profile-joined" class="profile-identity__joined">
+                      <i class="fas fa-calendar-alt"></i> Joined —
+                    </span>
+                  </div>
+                </div>
+                <button onclick="saveProfile()" id="profile-save-btn" class="profile-save-btn">
+                  <i class="fas fa-save"></i> Save Profile
+                </button>
+              </div>
+
+              <!-- Stats Strip -->
+              <div class="profile-stats-strip">
+                <div class="profile-stat">
+                  <div class="profile-stat__value" id="pstat-students">0</div>
+                  <div class="profile-stat__label">Assigned Students</div>
+                </div>
+                <div class="profile-stat">
+                  <div class="profile-stat__value" id="pstat-resumes-reviewed">0</div>
+                  <div class="profile-stat__label">Resumes Reviewed</div>
+                </div>
+                <div class="profile-stat">
+                  <div class="profile-stat__value" id="pstat-feedback">0</div>
+                  <div class="profile-stat__label">Feedbacks Given</div>
+                </div>
+              </div>
+
+              <div class="profile-section-title">
+                <i class="fas fa-id-card"></i> Personal Details
+              </div>
+              <form id="profile-form" class="profile-form" onsubmit="event.preventDefault();saveProfile();">
+                <div class="profile-field">
+                  <label class="profile-label"><i class="fas fa-user"></i> Full Name</label>
+                  <input type="text" id="prof-name" class="profile-input" placeholder="Your full name" />
+                </div>
+                <div class="profile-field">
+                  <label class="profile-label"><i class="fas fa-envelope"></i> Email Address</label>
+                  <input type="email" id="prof-email" class="profile-input profile-input--disabled" disabled />
+                </div>
+                <div class="profile-field">
+                  <label class="profile-label"><i class="fas fa-phone"></i> Phone Number</label>
+                  <input type="tel" id="prof-phone" class="profile-input" placeholder="e.g. +91 98765 43210" />
+                </div>
+                <div class="profile-field">
+                  <label class="profile-label"><i class="fas fa-briefcase"></i> Specialization</label>
+                  <input type="text" id="prof-course" class="profile-input" placeholder="e.g. Frontend Development, DSA" />
+                </div>
+                <div class="profile-field profile-field--full">
+                  <label class="profile-label"><i class="fas fa-building"></i> Organization</label>
+                  <input type="text" id="prof-college" class="profile-input" placeholder="e.g. Ami-Bridge Mentoring" />
+                </div>
+                <div class="profile-field profile-field--full">
+                  <label class="profile-label"><i class="fas fa-map-marker-alt"></i> City / Location</label>
+                  <input type="text" id="prof-city" class="profile-input" placeholder="e.g. Ranchi, Jharkhand" />
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
     </main>
     </div><!-- /.dash-shell -->
 
@@ -868,6 +950,34 @@
         document.getElementById("sidebar-user-name").textContent = loggedInUser.name;
         document.getElementById("sidebar-avatar").src = avatarUrl;
 
+        // Populate My Profile section
+        document.getElementById("profile-name-display").innerText = loggedInUser.name;
+        document.getElementById("profile-avatar").src = avatarUrl;
+        document.getElementById("prof-name").value  = loggedInUser.name;
+        document.getElementById("prof-email").value = loggedInUser.email;
+        fetch(`${API_BASE}/api/users/${loggedInUser.id}`)
+          .then(r => r.ok ? r.json() : null)
+          .then(user => {
+            if (!user) return;
+            document.getElementById("prof-course").value  = user.course  || "";
+            document.getElementById("prof-college").value = user.college || "";
+            document.getElementById("prof-phone").value   = user.phone   || "";
+            document.getElementById("prof-city").value    = user.city    || "";
+            if (user.created_at) {
+              const joined = new Date(user.created_at).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+              document.getElementById("profile-joined").innerHTML = `<i class="fas fa-calendar-alt"></i> Joined ${joined}`;
+            }
+            const synced = { ...loggedInUser, course: user.course || "", college: user.college || "", phone: user.phone || "", city: user.city || "" };
+            localStorage.setItem("ami_user", JSON.stringify(synced));
+            state.currentUser = synced;
+          })
+          .catch(() => {
+            document.getElementById("prof-course").value  = loggedInUser.course  || "";
+            document.getElementById("prof-college").value = loggedInUser.college || "";
+            document.getElementById("prof-phone").value   = loggedInUser.phone   || "";
+            document.getElementById("prof-city").value    = loggedInUser.city    || "";
+          });
+
         // 3. Fetch Real Data from Database
         try {
           // Fetch assigned students
@@ -955,10 +1065,22 @@
         populateStudentDropdowns();
         renderResumes();
         renderFeedbacks();
+        renderMentorProfileStats();
 
         // Default to assigned students
         navigate("assigned");
       };
+
+      /** Populate the My Profile stats strip from already-loaded state data */
+      function renderMentorProfileStats() {
+        const setStat = (id, val) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = val ?? 0;
+        };
+        setStat("pstat-students", (state.students || []).length);
+        setStat("pstat-resumes-reviewed", (state.resumes || []).filter(r => r.status === "Reviewed").length);
+        setStat("pstat-feedback", (state.feedbacks || []).length);
+      }
 
       function navigate(sectionId) {
         // Update Navigation UI
@@ -997,6 +1119,7 @@
           feedback: "Mentor Feedback System",
           ocr: "Ami-Bridge AI OCR",
           bulkregister: "Bulk Register Students",
+          profile: "My Profile",
           internships: "Local Internships",
         };
         document.getElementById("page-title").innerText = titles[sectionId] || sectionId;
@@ -1563,6 +1686,78 @@
         }, 3000);
       }
 
+      async function saveProfile() {
+        const name    = document.getElementById("prof-name").value.trim();
+        const course  = document.getElementById("prof-course").value.trim();
+        const college = document.getElementById("prof-college").value.trim();
+        const phone   = document.getElementById("prof-phone").value.trim();
+        const city    = document.getElementById("prof-city").value.trim();
+
+        if (!name) {
+          showToast("Name cannot be empty.", "error");
+          return;
+        }
+
+        const saveBtn = document.getElementById("profile-save-btn");
+        const origHTML = saveBtn ? saveBtn.innerHTML : "";
+        if (saveBtn) {
+          saveBtn.disabled = true;
+          saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        }
+
+        try {
+          const res = await fetch(`${API_BASE}/api/users/${state.currentUser.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, course, college, phone, city }),
+          });
+
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || `Server error ${res.status}`);
+          }
+
+          const saved = await res.json();
+
+          const updated = {
+            ...state.currentUser,
+            name:    saved.name,
+            course:  saved.course  || "",
+            college: saved.college || "",
+            phone:   saved.phone   || "",
+            city:    saved.city    || "",
+          };
+          localStorage.setItem("ami_user", JSON.stringify(updated));
+          state.currentUser = updated;
+
+          const els = {
+            "profile-name-display": "innerText",
+            "header-user-name":     "innerText",
+            "sidebar-user-name":    "textContent",
+          };
+          Object.entries(els).forEach(([id, prop]) => {
+            const el = document.getElementById(id);
+            if (el) el[prop] = saved.name;
+          });
+
+          const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(saved.name)}`;
+          ["header-avatar","profile-avatar","sidebar-avatar"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.src = avatarUrl;
+          });
+
+          showToast("Profile saved to database!", "success");
+
+        } catch (err) {
+          showToast("Failed to save: " + err.message, "error");
+        } finally {
+          if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = origHTML;
+          }
+        }
+      }
+
       function logout() {
         const overlay = document.createElement("div");
         overlay.id = "logout-confirm-overlay";
@@ -1624,7 +1819,6 @@
           setTimeout(() => { window.location.href = "index.html"; }, 500);
         }, 1000);
       }
-      
 
       // --- 6. CHARTS ---
 
@@ -1770,7 +1964,6 @@
           </div>`;
         }).join("");
       }
-      
 
       function openMentorInternModal(data) {
         document.getElementById("mentor-intern-edit-id").value       = data?.internship_id || "";

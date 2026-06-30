@@ -7,6 +7,10 @@ const ctrl = require("../controllers/interview.controller");
 router.get("/questions/:companyId", ctrl.getQuestions);
 router.post("/questions", ctrl.createQuestion);
 
+// User profile — get and update
+router.get("/users/:id", ctrl.getUser);
+router.put("/users/:id", ctrl.updateProfile);
+
 // Student attempts
 router.post("/attempts", ctrl.saveAttempt);
 router.get("/student/:id/attempts", ctrl.getAttempts);

@@ -253,11 +253,45 @@ const bulkRegister = async (req, res, next) => {
   }
 };
 
+
+// ── Get single user profile ───────────────────────────────────────────────────
+const getUser = async (req, res, next) => {
+  try {
+    const result = await UserModel.findById(Number(req.params.id));
+    if (!result.rows.length) return R.notFound(res, "User not found.");
+    return R.ok(res, result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ── Update user profile name ──────────────────────────────────────────────────
+const updateProfile = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name, course, college, phone, city } = req.body;
+    if (!name || !String(name).trim()) {
+      return R.badRequest(res, "Name is required.");
+    }
+    const result = await UserModel.updateProfile(
+      Number(id),
+      String(name).trim(),
+      course  ? String(course).trim()  : null,
+      college ? String(college).trim() : null,
+      phone   ? String(phone).trim()   : null,
+      city    ? String(city).trim()    : null,
+    );
+    if (!result.rows.length) return R.notFound(res, "User not found.");
+    return R.ok(res, result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getQuestions,
-  saveAttempt,
-  getQuestions,
   createQuestion,
+  saveAttempt,
   getAttempts,
   getFeedback,
   saveFeedback,
@@ -267,4 +301,6 @@ module.exports = {
   createAssignment,
   deleteAssignment,
   bulkRegister,
+  updateProfile,
+  getUser,
 };
