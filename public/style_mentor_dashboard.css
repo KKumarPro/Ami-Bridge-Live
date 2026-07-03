@@ -2197,10 +2197,61 @@ th.bg-slate-50, .bg-slate-50.text-slate-500 { background: var(--surface-2) !impo
 @media (max-width: 768px) {
   .profile-body { padding: 20px 14px 24px; }
   .profile-top-row { gap: 12px; margin-top: 0; }
-  .profile-avatar-img { width: 68px; height: 68px; }
+  .profile-avatar-img { width: 76px; height: 76px; }
   .profile-identity__name { font-size: 17px; }
   .profile-save-btn { width: 100%; justify-content: center; }
   .profile-form { grid-template-columns: 1fr; }
   .profile-field--full { grid-column: 1; }
   .profile-stats-strip { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ── FEEDBACK SECTION LAYOUT ─────────────────────────────────────── */
+.feedback-layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.feedback-form-panel,
+.feedback-history-panel {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  .feedback-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── MODAL FORM GRID ─────────────────────────────────────────────── */
+.modal-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 768px) {
+  .modal-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .modal-form-grid > div,
+  .modal-form-grid > div.col-span-2 {
+    grid-column: 1 !important;
+  }
+}
+
+/* ── STUDENT CARD ACTION BUTTONS ─────────────────────────────────── */
+.student-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+@media (max-width: 480px) {
+  .student-card-actions {
+    flex-direction: column;
+  }
+  .student-card-actions button {
+    width: 100% !important;
+  }
 }

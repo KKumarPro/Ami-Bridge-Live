@@ -414,40 +414,31 @@
           id="sec-feedback"
           class="section-container hidden fade-in max-w-6xl mx-auto reveal"
         >
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="feedback-layout">
             <!-- Feedback Form -->
-            <div
-              class="lg:col-span-1 bg-white rounded-xl shadow-sm border border-slate-200 p-6 h-fit"
-            >
-              <h3 class="text-lg font-bold text-slate-800 mb-4">
-                Send Feedback
+            <div class="feedback-form-panel panel-card">
+              <h3 class="profile-section-title" style="font-size:15px;margin-bottom:16px;">
+                <i class="fas fa-paper-plane"></i> Send Feedback
               </h3>
               <form
-                onsubmit="
-                  event.preventDefault();
-                  submitFeedback();
-                "
+                onsubmit="event.preventDefault(); submitFeedback();"
                 class="space-y-4"
               >
                 <div>
-                  <label class="block text-sm font-semibold text-slate-700 mb-1"
-                    >Select Student</label
-                  >
+                  <label class="profile-label" style="margin-bottom:6px;display:flex;"><i class="fas fa-user-graduate"></i> Select Student</label>
                   <select
                     id="fb-student-select"
-                    class="w-full border border-slate-300 rounded-lg py-2 px-3 focus:ring-2 focus:ring-primary outline-none"
+                    class="profile-input"
                     required
                   >
                     <!-- Rendered by JS -->
                   </select>
                 </div>
                 <div>
-                  <label class="block text-sm font-semibold text-slate-700 mb-1"
-                    >Feedback Type</label
-                  >
+                  <label class="profile-label" style="margin-bottom:6px;display:flex;"><i class="fas fa-tag"></i> Feedback Type</label>
                   <select
                     id="fb-type-select"
-                    class="w-full border border-slate-300 rounded-lg py-2 px-3 focus:ring-2 focus:ring-primary outline-none"
+                    class="profile-input"
                     required
                   >
                     <option value="Technical">Technical Advice</option>
@@ -457,12 +448,11 @@
                   </select>
                 </div>
                 <div>
-                  <label class="block text-sm font-semibold text-slate-700 mb-1"
-                    >Message</label
-                  >
+                  <label class="profile-label" style="margin-bottom:6px;display:flex;"><i class="fas fa-comment-alt"></i> Message</label>
                   <textarea
                     id="fb-message"
-                    class="w-full border border-slate-300 rounded-lg py-2 px-3 focus:ring-2 focus:ring-primary outline-none h-32"
+                    class="profile-input"
+                    style="height:120px;resize:vertical;"
                     placeholder="Write your feedback here..."
                     required
                   ></textarea>
@@ -470,18 +460,18 @@
                 <button
                   type="submit"
                   class="w-full py-2.5 bg-primary text-white rounded-lg hover:bg-primaryHover transition font-medium shadow-md"
+                  style="width:100%;padding:11px;border:none;border-radius:10px;background:#059669;color:#fff;font-size:14px;font-weight:700;cursor:pointer;"
+                  onmouseover="this.style.background='#047857'" onmouseout="this.style.background='#059669'"
                 >
-                  Send Feedback
+                  <i class="fas fa-paper-plane"></i> Send Feedback
                 </button>
               </form>
             </div>
 
             <!-- Feedback History -->
-            <div
-              class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-6"
-            >
-              <h3 class="text-lg font-bold text-slate-800 mb-4">
-                Past Feedback Sent
+            <div class="feedback-history-panel panel-card">
+              <h3 class="profile-section-title" style="font-size:15px;margin-bottom:16px;">
+                <i class="fas fa-history"></i> Past Feedback Sent
               </h3>
               <div id="feedback-history-list" class="space-y-4">
                 <!-- Rendered by JS -->
@@ -554,7 +544,7 @@
         </div>
         <div class="p-6 space-y-4 overflow-y-auto">
           <input type="hidden" id="mentor-intern-edit-id"/>
-          <div class="grid grid-cols-2 gap-4">
+          <div class="modal-form-grid">
             <div class="col-span-2">
               <label class="block text-sm font-semibold text-slate-700 mb-1">Company Name *</label>
               <input type="text" id="mentor-intern-company" placeholder="e.g. TechStart Solutions"
@@ -1167,9 +1157,9 @@
                                 <span class="font-bold ${student.statusColor}">${student.performance}</span>
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-3 mt-auto">
-                            <button onclick="jumpToPerformance('${student.id}')" class="py-2 text-center text-sm font-semibold rounded bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100 transition">View Stats</button>
-                            <button onclick="jumpToFeedback('${student.id}')" class="py-2 text-center text-sm font-semibold rounded bg-primary text-white hover:bg-primaryHover transition">Feedback</button>
+                        <div class="student-card-actions">
+                            <button onclick="jumpToPerformance('${student.id}')" style="flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;border-radius:8px;background:var(--surface-2);color:var(--fg);border:1px solid var(--border);cursor:pointer;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='var(--surface-2)'">View Stats</button>
+                            <button onclick="jumpToFeedback('${student.id}')" style="flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;border-radius:8px;background:#059669;color:#fff;border:none;cursor:pointer;" onmouseover="this.style.background='#047857'" onmouseout="this.style.background='#059669'">Feedback</button>
                         </div>
                     </div>
                 `;
@@ -1593,12 +1583,12 @@
           const kl = data.details.skipped
             .map((s) => `<li class="text-yellow-700 text-xs">${s.email}</li>`)
             .join("");
-          div.innerHTML = `<div class="grid grid-cols-3 gap-3 text-center mb-3">
-            <div class="bg-green-50 rounded-xl p-3"><p class="text-2xl font-black text-green-700">${data.created}</p><p class="text-xs text-green-600">Created</p></div>
-            <div class="bg-yellow-50 rounded-xl p-3"><p class="text-2xl font-black text-yellow-700">${data.skipped}</p><p class="text-xs text-yellow-600">Skipped</p></div>
-            <div class="bg-red-50 rounded-xl p-3"><p class="text-2xl font-black text-red-700">${data.failed}</p><p class="text-xs text-red-600">Failed</p></div>
-          </div>${sl ? `<div class="bg-green-50 rounded-xl p-3 text-xs"><p class="font-bold text-green-700 mb-1">✅ Created</p><ul>${sl}</ul></div>` : ""}
-          ${kl ? `<div class="bg-yellow-50 rounded-xl p-3 text-xs mt-2"><p class="font-bold text-yellow-700 mb-1">⚠️ Skipped</p><ul>${kl}</ul></div>` : ""}`;
+          div.innerHTML = `<div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:80px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);border-radius:12px;padding:12px;text-align:center;"><p style="font-size:28px;font-weight:900;color:#22c55e;margin:0 0 4px;">${data.created}</p><p style="font-size:11px;color:#16a34a;font-weight:600;">Created</p></div>
+            <div style="flex:1;min-width:80px;background:rgba(234,179,8,0.1);border:1px solid rgba(234,179,8,0.25);border-radius:12px;padding:12px;text-align:center;"><p style="font-size:28px;font-weight:900;color:#eab308;margin:0 0 4px;">${data.skipped}</p><p style="font-size:11px;color:#ca8a04;font-weight:600;">Skipped</p></div>
+            <div style="flex:1;min-width:80px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:12px;padding:12px;text-align:center;"><p style="font-size:28px;font-weight:900;color:#ef4444;margin:0 0 4px;">${data.failed}</p><p style="font-size:11px;color:#dc2626;font-weight:600;">Failed</p></div>
+          </div>${sl ? `<div style="background:rgba(34,197,94,0.08);border-radius:12px;padding:12px;font-size:12px;margin-bottom:8px;"><p style="font-weight:700;color:#22c55e;margin:0 0 6px;">✅ Created</p><ul style="margin:0;padding-left:16px;color:var(--fg-soft);">${sl}</ul></div>` : ""}
+          ${kl ? `<div style="background:rgba(234,179,8,0.08);border-radius:12px;padding:12px;font-size:12px;"><p style="font-weight:700;color:#eab308;margin:0 0 6px;">⚠️ Skipped</p><ul style="margin:0;padding-left:16px;color:var(--fg-soft);">${kl}</ul></div>` : ""}`;
           showToast(`${data.created} students registered!`, "success");
         } catch (err) {
           div.innerHTML = `<div class="p-4 bg-red-50 rounded-xl text-red-700 text-sm">${err.message}</div>`;
@@ -1819,6 +1809,7 @@
           setTimeout(() => { window.location.href = "index.html"; }, 500);
         }, 1000);
       }
+      
 
       // --- 6. CHARTS ---
 
