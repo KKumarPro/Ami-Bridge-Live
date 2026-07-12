@@ -1,6 +1,4 @@
-﻿<!-- Landing Page -->
-
-<!doctype html>
+﻿<!doctype html>
 <html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
@@ -728,6 +726,13 @@
                     placeholder="••••••••"
                     required
                   />
+                  <button
+                    type="button"
+                    class="auth-forgot-link"
+                    onclick="openForgotPassword()"
+                  >
+                    Forgot password?
+                  </button>
                 </div>
                 <button type="submit" class="auth-submit">
                   <span>Sign in to Ami-Bridge</span>
@@ -743,6 +748,78 @@
                   Create one free
                 </button>
               </p>
+            </div>
+
+            <!-- FORGOT PASSWORD: request reset link -->
+            <div id="forgot-panel" class="auth-panel auth-hidden">
+              <p class="auth-forgot-intro">
+                Enter the email on your account and we'll get you a reset link.
+              </p>
+              <form onsubmit="handleForgotPassword(event)">
+                <div class="field">
+                  <label>Email address</label>
+                  <input
+                    type="email"
+                    id="forgot-email"
+                    placeholder="you@example.com"
+                    required
+                  />
+                </div>
+                <button type="submit" class="auth-submit">
+                  <span>Send reset link</span>
+                </button>
+              </form>
+              <div id="forgot-dev-box" class="auth-dev-box" hidden>
+                <p class="auth-dev-box__title">
+                  <i class="fas fa-flask"></i> Development mode
+                </p>
+                <p class="auth-dev-box__text">
+                  Email sending isn't configured yet, so here's your reset link directly:
+                </p>
+                <a id="forgot-dev-link" class="auth-dev-box__link" href="#" target="_blank"></a>
+              </div>
+              <p class="auth-swap">
+                Remembered it?
+                <button
+                  type="button"
+                  class="auth-link"
+                  onclick="toggleAuth('login')"
+                >
+                  Back to sign in
+                </button>
+              </p>
+            </div>
+
+            <!-- RESET PASSWORD: set new password (opened via reset link) -->
+            <div id="reset-panel" class="auth-panel auth-hidden">
+              <p class="auth-forgot-intro">
+                Choose a new password for your account.
+              </p>
+              <form onsubmit="handleResetPassword(event)">
+                <div class="field">
+                  <label>New password</label>
+                  <input
+                    type="password"
+                    id="reset-password"
+                    placeholder="Min. 8 characters"
+                    minlength="8"
+                    required
+                  />
+                </div>
+                <div class="field">
+                  <label>Confirm new password</label>
+                  <input
+                    type="password"
+                    id="reset-password-confirm"
+                    placeholder="Re-enter new password"
+                    minlength="8"
+                    required
+                  />
+                </div>
+                <button type="submit" class="auth-submit">
+                  <span>Reset password</span>
+                </button>
+              </form>
             </div>
 
             <!-- SIGNUP -->
@@ -924,12 +1001,16 @@
       const box = document.getElementById("auth-box");
       const lp = document.getElementById("login-panel");
       const sp = document.getElementById("signup-panel");
+      const fp = document.getElementById("forgot-panel");
+      const rp = document.getElementById("reset-panel");
       const tLogin = document.getElementById("tab-login");
       const tSignup = document.getElementById("tab-signup");
+      const authTabs = document.querySelector(".auth-tabs");
       const isVisible = "auth-visible";
       const isHidden = "auth-hidden";
       const authTransitionMs = 360;
       let authCloseTimer = null;
+      const allAuthPanels = () => [lp, sp, fp, rp].filter(Boolean);
 
       function setAuthOpen(open) {
         if (!modal || !box) return;
@@ -965,25 +1046,47 @@
       function closeAuthOnBackdropClick(event) {
         if (event.target === modal) closeAuth();
       }
-      function switchAuthPanels(showPanel, hidePanel, showTab, hideTab) {
-        if (showPanel.classList.contains(isVisible)) return;
-        hidePanel.classList.remove(isVisible);
-        hidePanel.classList.add(isHidden);
-        hideTab.classList.remove("is-active");
-        showTab.classList.add("is-active");
+      /** Show exactly one auth panel, hide the rest, with a fade transition */
+      function showAuthPanel(panelToShow) {
+        allAuthPanels().forEach((panel) => {
+          if (panel === panelToShow) return;
+          if (panel.classList.contains(isVisible)) {
+            panel.classList.remove(isVisible);
+            panel.classList.add(isHidden);
+          }
+        });
         setTimeout(() => {
-          showPanel.classList.remove(isHidden);
-          showPanel.classList.add(isVisible);
+          panelToShow.classList.remove(isHidden);
+          panelToShow.classList.add(isVisible);
         }, 130);
       }
       function toggleAuth(type = "login") {
-        const showLogin = type === "login";
-        switchAuthPanels(
-          showLogin ? lp : sp,
-          showLogin ? sp : lp,
-          showLogin ? tLogin : tSignup,
-          showLogin ? tSignup : tLogin,
-        );
+        // Tabs only make sense for login/signup — hide them for forgot/reset
+        if (authTabs) {
+          authTabs.style.display = (type === "login" || type === "signup") ? "" : "none";
+        }
+        if (type === "login") {
+          tLogin?.classList.add("is-active");
+          tSignup?.classList.remove("is-active");
+          showAuthPanel(lp);
+        } else if (type === "signup") {
+          tSignup?.classList.add("is-active");
+          tLogin?.classList.remove("is-active");
+          showAuthPanel(sp);
+        } else if (type === "forgot") {
+          showAuthPanel(fp);
+        } else if (type === "reset") {
+          showAuthPanel(rp);
+        }
+      }
+      function openForgotPassword() {
+        // Pre-fill with whatever email was typed on the login form
+        const loginEmail = document.getElementById("login-email")?.value || "";
+        const forgotEmailInput = document.getElementById("forgot-email");
+        if (forgotEmailInput) forgotEmailInput.value = loginEmail;
+        const devBox = document.getElementById("forgot-dev-box");
+        if (devBox) devBox.hidden = true;
+        toggleAuth("forgot");
       }
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") closeAuth();
@@ -1154,6 +1257,106 @@
           errorText: "Signup failed.",
         });
       }
+
+      async function handleForgotPassword(e) {
+        e.preventDefault();
+        const email = getInputValue("forgot-email").toLowerCase();
+        if (!email) {
+          showToast("Please enter your email.", "error");
+          return;
+        }
+        const form = e.target;
+        const btn = form.querySelector(".auth-submit");
+        const origHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = "<span>Sending\u2026</span>";
+
+        try {
+          const res = await fetch(API_BASE + "/api/auth/forgot-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.error || "Something went wrong.");
+
+          if (data.devMode && data.resetToken) {
+            const link = window.location.origin + window.location.pathname +
+              "?reset_token=" + encodeURIComponent(data.resetToken);
+            const devBox = document.getElementById("forgot-dev-box");
+            const devLink = document.getElementById("forgot-dev-link");
+            devLink.href = link;
+            devLink.textContent = link;
+            devBox.hidden = false;
+            showToast("Reset link generated below.", "success");
+          } else {
+            showToast("If that email exists, a reset link has been sent.", "success");
+          }
+        } catch (err) {
+          showToast(err.message, "error");
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = origHTML;
+        }
+      }
+
+      async function handleResetPassword(e) {
+        e.preventDefault();
+        const password = document.getElementById("reset-password")?.value || "";
+        const confirmPw = document.getElementById("reset-password-confirm")?.value || "";
+        const token = window.__resetToken;
+
+        if (!token) {
+          showToast("Missing or invalid reset link.", "error");
+          return;
+        }
+        if (password.length < 8) {
+          showToast("Password must be at least 8 characters.", "error");
+          return;
+        }
+        if (password !== confirmPw) {
+          showToast("Passwords do not match.", "error");
+          return;
+        }
+
+        const form = e.target;
+        const btn = form.querySelector(".auth-submit");
+        const origHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = "<span>Resetting\u2026</span>";
+
+        try {
+          const res = await fetch(API_BASE + "/api/auth/reset-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token, password }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.error || "Reset failed.");
+
+          showToast("Password reset! Please sign in with your new password.", "success");
+          const url = new URL(window.location.href);
+          url.searchParams.delete("reset_token");
+          window.history.replaceState({}, "", url.toString());
+          window.__resetToken = null;
+          setTimeout(() => toggleAuth("login"), 900);
+        } catch (err) {
+          showToast(err.message, "error");
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = origHTML;
+        }
+      }
+
+      // Auto-open the reset panel if the page was loaded via a reset link
+      (function checkForResetToken() {
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get("reset_token");
+        if (token) {
+          window.__resetToken = token;
+          openAuth("reset");
+        }
+      })();
     </script>
   
     <script>

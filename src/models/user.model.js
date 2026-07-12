@@ -38,6 +38,29 @@ const UserModel = {
        RETURNING id, name, email, role, course, college, phone, city, created_at`,
       [name, course || null, college || null, phone || null, city || null, id]
     ),
+
+  // ── Password reset ──────────────────────────────────────────────────
+  setResetToken: (email, token, expiresAt) =>
+    pool.query(
+      `UPDATE users SET reset_token = $1, reset_token_expires = $2
+       WHERE email = $3 RETURNING id, name, email`,
+      [token, expiresAt, email]
+    ),
+
+  findByResetToken: (token) =>
+    pool.query(
+      `SELECT id, name, email, reset_token_expires FROM users
+       WHERE reset_token = $1`,
+      [token]
+    ),
+
+  resetPassword: (id, hashedPassword) =>
+    pool.query(
+      `UPDATE users
+       SET password = $1, reset_token = NULL, reset_token_expires = NULL
+       WHERE id = $2 RETURNING id, name, email`,
+      [hashedPassword, id]
+    ),
 };
 
 module.exports = UserModel;

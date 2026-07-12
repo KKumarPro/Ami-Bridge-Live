@@ -43,4 +43,31 @@ const login = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login };
+const forgotPassword = async (req, res, next) => {
+  try {
+    const err = requireFields(req.body, ["email"]);
+    if (err) return R.badRequest(res, err);
+    const result = await authService.forgotPassword(req.body.email);
+    return R.ok(res, result);
+  } catch (err) {
+    if (err.status) return res.status(err.status).json({ error: err.message });
+    next(err);
+  }
+};
+
+const resetPassword = async (req, res, next) => {
+  try {
+    const err = requireFields(req.body, ["token", "password"]);
+    if (err) return R.badRequest(res, err);
+    if (req.body.password.length < 6) {
+      return R.badRequest(res, "Password must be at least 6 characters");
+    }
+    const result = await authService.resetPassword(req.body.token, req.body.password);
+    return R.ok(res, result);
+  } catch (err) {
+    if (err.status) return res.status(err.status).json({ error: err.message });
+    next(err);
+  }
+};
+
+module.exports = { register, login, forgotPassword, resetPassword };

@@ -51,6 +51,8 @@ const initDB = async () => {
       ALTER TABLE users ADD COLUMN IF NOT EXISTS college VARCHAR(200);
       ALTER TABLE users ADD COLUMN IF NOT EXISTS phone   VARCHAR(30);
       ALTER TABLE users ADD COLUMN IF NOT EXISTS city    VARCHAR(150);
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token         VARCHAR(255);
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_expires TIMESTAMPTZ;
       ALTER TABLE resumes ADD COLUMN IF NOT EXISTS ats_score INTEGER;
 
       CREATE TABLE IF NOT EXISTS user_streaks (
