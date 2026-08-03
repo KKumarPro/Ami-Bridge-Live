@@ -18,8 +18,9 @@ const start = async () => {
     startResumeAnalysisJob(5 * 60 * 1000);
   }
 
-  // 3. Listen
-  if (env.NODE_ENV !== "production") {
+  // 3. Listen whenever this file is executed directly.
+  // Vercel imports the app without running this block.
+  if (require.main === module) {
     app.listen(env.PORT, () => {
       logger.info("Server running  →  http://localhost:" + env.PORT);
       logger.info("Gemini AI       →  " + (env.GEMINI_API_KEY ? "Configured ✓" : "NOT configured ✗"));

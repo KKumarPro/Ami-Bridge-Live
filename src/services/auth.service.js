@@ -3,8 +3,9 @@
 const bcrypt = require("bcryptjs");
 const UserModel = require("../models/user.model");
 const streakService = require("./streak.service");
+const emailService = require("./email.service");
 
-const register = async (name, email, password, role) => {
+const register = async (name, email, password, role, options = {}) => {
   const existing = await UserModel.findByEmail(email);
   if (existing.rows.length > 0) {
     const err = new Error("User already exists");
@@ -14,7 +15,19 @@ const register = async (name, email, password, role) => {
   const salt = await bcrypt.genSalt(10);
   const hashed = await bcrypt.hash(password, salt);
   const result = await UserModel.create(name, email, hashed, role);
-  return result.rows[0];
+  const user = result.rows[0];
+  const emailResult = await emailService.sendWelcomeEmail({
+    to: user.email,
+    name: user.name,
+    role: user.role,
+    baseUrl: options.baseUrl,
+  });
+
+  return {
+    ...user,
+    emailSent: emailResult.sent,
+    emailDevMode: emailResult.devMode || false,
+  };
 };
 
 const login = async (email, password) => {
@@ -54,7 +67,7 @@ const login = async (email, password) => {
 // ── Forgot / Reset password ─────────────────────────────────────────────
 const crypto = require("crypto");
 
-const forgotPassword = async (email) => {
+const forgotPassword = async (email, options = {}) => {
   const result = await UserModel.findByEmail(email);
   if (result.rows.length === 0) {
     // Don't reveal whether the email exists — same response either way
@@ -68,14 +81,19 @@ const forgotPassword = async (email) => {
 
   await UserModel.setResetToken(email, token, expiresAt);
 
-  // NOTE: No email service is configured yet. The token/link is returned
-  // directly so the reset flow works end-to-end today. Once an email
-  // provider (e.g. Resend, SendGrid, Nodemailer+SMTP) is added, replace
-  // the `return` below with an actual email send and return { sent: true }.
+  const emailResult = await emailService.sendResetEmail({
+    to: user.email,
+    name: user.name,
+    token,
+    baseUrl: options.baseUrl,
+  });
+
   return {
     sent: true,
-    devMode: true,
-    resetToken: token,
+    emailSent: emailResult.sent,
+    devMode: emailResult.devMode || false,
+    resetToken: emailResult.devMode ? token : undefined,
+    resetLink: emailResult.resetLink,
     userName: user.name,
   };
 };

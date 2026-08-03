@@ -4,6 +4,11 @@ const authService = require("../services/auth.service");
 const { requireFields } = require("../utils/validator");
 const R = require("../utils/response");
 
+const getRequestBaseUrl = (req) =>
+  process.env.APP_URL ||
+  req.get("origin") ||
+  `${req.protocol}://${req.get("host")}`;
+
 const register = async (req, res, next) => {
   try {
     const err = requireFields(req.body, ["name", "email", "password", "role"]);
@@ -13,6 +18,7 @@ const register = async (req, res, next) => {
       req.body.email,
       req.body.password,
       req.body.role,
+      { baseUrl: getRequestBaseUrl(req) },
     );
     return R.created(res, user);
   } catch (err) {
@@ -47,7 +53,9 @@ const forgotPassword = async (req, res, next) => {
   try {
     const err = requireFields(req.body, ["email"]);
     if (err) return R.badRequest(res, err);
-    const result = await authService.forgotPassword(req.body.email);
+    const result = await authService.forgotPassword(req.body.email, {
+      baseUrl: getRequestBaseUrl(req),
+    });
     return R.ok(res, result);
   } catch (err) {
     if (err.status) return res.status(err.status).json({ error: err.message });

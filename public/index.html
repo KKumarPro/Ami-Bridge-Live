@@ -1209,7 +1209,11 @@
             return;
           }
           saveSession(data);
-          showToast(config.successText, "success");
+          const successText =
+            typeof config.successText === "function"
+              ? config.successText(data)
+              : config.successText;
+          showToast(successText, "success");
           setTimeout(() => {
             location.href = getDashboardPath(data.role);
           }, 800);
@@ -1253,7 +1257,10 @@
           endpoint: "/api/auth/register",
           payload: { name, email, password, role },
           loadingText: "Creating…",
-          successText: "Account created! Redirecting…",
+          successText: (data) =>
+            data.emailSent
+              ? "Account created! Confirmation email sent. Redirecting…"
+              : "Account created! We could not send the confirmation email yet, but your account is ready. Redirecting…",
           errorText: "Signup failed.",
         });
       }
@@ -1280,17 +1287,29 @@
           const data = await res.json().catch(() => ({}));
           if (!res.ok) throw new Error(data.error || "Something went wrong.");
 
-          if (data.devMode && data.resetToken) {
-            const link = window.location.origin + window.location.pathname +
-              "?reset_token=" + encodeURIComponent(data.resetToken);
+          if (data.devMode && (data.resetLink || data.resetToken)) {
+            const link =
+              data.resetLink ||
+              window.location.origin +
+                window.location.pathname +
+                "?reset_token=" +
+                encodeURIComponent(data.resetToken);
             const devBox = document.getElementById("forgot-dev-box");
             const devLink = document.getElementById("forgot-dev-link");
             devLink.href = link;
             devLink.textContent = link;
             devBox.hidden = false;
             showToast("Reset link generated below.", "success");
+          } else if (!data.emailSent) {
+            showToast(
+              "We could not send the reset email right now. Please try again in a moment.",
+              "error",
+            );
           } else {
-            showToast("If that email exists, a reset link has been sent.", "success");
+            showToast(
+              "Reset link sent. Check your email.",
+              "success",
+            );
           }
         } catch (err) {
           showToast(err.message, "error");
