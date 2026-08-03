@@ -5,25 +5,34 @@ const { pool } = require("../config/db");
 const UserModel = {
   findByEmail: (email) =>
     pool.query(
-      "SELECT id, name, email, password, role, course, college, phone, city FROM users WHERE email = $1",
+      `SELECT id, name, email, password, role, course, college, phone, city,
+              email_verified, verified_at, verification_otp, verification_otp_expires,
+              reset_token_expires
+       FROM users WHERE email = $1`,
       [email]
     ),
 
   findById: (id) =>
     pool.query(
-      "SELECT id, name, email, role, course, college, phone, city, created_at FROM users WHERE id = $1",
+      `SELECT id, name, email, role, course, college, phone, city, email_verified,
+              verified_at, created_at
+       FROM users WHERE id = $1`,
       [id]
     ),
 
   create: (name, email, hashedPassword, role) =>
     pool.query(
-      "INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id, name, email, role",
+      `INSERT INTO users (name, email, password, role, email_verified)
+       VALUES ($1, $2, $3, $4, FALSE)
+       RETURNING id, name, email, role, email_verified`,
       [name, email, hashedPassword, role]
     ),
 
   getAll: () =>
     pool.query(
-      "SELECT id, name, email, role, course, college, phone, city, created_at FROM users ORDER BY created_at DESC"
+      `SELECT id, name, email, role, course, college, phone, city, email_verified,
+              verified_at, created_at
+       FROM users ORDER BY created_at DESC`
     ),
 
   updateProfile: (id, name, course, college, phone, city) =>
@@ -60,6 +69,43 @@ const UserModel = {
        SET password = $1, reset_token = NULL, reset_token_expires = NULL
        WHERE id = $2 RETURNING id, name, email`,
       [hashedPassword, id]
+    ),
+
+  setVerificationOtp: (email, hashedOtp, expiresAt) =>
+    pool.query(
+      `UPDATE users
+       SET verification_otp = $1, verification_otp_expires = $2
+       WHERE email = $3
+       RETURNING id, name, email, role, email_verified`,
+      [hashedOtp, expiresAt, email]
+    ),
+
+  findByVerificationEmail: (email) =>
+    pool.query(
+      `SELECT id, name, email, role, email_verified, verification_otp, verification_otp_expires
+       FROM users WHERE email = $1`,
+      [email]
+    ),
+
+  verifyEmail: (id) =>
+    pool.query(
+      `UPDATE users
+       SET email_verified = TRUE,
+           verified_at = NOW(),
+           verification_otp = NULL,
+           verification_otp_expires = NULL
+       WHERE id = $1
+       RETURNING id, name, email, role, email_verified, verified_at`,
+      [id]
+    ),
+
+  clearVerificationOtp: (id) =>
+    pool.query(
+      `UPDATE users
+       SET verification_otp = NULL,
+           verification_otp_expires = NULL
+       WHERE id = $1`,
+      [id]
     ),
 };
 

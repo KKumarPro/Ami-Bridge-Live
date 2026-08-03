@@ -63,6 +63,30 @@ const forgotPassword = async (req, res, next) => {
   }
 };
 
+const verifySignupOtp = async (req, res, next) => {
+  try {
+    const err = requireFields(req.body, ["email", "otp"]);
+    if (err) return R.badRequest(res, err);
+    const result = await authService.verifySignupOtp(req.body.email, req.body.otp);
+    return R.ok(res, result);
+  } catch (err) {
+    if (err.status) return res.status(err.status).json({ error: err.message, code: err.code });
+    next(err);
+  }
+};
+
+const resendSignupOtp = async (req, res, next) => {
+  try {
+    const err = requireFields(req.body, ["email"]);
+    if (err) return R.badRequest(res, err);
+    const result = await authService.resendSignupOtp(req.body.email);
+    return R.ok(res, result);
+  } catch (err) {
+    if (err.status) return res.status(err.status).json({ error: err.message, code: err.code });
+    next(err);
+  }
+};
+
 const resetPassword = async (req, res, next) => {
   try {
     const err = requireFields(req.body, ["token", "password"]);
@@ -78,4 +102,11 @@ const resetPassword = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, forgotPassword, resetPassword };
+module.exports = {
+  register,
+  login,
+  verifySignupOtp,
+  resendSignupOtp,
+  forgotPassword,
+  resetPassword,
+};

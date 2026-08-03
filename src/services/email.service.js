@@ -109,6 +109,36 @@ const buildResetEmail = (name, token, baseUrl) => {
   };
 };
 
+const buildVerificationEmail = (name, otp) => {
+  const safeName = name || "there";
+  const code = String(otp || "").trim();
+
+  return {
+    subject: "Your Ami-Bridge verification code",
+    text: `Hi ${safeName},\n\nYour Ami-Bridge verification code is ${code}.\nIt expires in 10 minutes.\nIf you did not request this, you can ignore this email.`,
+    html: `
+      <div style="font-family:Arial,sans-serif;line-height:1.6;color:#0f172a">
+        <h2 style="margin:0 0 16px">Verify your email</h2>
+        <p style="margin:0 0 12px">Hi ${safeName},</p>
+        <p style="margin:0 0 12px">
+          Your Ami-Bridge verification code is:
+        </p>
+        <div
+          style="display:inline-block;padding:14px 18px;border-radius:12px;background:#eef2ff;color:#1d4ed8;font-size:24px;font-weight:700;letter-spacing:4px"
+        >
+          ${code}
+        </div>
+        <p style="margin:16px 0 0;color:#475569;font-size:14px">
+          This code expires in 10 minutes.
+        </p>
+        <p style="margin:8px 0 0;color:#475569;font-size:14px">
+          If you did not request this, you can ignore this email.
+        </p>
+      </div>
+    `,
+  };
+};
+
 const sendMail = async ({ to, subject, text, html }) => {
   const transporter = getTransporter();
   if (!transporter) {
@@ -154,9 +184,22 @@ const sendResetEmail = async ({ to, name, token, baseUrl }) => {
   }
 };
 
+const sendVerificationEmail = async ({ to, name, otp }) => {
+  const message = buildVerificationEmail(name, otp);
+  try {
+    const result = await sendMail({ to, ...message });
+    logger.info(`Verification email sent via ${result.provider || "local"} to ${to}`);
+    return result;
+  } catch (err) {
+    logger.warn("Verification email failed:", err.message);
+    return { sent: false, devMode: !hasEmailConfig() };
+  }
+};
+
 module.exports = {
   hasSmtpConfig,
   buildResetLink,
   sendWelcomeEmail,
   sendResetEmail,
+  sendVerificationEmail,
 };

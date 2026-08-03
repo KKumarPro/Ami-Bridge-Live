@@ -822,6 +822,59 @@
               </form>
             </div>
 
+            <!-- VERIFY EMAIL -->
+            <div id="verify-panel" class="auth-panel auth-hidden">
+              <p class="auth-forgot-intro">
+                We sent a 6-digit verification code to your email. Enter it below to activate your account.
+              </p>
+              <form onsubmit="handleVerifySignup(event)">
+                <div class="field">
+                  <label>Email address</label>
+                  <input
+                    type="email"
+                    id="verify-email"
+                    placeholder="you@example.com"
+                    required
+                  />
+                </div>
+                <div class="field">
+                  <label>Verification code</label>
+                  <input
+                    type="text"
+                    id="verify-otp"
+                    placeholder="123456"
+                    inputmode="numeric"
+                    maxlength="6"
+                    pattern="[0-9]{6}"
+                    required
+                  />
+                </div>
+                <button type="submit" class="auth-submit">
+                  <span>Verify email</span>
+                </button>
+              </form>
+              <p class="auth-swap">
+                Didn’t get the code?
+                <button
+                  type="button"
+                  class="auth-link"
+                  onclick="handleResendVerification()"
+                >
+                  Resend code
+                </button>
+              </p>
+              <p class="auth-swap">
+                Already verified?
+                <button
+                  type="button"
+                  class="auth-link"
+                  onclick="toggleAuth('login')"
+                >
+                  Back to sign in
+                </button>
+              </p>
+            </div>
+
             <!-- SIGNUP -->
             <div id="signup-panel" class="auth-panel auth-hidden">
               <form onsubmit="handleSignup(event)">
@@ -1003,6 +1056,7 @@
       const sp = document.getElementById("signup-panel");
       const fp = document.getElementById("forgot-panel");
       const rp = document.getElementById("reset-panel");
+      const vp = document.getElementById("verify-panel");
       const tLogin = document.getElementById("tab-login");
       const tSignup = document.getElementById("tab-signup");
       const authTabs = document.querySelector(".auth-tabs");
@@ -1010,7 +1064,7 @@
       const isHidden = "auth-hidden";
       const authTransitionMs = 360;
       let authCloseTimer = null;
-      const allAuthPanels = () => [lp, sp, fp, rp].filter(Boolean);
+      const allAuthPanels = () => [lp, sp, fp, rp, vp].filter(Boolean);
 
       function setAuthOpen(open) {
         if (!modal || !box) return;
@@ -1077,7 +1131,17 @@
           showAuthPanel(fp);
         } else if (type === "reset") {
           showAuthPanel(rp);
+        } else if (type === "verify") {
+          showAuthPanel(vp);
         }
+      }
+      function openVerifyPanel(email) {
+        const verifyEmail = document.getElementById("verify-email");
+        const verifyOtp = document.getElementById("verify-otp");
+        if (verifyEmail) verifyEmail.value = email || window.__pendingVerifyEmail || "";
+        if (verifyOtp) verifyOtp.value = "";
+        window.__pendingVerifyEmail = email || window.__pendingVerifyEmail || "";
+        toggleAuth("verify");
       }
       function openForgotPassword() {
         // Pre-fill with whatever email was typed on the login form
@@ -1225,22 +1289,53 @@
       }
 
       async function handleLogin(e) {
+        e.preventDefault();
         const email = getInputValue("login-email").toLowerCase();
         const password = document.getElementById("login-password")?.value || "";
         if (!email || !password) {
           showToast("Please enter email and password.", "error");
           return;
         }
-        await submitAuth(e, {
-          endpoint: "/api/auth/login",
-          payload: { email, password },
-          loadingText: "Signing in…",
-          successText: "Login successful! Redirecting…",
-          errorText: "Login failed.",
-        });
+
+        const form = e.target;
+        const btn = form.querySelector(".auth-submit");
+        const origHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = "<span>Signing in…</span>";
+
+        try {
+          const res = await fetch(API_BASE + "/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+          const data = await res.json().catch(() => ({}));
+
+          if (res.status === 403 && data.code === "EMAIL_NOT_VERIFIED") {
+            window.__pendingVerifyEmail = email;
+            openVerifyPanel(email);
+            showToast("Please verify your email before signing in.", "info");
+            return;
+          }
+
+          if (!res.ok) throw new Error(data.error || "Login failed.");
+
+          saveSession(data);
+          showToast("Login successful! Redirecting…", "success");
+          setTimeout(() => {
+            location.href = getDashboardPath(data.role);
+          }, 800);
+        } catch (err) {
+          console.error(err);
+          showToast(err.message || "Network error. Cannot reach the server.", "error");
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = origHTML;
+        }
       }
 
       async function handleSignup(e) {
+        e.preventDefault();
         const name = getInputValue("signup-name");
         const email = getInputValue("signup-email").toLowerCase();
         const password = document.getElementById("signup-password")?.value || "";
@@ -1253,16 +1348,102 @@
           showToast("Password must be at least 8 characters.", "error");
           return;
         }
-        await submitAuth(e, {
-          endpoint: "/api/auth/register",
-          payload: { name, email, password, role },
-          loadingText: "Creating…",
-          successText: (data) =>
-            data.emailSent
-              ? "Account created! Confirmation email sent. Redirecting…"
-              : "Account created! We could not send the confirmation email yet, but your account is ready. Redirecting…",
-          errorText: "Signup failed.",
-        });
+
+        const form = e.target;
+        const btn = form.querySelector(".auth-submit");
+        const origHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = "<span>Creating…</span>";
+
+        try {
+          const res = await fetch(API_BASE + "/api/auth/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, password, role }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.error || "Signup failed.");
+
+          window.__pendingVerifyEmail = email;
+          openVerifyPanel(email);
+
+          if (data.emailSent) {
+            showToast("We sent a verification code to your email.", "success");
+          } else {
+            showToast(
+              "Account created, but the verification email could not be sent right now. Use resend code.",
+              "error",
+            );
+          }
+        } catch (err) {
+          console.error(err);
+          showToast(err.message || "Network error. Cannot reach the server.", "error");
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = origHTML;
+        }
+      }
+
+      async function handleVerifySignup(e) {
+        e.preventDefault();
+        const email = getInputValue("verify-email").toLowerCase();
+        const otp = getInputValue("verify-otp");
+        if (!email || !otp) {
+          showToast("Please enter your email and verification code.", "error");
+          return;
+        }
+        const form = e.target;
+        const btn = form.querySelector(".auth-submit");
+        const origHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = "<span>Verifying…</span>";
+
+        try {
+          const res = await fetch(API_BASE + "/api/auth/verify-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, otp }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.error || "Verification failed.");
+
+          window.__pendingVerifyEmail = null;
+          showToast("Email verified! You can sign in now.", "success");
+          setTimeout(() => toggleAuth("login"), 700);
+          const loginEmail = document.getElementById("login-email");
+          if (loginEmail) loginEmail.value = email;
+        } catch (err) {
+          showToast(err.message || "Verification failed.", "error");
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = origHTML;
+        }
+      }
+
+      async function handleResendVerification() {
+        const email = getInputValue("verify-email").toLowerCase() || window.__pendingVerifyEmail || "";
+        if (!email) {
+          showToast("Please enter your email first.", "error");
+          return;
+        }
+
+        try {
+          const res = await fetch(API_BASE + "/api/auth/resend-verification", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.error || "Could not resend code.");
+
+          if (data.devMode && data.otp) {
+            showToast(`Dev code: ${data.otp}`, "info");
+          } else {
+            showToast("A new verification code has been sent.", "success");
+          }
+        } catch (err) {
+          showToast(err.message || "Could not resend code.", "error");
+        }
       }
 
       async function handleForgotPassword(e) {

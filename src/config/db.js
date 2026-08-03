@@ -51,9 +51,20 @@ const initDB = async () => {
       ALTER TABLE users ADD COLUMN IF NOT EXISTS college VARCHAR(200);
       ALTER TABLE users ADD COLUMN IF NOT EXISTS phone   VARCHAR(30);
       ALTER TABLE users ADD COLUMN IF NOT EXISTS city    VARCHAR(150);
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS verified_at TIMESTAMPTZ;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_otp VARCHAR(255);
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_otp_expires TIMESTAMPTZ;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token         VARCHAR(255);
       ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_expires TIMESTAMPTZ;
       ALTER TABLE resumes ADD COLUMN IF NOT EXISTS ats_score INTEGER;
+
+      UPDATE users
+      SET email_verified = COALESCE(email_verified, TRUE)
+      WHERE email_verified IS NULL;
+
+      ALTER TABLE users ALTER COLUMN email_verified SET DEFAULT FALSE;
+      ALTER TABLE users ALTER COLUMN email_verified SET NOT NULL;
 
       CREATE TABLE IF NOT EXISTS user_streaks (
         user_id INT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
