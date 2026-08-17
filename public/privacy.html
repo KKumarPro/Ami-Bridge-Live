@@ -4,19 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy Policy - Ami-Bridge</title>
-  <link rel="stylesheet" href="style_index.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="/logo.png" />
   <style>
+    /* Reset & Base Variables */
     :root {
       --primary-color: #4f46e5;
       --primary-hover: #4338ca;
       --secondary-color: #06b6d4;
-      --bg-dark: #0f172a;
-      --card-bg: #1e293b;
-      --card-border: #334155;
+      --bg-dark: #0b1120;
+      --card-bg: #131d31;
+      --card-border: #1e293b;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --text-accent: #38bdf8;
@@ -32,18 +31,19 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background-color: var(--bg-dark);
       color: var(--text-main);
-      line-height: 1.7;
+      line-height: 1.6;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
+    /* Navigation */
     .nav-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 16px 40px;
-      background: rgba(15, 23, 42, 0.85);
+      background: rgba(11, 17, 32, 0.95);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--card-border);
       position: sticky;
@@ -92,20 +92,21 @@
       background: var(--primary-hover);
     }
 
+    /* Header Banner */
     .privacy-header {
-      background: linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(6, 182, 212, 0.1) 100%);
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.12) 0%, rgba(6, 182, 212, 0.08) 100%);
       border-bottom: 1px solid var(--card-border);
-      padding: 60px 20px 40px;
+      padding: 36px 20px 24px;
       text-align: center;
     }
 
     .privacy-header h1 {
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       font-weight: 800;
       background: linear-gradient(90deg, #ffffff 0%, #38bdf8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
     .privacy-header p {
@@ -118,66 +119,78 @@
       background: rgba(79, 70, 229, 0.2);
       color: #818cf8;
       border: 1px solid rgba(99, 102, 241, 0.3);
-      padding: 4px 12px;
+      padding: 3px 12px;
       border-radius: 9999px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 500;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
+    /* Container & Card */
     .container {
-      max-width: 900px;
-      margin: 40px auto 80px;
-      padding: 0 24px;
+      max-width: 880px;
+      margin: 28px auto 48px;
+      padding: 0 20px;
       flex: 1;
+      width: 100%;
     }
 
     .privacy-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 40px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      border-radius: 14px;
+      padding: 32px 36px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
     }
 
-    .section {
-      margin-bottom: 36px;
+    /* Reduced Gap Between Sections (2-3 lines = ~20px) */
+    .privacy-section, section {
+      min-height: auto !important;
+      height: auto !important;
+      padding: 0 !important;
+      margin: 0 0 20px 0 !important;
     }
 
-    .section:last-child {
+    .privacy-section:last-child {
+      margin-bottom: 0 !important;
+    }
+
+    .privacy-section h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin: 0 0 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 6px;
+    }
+
+    .privacy-section p {
+      color: var(--text-muted);
+      margin: 0 0 8px 0;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .privacy-section p:last-child {
       margin-bottom: 0;
     }
 
-    .section h2 {
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: #f1f5f9;
-      margin-bottom: 14px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 8px;
-    }
-
-    .section p {
-      color: var(--text-muted);
-      margin-bottom: 12px;
-      font-size: 0.98rem;
-    }
-
-    .section ul {
+    .privacy-section ul {
       list-style-type: none;
       padding-left: 0;
-      margin-bottom: 14px;
+      margin: 6px 0 10px 0;
     }
 
-    .section ul li {
+    .privacy-section ul li {
       position: relative;
-      padding-left: 22px;
+      padding-left: 20px;
       color: var(--text-muted);
-      margin-bottom: 8px;
-      font-size: 0.95rem;
+      margin-bottom: 6px;
+      font-size: 0.92rem;
+      line-height: 1.5;
     }
 
-    .section ul li::before {
+    .privacy-section ul li::before {
       content: "•";
       position: absolute;
       left: 6px;
@@ -187,24 +200,24 @@
 
     .highlight-box {
       background: rgba(56, 189, 248, 0.06);
-      border-left: 4px solid var(--text-accent);
-      padding: 16px 20px;
-      border-radius: 0 8px 8px 0;
-      margin: 16px 0;
+      border-left: 3px solid var(--text-accent);
+      padding: 12px 16px;
+      border-radius: 0 6px 6px 0;
+      margin: 10px 0 0 0;
     }
 
     .highlight-box p {
       color: #cbd5e1;
       margin-bottom: 0;
-      font-size: 0.92rem;
+      font-size: 0.9rem;
     }
 
     .contact-card {
       background: rgba(79, 70, 229, 0.1);
       border: 1px solid rgba(99, 102, 241, 0.25);
-      border-radius: 12px;
-      padding: 20px 24px;
-      margin-top: 16px;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-top: 10px;
     }
 
     .contact-card a {
@@ -216,17 +229,18 @@
       text-decoration: underline;
     }
 
+    /* Footer */
     footer {
-      background: #090d16;
+      background: #070a12;
       border-top: 1px solid var(--card-border);
-      padding: 30px 20px;
+      padding: 24px 20px;
       text-align: center;
       color: var(--text-muted);
-      font-size: 0.9rem;
+      font-size: 0.88rem;
     }
 
     footer .footer-links {
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
     footer .footer-links a {
@@ -245,10 +259,10 @@
         padding: 14px 20px;
       }
       .privacy-header h1 {
-        font-size: 1.9rem;
+        font-size: 1.8rem;
       }
       .privacy-card {
-        padding: 24px 18px;
+        padding: 20px 16px;
       }
     }
   </style>
@@ -280,7 +294,7 @@
     <article class="privacy-card">
 
       <!-- Section 1 -->
-      <section class="section">
+      <div class="privacy-section">
         <h2>1. Introduction</h2>
         <p>
           Welcome to <strong>Ami-Bridge</strong> ("Platform", "we", "our", or "us"). Ami-Bridge is an intelligent campus placement and career readiness platform designed to facilitate student recruitment, AI-powered resume analysis, mock interview preparation, and mentor-student collaboration.
@@ -288,10 +302,10 @@
         <p>
           We take data privacy seriously. This Privacy Policy details how we handle the collection, use, processing, and protection of personal data belonging to students, mentors, company recruiters, and academic administrators.
         </p>
-      </section>
+      </div>
 
       <!-- Section 2 -->
-      <section class="section">
+      <div class="privacy-section">
         <h2>2. Information We Collect</h2>
         <p>In order to provide career and placement intelligence services, we collect:</p>
         <ul>
@@ -301,10 +315,10 @@
           <li><strong>Interview & Performance Insights:</strong> Responses, feedback notes, and performance evaluations from mock interview sessions.</li>
           <li><strong>System Log Data:</strong> Device browser, IP address, and platform usage metrics.</li>
         </ul>
-      </section>
+      </div>
 
       <!-- Section 3 -->
-      <section class="section">
+      <div class="privacy-section">
         <h2>3. How We Use Your Information</h2>
         <p>Your data is used strictly for platform functionalities:</p>
         <ul>
@@ -316,10 +330,10 @@
         <div class="highlight-box">
           <p><strong>AI Processing Confidentiality:</strong> Resumes and responses evaluated by integrated AI services are processed securely via encrypted APIs and are never sold or used for external public model training.</p>
         </div>
-      </section>
+      </div>
 
       <!-- Section 4 -->
-      <section class="section">
+      <div class="privacy-section">
         <h2>4. Information Sharing & Access Controls</h2>
         <p>We do not sell or rent personal information. Data is shared strictly within authorized placement operations:</p>
         <ul>
@@ -327,10 +341,10 @@
           <li><strong>Verified Recruiters:</strong> Profile and resume access when students apply for participating companies.</li>
           <li><strong>Assigned Mentors:</strong> For providing personalized reviews and mock interview guidance.</li>
         </ul>
-      </section>
+      </div>
 
       <!-- Section 5 -->
-      <section class="section">
+      <div class="privacy-section">
         <h2>5. Data Security</h2>
         <p>We apply robust administrative and technical protections, including:</p>
         <ul>
@@ -338,27 +352,27 @@
           <li>Encrypted password hashing and token-based session management.</li>
           <li>Role-based access controls to prevent unauthorized data exposure.</li>
         </ul>
-      </section>
+      </div>
 
       <!-- Section 6 -->
-      <section class="section">
+      <div class="privacy-section">
         <h2>6. Your Rights</h2>
         <p>You have full control over your information:</p>
         <ul>
           <li>Review or update your personal and academic profile at any time.</li>
           <li>Request deletion of uploaded resumes and account data upon graduation.</li>
         </ul>
-      </section>
+      </div>
 
       <!-- Section 7 -->
-      <section class="section">
+      <div class="privacy-section">
         <h2>7. Contact Us</h2>
         <p>For any privacy inquiries or data requests, please contact:</p>
         <div class="contact-card">
           <p><strong>Ami-Bridge Placement Desk</strong></p>
           <p>Email: <a href="mailto:amibridge.team@gmail.com">amibridge.team@gmail.com</a></p>
         </div>
-      </section>
+      </div>
 
     </article>
   </main>
